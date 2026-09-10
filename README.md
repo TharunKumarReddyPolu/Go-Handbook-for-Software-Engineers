@@ -1,21 +1,38 @@
+<div align="center">
+  <img src="assets/banner.svg" alt="Go Handbook for Software Engineers" width="900"/>
+</div>
+
 # Go Handbook for Software Engineers
 
-A comprehensive Go handbook for software engineers covering fundamentals, idiomatic Go, concurrency, generics, testing, APIs, databases, performance, microservices, system design, and production engineering.
+<div align="center">
+
+**A comprehensive Go handbook covering fundamentals, idiomatic Go, concurrency, generics, testing, APIs, databases, performance, microservices, system design, and production engineering.**
 
 [![CI](https://github.com/TharunKumarReddyPolu/Go-Handbook-for-Software-Engineers/actions/workflows/ci.yml/badge.svg)](https://github.com/TharunKumarReddyPolu/Go-Handbook-for-Software-Engineers/actions/workflows/ci.yml)
 [![Go version](https://img.shields.io/badge/go-1.27-00ADD8?logo=go&logoColor=white)](https://go.dev/doc/go1.27)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)](CONTRIBUTING.md)
 
-This is **not** just another Go syntax tutorial. It is a practical,
-engineering-focused handbook for learning Go and building reliable,
-scalable, production-ready software.
+</div>
 
-Most Go material online stops at "here is the syntax." This handbook starts
-there and keeps going: how Go behaves under load, why the runtime does what
-it does, how to structure a service you can page someone about at 3 a.m.,
-and how to design distributed and financial systems with the tools Go gives
-you.
+> **TL;DR:** 28 sections organized into 7 learning paths, 38 fully written chapters with compiled, CI-verified examples, and honest progress tracking for the rest. Not another syntax tutorial: it also covers how Go behaves under load, why the runtime does what it does, how to structure a service you can page someone about at 3 a.m., and how to design distributed and financial systems with the tools Go gives you.
+
+**Try it in 30 seconds** (Go 1.27+):
+
+```bash
+git clone https://github.com/TharunKumarReddyPolu/Go-Handbook-for-Software-Engineers.git
+cd Go-Handbook-for-Software-Engineers
+go test ./08-concurrency/... -race   # every example in the repo is CI-verified
+```
+
+## Why this handbook
+
+| | |
+|---|---|
+| **Depth before breadth** | A topic is not "covered" until it answers: what is it, why does it exist, how does it work, when should I *not* use it, what goes wrong in production, and how would I debug it? |
+| **Everything compiles** | 15 example packages pass `go build ./...`, `go vet`, `go test -race`, and staticcheck on every push |
+| **No copying** | Original explanations; official docs are linked under *Further Reading*, never reproduced |
+| **Honest status** | 8 of 28 sections fully written; the other 20 have complete outlines tracked in [ROADMAP.md](ROADMAP.md) |
 
 Every chapter follows the same contract:
 
@@ -28,6 +45,7 @@ Every chapter follows the same contract:
 
 ## Table of Contents
 
+- [Why this handbook](#why-this-handbook)
 - [Who this is for](#who-this-is-for)
 - [The philosophy](#the-philosophy)
 - [Learning paths](#learning-paths)
@@ -87,6 +105,9 @@ Two rules follow from this and are enforced throughout:
 ## Learning paths
 
 Sections are numbered; paths pick a route through them.
+
+<details open>
+<summary><b>Show the 7 role-based paths</b></summary>
 
 ### Path 1: Complete Beginner → Go Engineer
 
@@ -153,6 +174,8 @@ Sections are numbered; paths pick a route through them.
 4. [09 Memory & Runtime](09-memory-runtime/) and [23 Go Internals](23-go-internals/)
 5. [24 System Design with Go](24-system-design/)
 
+</details>
+
 ## Quick start
 
 Install Go 1.27 or later from <https://go.dev/dl/>, then:
@@ -180,6 +203,9 @@ not compile (intentionally incomplete snippets) as such.
 Sections marked **[In depth]** are fully written with verified examples.
 Sections marked **[Outline]** have a complete topic map and are being
 written: see [ROADMAP.md](ROADMAP.md) for status and ordering.
+
+<details>
+<summary><b>Browse all 28 sections</b> (8 in depth, 20 outlined)</summary>
 
 ### Foundations
 
@@ -232,6 +258,8 @@ written: see [ROADMAP.md](ROADMAP.md) for status and ordering.
 - **[26 Go Interview Preparation](26-go-interview-preparation/)** [In depth]: beginner → senior tracks, scenario questions, reasoning-first answers
 - **[27 Open Source](27-open-source/)** [Outline]: contributing to Go projects, Go itself, and the Kafka-in-Go ecosystem
 - **[28 Projects](28-projects/)** [Outline]: five levels, 20+ projects, ending in the Production-Grade Financial Transaction Platform capstone
+
+</details>
 
 ## How examples are verified
 

@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="280" viewBox="0 0 1200 280" role="img" aria-label="Go Handbook for Software Engineers">
+  <rect width="1200" height="280" fill="#0d1117"/>
+  <rect x="1.5" y="1.5" width="1197" height="277" rx="16" fill="none" stroke="#30363d" stroke-width="3"/>
+  <rect x="90" y="52" width="56" height="6" rx="3" fill="#00ADD8"/>
+  <text x="88" y="190" font-family="'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="150" font-weight="800" fill="#00ADD8">Go</text>
+  <line x1="300" y1="70" x2="300" y2="212" stroke="#30363d" stroke-width="3"/>
+  <text x="340" y="128" font-family="'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="54" font-weight="700" fill="#e6edf3">Handbook for</text>
+  <text x="340" y="192" font-family="'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="54" font-weight="700" fill="#e6edf3">Software Engineers</text>
+  <text x="340" y="236" font-family="'Segoe UI', 'Helvetica Neue', Helvetica, Arial, sans-serif" font-size="24" fill="#8b949e">fundamentals · concurrency · distributed systems · fintech · interviews</text>
+</svg>
