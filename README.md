@@ -36,6 +36,7 @@ Every chapter follows the same contract:
 - [How examples are verified](#how-examples-are-verified)
 - [Reading version-specific content](#reading-version-specific-content)
 - [Contributing and community](#contributing-and-community)
+- [⭐ Support the Project](#-support-the-project)
 
 ## Who this is for
 
@@ -268,3 +269,27 @@ and the verification commands every PR must pass. By participating you
 agree to the [Code of Conduct](CODE_OF_CONDUCT.md). Good first
 contributions: fixing an inaccuracy (file an issue with the quote), adding
 an exercise, improving a diagram.
+
+---
+
+## ⭐ Support the Project
+
+If this handbook helps you on your path to mastering Go, please consider:
+
+<div align="center">
+
+[![Star this repo](https://img.shields.io/badge/⭐%20Star%20this%20repo-important?style=for-the-badge)](https://github.com/TharunKumarReddyPolu/Go-Handbook-for-Software-Engineers/stargazers)
+[![Watch this repo](https://img.shields.io/badge/👁%20Watch%20this%20repo-informational?style=for-the-badge)](https://github.com/TharunKumarReddyPolu/Go-Handbook-for-Software-Engineers/subscription)
+[![Fork this repo](https://img.shields.io/badge/🍴%20Fork%20this%20repo-success?style=for-the-badge)](https://github.com/TharunKumarReddyPolu/Go-Handbook-for-Software-Engineers/fork)
+
+</div>
+
+---
+
+<div align="center">
+
+# **Learn Go smarter, not harder!** 🧠
+
+</div>
+
+> **Inspired by practical production engineering** with key insights from official sources like go.dev, Effective Go, the Go Blog, and real-world systems experience. **Happy Coding! 🚀**
