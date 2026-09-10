@@ -3,14 +3,14 @@
 ## Why Does This Matter?
 
 Channels get the attention; `sync` gets the work done. Real services
-protect shared state — caches, registries, connection pools, counters —
+protect shared state: caches, registries, connection pools, counters,
 and the vocabulary for that is the `sync` package. Choosing the wrong
 primitive is how systems acquire lock contention at 10k RPS and nobody
 can explain why.
 
 ## Mental Model
 
-One decision table first — *protection in place vs transfer of
+One decision table first: *protection in place vs transfer of
 ownership*:
 
 | You are... | Use |
@@ -22,10 +22,10 @@ ownership*:
 | Handing values between goroutines | channels |
 | Many-key shared cache with hot keys | sharded mutexes or `sync.Map` |
 
-A mutex protects *memory*, a channel *coordinates* — most designs need
+A mutex protects *memory*, a channel *coordinates*: most designs need
 both, and knowing which problem you are solving is half the skill.
 
-## Mutex — protect the invariant, not the line of code
+## Mutex: protect the invariant, not the line of code
 
 ```go
 type Counter struct {
@@ -50,13 +50,13 @@ Rules with teeth:
 
 - **Lock/defer-unlock adjacent.** Reviewers read the pairing instantly.
 - **Never call out of your own mutex** (no method calls that might lock
-  again — that's how deadlocks happen).
+  again: that's how deadlocks happen).
 - **The mutex guards an invariant**, not a statement: if `a` and `b` must
   be consistent, one lock covers both.
-- **Zero value is ready.** `var mu sync.Mutex` — never copy it after use
+- **Zero value is ready.** `var mu sync.Mutex`: never copy it after use
   (`go vet` catches copying).
 
-## RWMutex — only when reads dominate *measurably*
+## RWMutex: only when reads dominate *measurably*
 
 ```go
 type Registry struct {
@@ -81,9 +81,9 @@ func (r *Registry) Set(name string, e Endpoint) {
 RWMutex is not free: writer starvation protection, more bookkeeping, and
 RLock is slower than Mutex's fast path. Below high read contention
 (measure!), plain Mutex often wins. Contended single-key locks are also
-a shard boundary signal — see below.
+a shard boundary signal: see below.
 
-## sync.Once — initialization as an idempotent fact
+## sync.Once: initialization as an idempotent fact
 
 ```go
 type Client struct {
@@ -102,10 +102,10 @@ func (c *Client) Conn(ctx context.Context) (*Conn, error) {
 
 `Once` runs exactly one function, and other callers block until it
 completes. Two caveats: a panicking `Do` still counts as done (the
-failure is sticky), and `Do` cannot take arguments — capture them in the
+failure is sticky), and `Do` cannot take arguments: capture them in the
 closure.
 
-## WaitGroup — the collector
+## WaitGroup: the collector
 
 ```go
 var wg sync.WaitGroup
@@ -130,9 +130,9 @@ wg.Wait()
 ```
 
 (Loop variables are per-iteration since Go 1.22, so the old `job := job`
-capture hack is gone — see [meta/versioning.md](../meta/versioning.md).)
+capture hack is gone: see [meta/versioning.md](../meta/versioning.md).)
 
-## atomic — the scalpel
+## atomic: the scalpel
 
 ```go
 type Metrics struct {
@@ -151,7 +151,7 @@ func (m *Metrics) Record(err error) {
 Atomics are lock-free single-word operations: increment, load, store,
 compare-and-swap. Two hard limits:
 
-1. **One value.** Two related atomics are not one consistent state — if
+1. **One value.** Two related atomics are not one consistent state: if
    `requests` and `errors` must be read consistently, they are a struct
    under one Mutex, not two atomics.
 2. **No compound invariants.** "Move 10 from A to B" is not atomic as two
@@ -169,7 +169,7 @@ for {
 }
 ```
 
-## sync.Map — the specialty tool
+## sync.Map: the specialty tool
 
 Optimized for two specific shapes: (1) keys written once, read many
 (caches, registries), (2) disjoint goroutines touching disjoint keys.
@@ -187,7 +187,7 @@ Default to `Mutex + map` until a profile shows the contention; reach for
 `sync.Map` when the access shape matches its optimization, and say the
 shape out loud in a comment.
 
-## Basic Example — all together: a rate-limited client registry
+## Basic Example: all together: a rate-limited client registry
 
 ```go
 type Registry struct {
@@ -219,24 +219,24 @@ func (r *Registry) Client(name string, dial func() (*Client, error)) (*Client, e
 }
 ```
 
-Note the double-checked pattern — cheap read path, serialized write path,
+Note the double-checked pattern: cheap read path, serialized write path,
 no double-dial.
 
 ## Common Mistakes
 
-- **Copying a mutex** (value receiver on a struct holding one) — vet
+- **Copying a mutex** (value receiver on a struct holding one): vet
   catches it; the copy silently guards nothing.
-- **Locking around long I/O** — hold locks for memory operations;
+- **Locking around long I/O**: hold locks for memory operations;
   if you must wait on the network under a lock, redesign.
-- **Two atomics for one invariant** — covered above; it *will* tear.
-- **RWMutex by default** — measure; it's often slower than Mutex.
-- **`wg.Add` inside the goroutine** — race with `wg.Wait()`: the counter
+- **Two atomics for one invariant**: covered above; it *will* tear.
+- **RWMutex by default**: measure; it's often slower than Mutex.
+- **`wg.Add` inside the goroutine**: race with `wg.Wait()`: the counter
   may hit zero before Add runs. Add before `go`.
-- **Reusing `sync.Once` for "run every N"** — Once is once, forever.
+- **Reusing `sync.Once` for "run every N"**: Once is once, forever.
 
 ## Idiomatic Go
 
-- Prefer designing away shared state (ownership transfer) — the best
+- Prefer designing away shared state (ownership transfer): the best
   mutex is the one that doesn't exist.
 - Keep locked sections tiny and boring; allocate/IO outside the lock.
 - Expose locking via methods; never export a mutex (callers will misuse it).
@@ -247,14 +247,14 @@ no double-dial.
   wait time that dominates, not the lock op.
 - Contended mutexes degrade to OS-level waiting; if your pprof shows
   `sync.(*Mutex).Lock` hot, shard, batch, or re-own the data.
-- Atomics under heavy contention serialize on the cacheline —
+- Atomics under heavy contention serialize on the cacheline,
   sharded counters beat one hot atomic at scale.
 
 ## Concurrency Considerations
 
 - All of `sync` provides happens-before edges (a successful Lock pairs
   with Unlock; Once completes before any Do returns). Race-free is not
-  the same as *deadlock-free* — ordering of lock acquisition across
+  the same as *deadlock-free*: ordering of lock acquisition across
   multiple locks must be global (always A→B, never B→A).
 - Go's mutexes are not reentrant: locking twice in one goroutine
   deadlocks. Design non-reentrant APIs.
@@ -276,13 +276,13 @@ no double-dial.
 
 ## Interview Questions
 
-1. *Mutex vs channel — how do you choose?* — Protect-in-place vs
+1. *Mutex vs channel: how do you choose?*: Protect-in-place vs
    transfer-ownership; both examples.
-2. *Why is RWMutex sometimes slower than Mutex?* — RLock bookkeeping +
+2. *Why is RWMutex sometimes slower than Mutex?*: RLock bookkeeping +
    writer-priority coordination; wins only under heavy read share.
-3. *Write a concurrent-safe lazy singleton. What are the failure modes?* —
+3. *Write a concurrent-safe lazy singleton. What are the failure modes?*,
    sync.Once; sticky panic, arg capture, first-caller blocking.
-4. *What breaks if two atomics model one state?* — Torn reads across the
+4. *What breaks if two atomics model one state?*: Torn reads across the
    pair; needs one lock or one word.
 
 ## Practice Exercises
@@ -298,6 +298,6 @@ no double-dial.
 
 ## Further Reading
 
-- [sync package docs](https://pkg.go.dev/sync) — every primitive's contract
-- [Go memory model](https://go.dev/ref/mem) — the happens-before edges sync provides
-- [Introducing sync.Map](https://go.dev/blog/sync-map) — official rationale for its niche
+- [sync package docs](https://pkg.go.dev/sync): every primitive's contract
+- [Go memory model](https://go.dev/ref/mem): the happens-before edges sync provides
+- [Introducing sync.Map](https://go.dev/blog/sync-map): official rationale for its niche

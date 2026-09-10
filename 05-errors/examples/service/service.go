@@ -47,7 +47,7 @@ type PaymentService struct {
 // layer converts infrastructure failures into classified domain errors.
 //
 // Note the cancellation handling: a raw context error is NOT retryable
-// (errorslib.Retryable returns false for it — the caller must decide why
+// (errorslib.Retryable returns false for it: the caller must decide why
 // the deadline fired), so the service translates it into CodeUnavailable
 // when the right client-facing answer is "try again later".
 func (s *PaymentService) Process(ctx context.Context, req PaymentRequest) error {

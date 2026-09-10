@@ -3,7 +3,7 @@
 ## Why Does This Matter?
 
 Chapter 1 covered mechanics. This chapter covers judgment: how errors
-flow through a real service — where they are created, enriched, classified,
+flow through a real service: where they are created, enriched, classified,
 logged, and finally mapped to responses. The difference between a junior
 and senior error design is invisible in demos and obvious in incidents.
 
@@ -43,7 +43,7 @@ Mixing families is the root cause of both 500-on-bad-input (validation
 mapped to "internal") and 400-on-dependency-failure (infra mapped to
 "client"). Classify at creation; map by class.
 
-## Validation errors — batch, don't bail
+## Validation errors: batch, don't bail
 
 ```go
 // Collect all violations; users fix ten fields in one round trip.
@@ -65,7 +65,7 @@ func validateTransfer(req TransferRequest) error {
 `errors.Join` (Go 1.20+) is the batch primitive: `errors.Is/As` walk all
 branches, so one joined error still answers "is this a validation error?"
 
-## HTTP error mapping — the contract layer
+## HTTP error mapping: the contract layer
 
 ```go
 // examples/service/http.go
@@ -105,31 +105,31 @@ Design decisions embedded here, each defensible in review:
 
 - **Clients see classification, not text.** The timeout's hostname never
   crosses the wire.
-- **Retry-After only for genuinely retryable classes** — see below.
-- **Unknown defaults to 500** — treat unexpected errors as server faults,
+- **Retry-After only for genuinely retryable classes**: see below.
+- **Unknown defaults to 500**: treat unexpected errors as server faults,
   not client's problem.
 
-## Retryable vs non-retryable — decision table
+## Retryable vs non-retryable: decision table
 
 | Signal | Retry? | Why |
 |---|---|---|
 | Network timeout, connection reset | yes, backoff + jitter | likely transient |
 | HTTP 429 / 503 with Retry-After | yes, honor the header | server asked you to |
 | HTTP 400, 404, 409 | no | deterministic outcome |
-| Context deadline exceeded | rarely — decide *why* | your budget spent |
+| Context deadline exceeded | rarely: decide *why* | your budget spent |
 | ErrNoRows / not-found | no | state, not failure |
 | Anything unknown | no, alert | retrying bugs doubles their cost |
 
 The cardinal sin is retrying without classification: it converts a
 10-second blip into a 10-minute self-inflicted outage. Retry policy
-belongs with the *caller* that knows the operation's idempotency — see
+belongs with the *caller* that knows the operation's idempotency: see
 [16-distributed-systems](../16-distributed-systems/) and
 [25-fintech-with-go](../25-fintech-with-go/) for the full treatment.
 
-## Logging errors — once, structured, decision-ready
+## Logging errors: once, structured, decision-ready
 
 ```go
-// slog (stdlib, Go 1.21+) — structured fields beat string interpolation
+// slog (stdlib, Go 1.21+): structured fields beat string interpolation
 logger.Error("payment failed",
 	"err", err,                       // the full chain, formatted
 	"idempotency_key", req.Key,       // decision-relevant fields
@@ -143,14 +143,14 @@ Rules:
 - **Log once** at the top of the request/job; lower layers add context to
   the error instead.
 - **`"err", err`** logs the wrapped chain's text. Log stack traces only
-  for unexpected (panic-level) failures — expected failures with stacks
+  for unexpected (panic-level) failures: expected failures with stacks
   drown real signals.
 - **Never log-and-return.** `log.Println(err); return err` is how an
   incident gets three copies of the same line.
 - **Include decision fields** (ids, amounts, attempts) so the on-call can
   act without rerunning the request.
 
-## Production Example — a service boundary in full
+## Production Example: a service boundary in full
 
 ```go
 // examples/service/main.go
@@ -211,20 +211,20 @@ func (s *PaymentService) Process(ctx context.Context, req PaymentRequest) error 
 ```
 
 (The `PaymentService`/request types referenced above are completed in
-`examples/service/` — the point of this excerpt is the *boundary
+`examples/service/`: the point of this excerpt is the *boundary
 discipline*, not the wiring.)
 
 ## Common Mistakes
 
-- **`fmt.Errorf("payment failed")`** — context-free errors force
+- **`fmt.Errorf("payment failed")`**: context-free errors force
   archaeology. Say what failed, with what key, at which attempt.
-- **`if err != nil { log.Fatal(err) }` in libraries** — libraries return;
+- **`if err != nil { log.Fatal(err) }` in libraries**: libraries return;
   only `main` decides the process dies.
 - **Error text as API.** Another team parses your message string; you can
   never change a typo again. Expose codes/types instead.
 - **500 for everything.** Validation, conflicts, and outages all collapse
   into "our fault," clients retry wrongly, dashboards lie.
-- **Swallowing with `err = nil`** after a failed optional step — at least
+- **Swallowing with `err = nil`** after a failed optional step: at least
   log the swallowed error with a reason field.
 - **Panic in request paths** for user errors (see
   [01 §7 defer/panic/recover](../01-go-fundamentals/07-defer-panic-recover.md)).
@@ -249,7 +249,7 @@ discipline*, not the wiring.)
 - Errors collected across goroutines: `errors.Join` or slice+mutex;
   never append to a shared slice without synchronization.
 - An error value passed through a channel should be immutable after
-  creation — treat it as a message, not shared state.
+  creation: treat it as a message, not shared state.
 
 ## Security Considerations
 
@@ -265,7 +265,7 @@ discipline*, not the wiring.)
 - Table-driven tests per mapping: inject each domain code, assert status
   code + safe body.
 - Contract test: every error a service returns must satisfy exactly one
-  mapping branch — an unclassified error is a bug; test that default
+  mapping branch: an unclassified error is a bug; test that default
   branch is hit only by truly unknown errors.
 - Retry policy tests: freeze a clock, feed timeout errors, assert
   backoff sequence. See [10-testing](../10-testing/) for the patterns.
@@ -273,12 +273,12 @@ discipline*, not the wiring.)
 ## Interview Questions
 
 1. *Walk me through what happens between "Postgres is down" and the
-   client's response.* — The pipeline diagram; grading on log-once,
+   client's response.*: The pipeline diagram; grading on log-once,
    classification, boundary mapping, no internal leakage.
-2. *Why not log errors at every layer?* — Multiplication of noise, no
+2. *Why not log errors at every layer?*: Multiplication of noise, no
    single source of truth for an incident; context belongs in the error,
    logs at the top.
-3. *Design the error model for a payments API.* — Families, codes,
+3. *Design the error model for a payments API.*: Families, codes,
    idempotency interaction, retry classification, audit trail; the
    [25-fintech-with-go](../25-fintech-with-go/) answer deepens this.
 
@@ -286,7 +286,7 @@ discipline*, not the wiring.)
 
 1. Add `CodeConflict` handling to `writeError` with `409` and an
    `Idempotency-Key` header echo; test it with httptest.
-2. Write `Policy` — a retry helper that takes `Retryable(err)` and a
+2. Write `Policy`: a retry helper that takes `Retryable(err)` and a
    backoff func, and returns the final error; unit test with a fake
    clock.
 3. Refactor a real function of yours: every `log.Println(err)` removed,
@@ -295,6 +295,6 @@ discipline*, not the wiring.)
 
 ## Further Reading
 
-- [Go wiki: Errors](https://go.dev/wiki/Errors) — community norms
-- [log/slog package docs](https://pkg.go.dev/log/slog) — structured logging
-- [Dave Cheney: Don't just check errors, handle them gracefully](https://dave.cheney.net/2016/04/27/dont-just-check-errors-handle-them-gracefully) — the classic essay on error design
+- [Go wiki: Errors](https://go.dev/wiki/Errors): community norms
+- [log/slog package docs](https://pkg.go.dev/log/slog): structured logging
+- [Dave Cheney: Don't just check errors, handle them gracefully](https://dave.cheney.net/2016/04/27/dont-just-check-errors-handle-them-gracefully): the classic essay on error design

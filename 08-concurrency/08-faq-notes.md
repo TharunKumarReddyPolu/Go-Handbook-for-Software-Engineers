@@ -40,7 +40,7 @@ chapter.
 
 **Why does my program panic with `all goroutines are asleep - deadlock!`?**
 Every goroutine is blocked on channel/lock operations and none can
-progress — the runtime detects total deadlock. Partial deadlocks (one
+progress: the runtime detects total deadlock. Partial deadlocks (one
 component blocked, others fine) hang instead; find them with the
 goroutine profile. See [07-pitfalls](07-pitfalls.md).
 
@@ -53,12 +53,12 @@ When you can prove no send will happen again: you own all sends (owner
 closes), or every sender is joined (`wg.Wait()` before close). See
 [01-goroutines-and-channels](01-goroutines-and-channels.md).
 
-**My select has two ready cases — which runs?**
+**My select has two ready cases, which runs?**
 Random, uniformly. This prevents starvation; don't build ordering on it.
 See [02-select-and-timeouts](02-select-and-timeouts.md).
 
 **Buffered channel as a lock-free queue?**
-It's a bounded queue, not a lock-free anything — full buffers block
+It's a bounded queue, not a lock-free anything: full buffers block
 sends (that's backpressure, the feature). Sync-free semantics still come
 from channel rules, not atomics.
 
@@ -67,7 +67,7 @@ When memory, scheduler latency, or contention profiles say so. Workers
 pool at #cores (CPU-bound) or #deps (I/O-bound); per-connection
 goroutines in servers are normal at 100k+. Measure; don't folklore.
 
-**Goroutine leaks — how do I check in CI?**
+**Goroutine leaks: how do I check in CI?**
 goleak, or the runtime.NumGoroutine baseline pattern in
 [07-pitfalls](07-pitfalls.md).
 
@@ -87,14 +87,14 @@ per goroutine. Outside those, mutex+map wins. See
 [04-sync-primitives](04-sync-primitives.md).
 
 **Can a channel be nil? What happens?**
-Yes — every operation blocks forever. Used deliberately to disable
+Yes: every operation blocks forever. Used deliberately to disable
 select cases; accidentally, it's a deadlock. See
 [05-zero-values chapter of 01](../01-go-fundamentals/05-zero-values.md).
 
 **How do I run something exactly once across a cluster, not just a
 process?**
 `sync.Once` is per-process. Distributed once needs consensus or lease
-acquisition — see [16-distributed-systems](../16-distributed-systems/).
+acquisition: see [16-distributed-systems](../16-distributed-systems/).
 
 ## Anti-pattern gallery
 
@@ -138,6 +138,6 @@ reviewer can link it in a PR comment.
 
 ## Further Reading
 
-- [Go memory model](https://go.dev/ref/mem) — the ground truth for all of it
-- [Practical Go: Concurrency](https://dave.cheney.net/practical-go/presentations/qcon-china.html) — Cheney's concurrency counsel
-- [Concurrency in Go](https://www.oreilly.com/library/view/concurrency-in-go/9781491941294/) — the book this section most agrees with
+- [Go memory model](https://go.dev/ref/mem): the ground truth for all of it
+- [Practical Go: Concurrency](https://dave.cheney.net/practical-go/presentations/qcon-china.html): Cheney's concurrency counsel
+- [Concurrency in Go](https://www.oreilly.com/library/view/concurrency-in-go/9781491941294/): the book this section most agrees with

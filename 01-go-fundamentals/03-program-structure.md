@@ -11,7 +11,7 @@ week one prevents the reorganization everyone else does in year two.
 A **module** is the unit of versioning and dependency management; it is
 announced by a `go.mod` at its root. A **package** is the unit of
 compilation and visibility inside that module. A **repository** is just
-storage — it may hold one module, many modules, or be part of nothing.
+storage: it may hold one module, many modules, or be part of nothing.
 
 ```text
 repository (git)
@@ -41,13 +41,13 @@ Three mandatory facts, each a favorite interview warm-up:
 
 1. `package main` + `func main()` is the executable entry point. The
    linker starts there.
-2. Imports are per-file and unused imports are **errors** — dead imports
+2. Imports are per-file and unused imports are **errors**: dead imports
    are noise a team should not pay for.
 3. `main` is called on the main goroutine and returns nothing; to exit
    with a status use `os.Exit`, which skips defers (see
    [defer chapter](07-defer-panic-recover.md)).
 
-## go.mod — the module contract
+## go.mod: the module contract
 
 ```go
 module github.com/TharunKumarReddyPolu/Go-Handbook-for-Software-Engineers
@@ -62,7 +62,7 @@ go 1.27
   their cryptographic content.
 
 Create one per module: `go mod init <path>`. Add/prune deps:
-`go mod tidy` — run it, commit both files, always.
+`go mod tidy`: run it, commit both files, always.
 
 ## Internal packages
 
@@ -78,7 +78,7 @@ mycompany/
 
 Other repositories trying to import `internal/...` fail to compile. This
 is how Go says "public API" vs "not yours": capitalization covers files,
-`internal` covers trees. Use it aggressively — most packages in a real
+`internal` covers trees. Use it aggressively: most packages in a real
 service should be internal.
 
 ## Where does main.go live?
@@ -97,13 +97,13 @@ service/
 └── README.md
 ```
 
-`cmd/` is convention, not magic — the compiler does not know it exists.
+`cmd/` is convention, not magic: the compiler does not know it exists.
 The layout matters because *imports point inward*: `cmd` and `internal/*`
 may import `domain`; `domain` imports neither. That one-way flow is what
 keeps a service testable for years. The full treatment is
 [14-backend-development](../14-backend-development/).
 
-## Comments and naming — the 20% that matters
+## Comments and naming: the 20% that matters
 
 - **Comments are prose, complete sentences.** Doc comments start with the
   name: `// Load returns the cached value for key.`
@@ -112,9 +112,9 @@ keeps a service testable for years. The full treatment is
 - **Names are short and local.** `i` in a loop, `r` for a reader within a
   function, `readerTimeout` in config. Long names do not add clarity;
   scope does.
-- **MixedCaps, no underscores.** `HTTPServer`, `userID` — initialisms are
+- **MixedCaps, no underscores.** `HTTPServer`, `userID`: initialisms are
   capitalized uniformly.
-- **Get it? No `Get` prefix.** `user.Name()`, not `user.GetName()` —
+- **Get it? No `Get` prefix.** `user.Name()`, not `user.GetName()`,
   getters are unidiomatic; return values directly.
 
 ## Common Mistakes
@@ -125,7 +125,7 @@ keeps a service testable for years. The full treatment is
   everything. Name packages for what they provide: `timeutil` beats `utils`.
 - **Cyclic imports.** A design smell; break cycles by extracting the
   shared types into a lower package.
-- **Reorganizing into `models/`, `handlers/`, `controllers/`** — importing
+- **Reorganizing into `models/`, `handlers/`, `controllers/`**: importing
   your framework's vocabulary instead of your domain's.
 - **Forgetting `go mod tidy` after refactor.** CI catches it; make it
   muscle memory first.
@@ -170,7 +170,7 @@ symbol, context as the first parameter.
 - Package layout affects build granularity: fewer, larger packages
   recompile less in big repos than hundreds of micro-packages.
 - Import cycles are impossible, so refactors that add cycles fail fast at
-  compile time — use that as a design check.
+  compile time: use that as a design check.
 
 ## Testing Strategy
 
@@ -180,12 +180,12 @@ introduced properly in [10-testing](../10-testing/).
 
 ## Interview Questions
 
-1. *What is the difference between a module and a package?* — Module:
+1. *What is the difference between a module and a package?*: Module:
    versioned dependency unit (go.mod). Package: compilation and visibility
    unit. A module contains packages.
-2. *How does `internal` enforce privacy?* — The compiler (not the VCS)
+2. *How does `internal` enforce privacy?*: The compiler (not the VCS)
    rejects imports from outside the `internal`'s parent tree.
-3. *Why are unused variables and imports errors?* — Both correlate with
+3. *Why are unused variables and imports errors?*: Both correlate with
    bugs; the language treats dead code as a defect, and it keeps builds
    incremental.
 
@@ -201,6 +201,6 @@ introduced properly in [10-testing](../10-testing/).
 
 ## Further Reading
 
-- [Organizing a Go module](https://go.dev/doc/modules/layout) — official
+- [Organizing a Go module](https://go.dev/doc/modules/layout): official
 - [Effective Go: names](https://go.dev/doc/effective_go#names)
-- [Go Code Review Comments](https://go.dev/wiki/CodeReviewComments) — naming and doc-comment norms
+- [Go Code Review Comments](https://go.dev/wiki/CodeReviewComments): naming and doc-comment norms

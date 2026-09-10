@@ -10,7 +10,7 @@ import (
 )
 
 // FuzzEval_EvalNeverPanics guards the parser: any input may produce an
-// error, but never a panic — and accepted negatives must parse back to
+// error, but never a panic, and accepted negatives must parse back to
 // their own value through the string round trip.
 func FuzzEval_EvalNeverPanics(f *testing.F) {
 	// Seeds: examples and shapes from past bugs.
@@ -60,7 +60,7 @@ func TestEvalRoundTripProperty(t *testing.T) {
 }
 
 // TestSortProperties demonstrates the classic invariants with stdlib
-// sort on random inputs — the shape to copy for your own domains.
+// sort on random inputs: the shape to copy for your own domains.
 func TestSortProperties(t *testing.T) {
 	rng := rand.New(rand.NewSource(7))
 	for i := 0; i < 100; i++ {
@@ -86,7 +86,7 @@ func TestSortProperties(t *testing.T) {
 }
 
 // TestNoSleepNeeded documents the timing discipline: this test uses a
-// channel gate, not a sleep — see 10-testing/01-fundamentals.md.
+// channel gate, not a sleep: see 10-testing/01-fundamentals.md.
 func TestChannelGatePattern(t *testing.T) {
 	done := make(chan struct{})
 	go func() {

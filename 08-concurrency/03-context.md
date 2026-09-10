@@ -6,7 +6,7 @@ Before context (Go 1.7), cancellation was a mess of done-channels with
 incompatible shapes, and deadlines were a per-library invention. Context
 standardized one thing every layer of every service needs: *the ability
 to say "stop waiting, it's over" and have every layer hear it.* It is the
-connective tissue of production Go — you will find it in every signature
+connective tissue of production Go: you will find it in every signature
 from HTTP handlers to database drivers.
 
 ## Mental Model
@@ -25,7 +25,7 @@ flowchart TD
   request-scoped values.
 - Children derive from parents; cancelling a parent cancels all
   descendants. There is no way to *un*-cancel.
-- `Done() <-chan struct{}` closes when cancelled — it's a broadcast all
+- `Done() <-chan struct{}` closes when cancelled: it's a broadcast all
   descendants can await.
 - `Err()` says why: `Canceled` or `DeadlineExceeded`.
 
@@ -35,7 +35,7 @@ Rules that make it work across a codebase:
 2. Pass it through every call that can block.
 3. Never store it in structs (config-like structs excepted, and even
    then: don't).
-4. It is not for optional function parameters — that's what values are.
+4. It is not for optional function parameters: that's what values are.
 
 ## How It Works
 
@@ -48,7 +48,7 @@ defer cancel() // ALWAYS: releases the child's timer/resources even on success
 
 `defer cancel()` even when the context expires naturally: the context
 keeps its timer and parent link alive until cancel runs. Forgetting it
-is a slow leak in long-lived processes — subtler than a goroutine leak
+is a slow leak in long-lived processes: subtler than a goroutine leak
 but the same species.
 
 Checking for cancellation in compute loops (the only case where context
@@ -76,7 +76,7 @@ case <-ctx.Done():
 }
 ```
 
-## Basic Example — deadline through layers
+## Basic Example: deadline through layers
 
 ```go
 func (s *Store) GetUser(ctx context.Context, id string) (User, error) {
@@ -88,10 +88,10 @@ func (s *Store) GetUser(ctx context.Context, id string) (User, error) {
 
 If the driver honors context (all `database/sql` drivers must), the query
 is abandoned at 300ms, and `ctx.Err()` returns
-`context.DeadlineExceeded` — which the caller classifies per the error
+`context.DeadlineExceeded`, which the caller classifies per the error
 chapter's rules.
 
-## Real-World Example — per-request budget split
+## Real-World Example: per-request budget split
 
 A handler with a total budget shared across two calls, then a critical
 section protected by its own smaller deadline:
@@ -113,7 +113,7 @@ func HandlePayment(ctx context.Context, req Request) error {
 Note the asymmetry: the parent budget bounds the *whole* operation; the
 child bounds *this call* tighter. Deadlines only shrink down the tree.
 
-## Production Example — shutdown coordination
+## Production Example: shutdown coordination
 
 ```go
 func main() {
@@ -134,11 +134,11 @@ func main() {
 ```
 
 The two-context pattern matters: the shutdown context derives from
-`Background`, *not* the signal context — the signal already fired; a new
+`Background`, *not* the signal context: the signal already fired; a new
 budget is needed for the drain. Full treatment in
 [22-production-go](../22-production-go/).
 
-### Context values — the narrow, honest use
+### Context values: the narrow, honest use
 
 ```go
 type ctxKey int
@@ -155,30 +155,30 @@ func RequestID(ctx context.Context) string {
 }
 ```
 
-Legitimate: correlation IDs, auth principals, tracing spans — values
+Legitimate: correlation IDs, auth principals, tracing spans: values
 that are genuinely *request-scoped metadata* consumed by middleware and
 infrastructure, not by business logic. Anti-pattern: passing options or
-domain data ("current user's settings") through context — that hides
+domain data ("current user's settings") through context: that hides
 dependencies. Use unexported key types (shown above) to prevent
 collisions.
 
 ## Common Mistakes
 
-- **Storing ctx in a struct field** — now every method's lifetime is
+- **Storing ctx in a struct field**: now every method's lifetime is
   ambiguous; pass it explicitly.
-- **Forgetting `defer cancel()`** — timer + parent-link leak.
+- **Forgetting `defer cancel()`**: timer + parent-link leak.
 - **Deriving request-scoped contexts in background goroutines** after
-  the request ended — the context is already cancelled; the goroutine
+  the request ended: the context is already cancelled; the goroutine
   dies instantly. For work that outlives the request, detach
   deliberately: `context.WithoutCancel(ctx)` (Go 1.21+) keeps values,
-  drops cancellation — and document why that's safe.
+  drops cancellation, and document why that's safe.
 - **`context.Background()` in handlers** instead of using the request's
-  context (`r.Context()`) — the request's cancellation, deadline, and
+  context (`r.Context()`): the request's cancellation, deadline, and
   values are lost.
-- **Swallowing `ctx.Err()`** and returning something else — callers
+- **Swallowing `ctx.Err()`** and returning something else: callers
   check `errors.Is(err, context.DeadlineExceeded)` to make retry
   decisions; preserve it (wrap with `%w`).
-- **Using context for optional arguments** — invisible signatures.
+- **Using context for optional arguments**: invisible signatures.
 
 ## Idiomatic Go
 
@@ -199,7 +199,7 @@ case r := <-s.results:
 
 ## Performance Considerations
 
-- `context.WithValue` allocates a wrapper per call — fine at request
+- `context.WithValue` allocates a wrapper per call: fine at request
   rate, avoid in hot inner loops.
 - Deadline contexts allocate a timer each; reusing a single derived
   context for a batch of calls beats per-call deadlines when policy
@@ -209,7 +209,7 @@ case r := <-s.results:
 
 ## Concurrency Considerations
 
-- Context is safe for concurrent use — that's the point: one tree,
+- Context is safe for concurrent use: that's the point: one tree,
   many watchers.
 - `Done()` closing is a broadcast: N goroutines can all select on the
   same channel and all wake.
@@ -222,7 +222,7 @@ case r := <-s.results:
 - Auth principals in context values must be set at the authentication
   boundary only; reading them from untrusted inputs elsewhere is an
   escalation vector.
-- Values ride along on every wrapped context — including ones you log or
+- Values ride along on every wrapped context: including ones you log or
   serialize. Keep secrets out (see [21-security](../21-security/)).
 - Context timeouts are your anti-slow-loris and anti-deadlock budget;
   absence of deadlines is a resource-exhaustion risk, not a feature.
@@ -238,17 +238,17 @@ case r := <-s.results:
 
 ## Interview Questions
 
-1. *Why is ctx the first parameter?* — Convention enables tooling,
+1. *Why is ctx the first parameter?*: Convention enables tooling,
    reviews, and pipeline linting; uniformity is the feature.
-2. *What happens if you don't call cancel?* — The context's resources
-   (timer, parent-child link) live until expiry — a leak in
+2. *What happens if you don't call cancel?*: The context's resources
+   (timer, parent-child link) live until expiry: a leak in
    long-running processes.
-3. *How do you pass a value that outlives a request's cancellation?* —
+3. *How do you pass a value that outlives a request's cancellation?*,
    `context.WithoutCancel` (Go 1.21+), keeping values but dropping the
    cancellation link; discuss when that's appropriate (audit writes) vs
    dangerous (retrying unsafe work).
 4. *Design a request flow with a total budget and a tighter budget on
-   the risk check.* — The per-request budget example; grades on
+   the risk check.*: The per-request budget example; grades on
    deadline-shrink semantics.
 
 ## Practice Exercises
@@ -264,6 +264,6 @@ case r := <-s.results:
 
 ## Further Reading
 
-- [Go Concurrency Patterns: Context](https://go.dev/blog/context) — official blog
-- [context package docs](https://pkg.go.dev/context) — read the package comment fully; it's the spec
-- [Go 1.21: WithoutCancel etc.](https://go.dev/doc/go1.21) — the detach helpers
+- [Go Concurrency Patterns: Context](https://go.dev/blog/context): official blog
+- [context package docs](https://pkg.go.dev/context): read the package comment fully; it's the spec
+- [Go 1.21: WithoutCancel etc.](https://go.dev/doc/go1.21): the detach helpers

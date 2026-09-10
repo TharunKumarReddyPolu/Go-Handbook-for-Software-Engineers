@@ -5,7 +5,7 @@
 The difference between a toy and a production Kafka service is the
 envelope around the handler: retries, dead-letter queues, idempotency,
 offset discipline on rebalance, and graceful shutdown. This chapter
-builds that envelope on the transport-free core from the examples — the
+builds that envelope on the transport-free core from the examples: the
 same structure as [08-concurrency's stage 5](../08-concurrency/examples/05-jobprocessor/),
 with Kafka-specific semantics layered on.
 
@@ -27,8 +27,8 @@ The contracts that make this survivable:
   forever on a full buffer.
 - **Consumers** process-then-commit (at-least-once), so handlers are
   idempotent by construction.
-- **Failures after bounded retries** go to a DLQ — with the *original*
-  message plus failure metadata — and never block the partition.
+- **Failures after bounded retries** go to a DLQ: with the *original*
+  message plus failure metadata, and never block the partition.
 
 ## The transport-free core
 
@@ -55,7 +55,7 @@ adapts `franz-go` records to `Message` and commits per its policies.
 The seam costs two adapter functions and buys client swap-ability
 (ch. 02's conclusion).
 
-## Producer — batching, idempotence, backpressure
+## Producer: batching, idempotence, backpressure
 
 ```go
 // examples/producer.go (adapter excerpt)
@@ -92,16 +92,16 @@ func ProduceWithResult(ctx context.Context, cl *kgo.Client, topic, key string, v
 Producer semantics worth knowing cold:
 
 - **Idempotent produce** (client default) gives per-partition exactly-
-  once *within client retries* — broker de-dups on sequence numbers.
+  once *within client retries*: broker de-dups on sequence numbers.
   It does not make *your* flow exactly-once end to end.
 - **acks=all + min.insync.replicas=2** is the durability default for
   money-adjacent data; anything weaker trades availability for silent
   loss risk.
 - **Buffered-record limits** are your backpressure: when full, produce
-  calls block or fail — surface that as a metric and a shed decision
+  calls block or fail: surface that as a metric and a shed decision
   (stage 4 pattern), never as an unbounded wait.
 
-## Consumer — groups, offsets, the drain-before-commit sequence
+## Consumer: groups, offsets, the drain-before-commit sequence
 
 ```go
 // examples/consumer.go (adapter excerpt)
@@ -134,20 +134,20 @@ func (c *Consumer) Run(ctx context.Context) error {
 		})
 
 		// Commit AFTER the batch processes: at-least-once. On rebalance
-		// or shutdown, uncommitted work reprocesses — handlers are
+		// or shutdown, uncommitted work reprocesses: handlers are
 		// idempotent by contract (below).
 		c.client.CommitRecords(ctx, recordsOf(fetches)...)
 	}
 }
 ```
 
-### Idempotent consumers — the load-bearing piece
+### Idempotent consumers: the load-bearing piece
 
 At-least-once means duplicates are normal. The handler de-dups with the
 envelope's identity:
 
 ```go
-// examples/service.go — the idempotency gate
+// examples/service.go: the idempotency gate
 func (s *OrderService) Process(ctx context.Context, msg Message) error {
 	id := msg.Headers["idempotency_key"]
 	if id == "" {
@@ -211,21 +211,21 @@ func (c *Consumer) processPartition(ctx context.Context, p kgo.FetchTopicPartiti
 ```
 
 The DLQ record carries the original message *and* failure metadata
-(error, attempts, first-seen timestamp) in headers — the DLQ is an
+(error, attempts, first-seen timestamp) in headers: the DLQ is an
 operations surface, not a landfill: alert on its rate
 ([04-observability-tuning](04-observability-tuning.md)).
 
-### Rebalances and shutdown — the drain
+### Rebalances and shutdown: the drain
 
 When the group rebalances (or ctx cancels), franz-go revokes
 partitions. Your contract: stop accepting, finish in-flight handler
 work, *then* commit. The consumer above does this implicitly (commit
-after EachPartition completes); explicit version — hook
+after EachPartition completes); explicit version: hook
 `kgo.BlockRebalanceOnPoll` and call `client.CommitMarkedRecords` after
-drain — is documented in the example file. The invariant matches the
+drain: is documented in the example file. The invariant matches the
 stage-5 processor: **no commit while work is in flight.**
 
-## Serialization & schema evolution — the envelope pattern
+## Serialization & schema evolution: the envelope pattern
 
 ```go
 // Wire envelope: version first, always.
@@ -239,7 +239,7 @@ type Envelope struct {
 
 - `Version` lets consumers route old/new payloads side by side during
   migrations.
-- `json.RawMessage` decodes lazily — consumers parse only the payload
+- `json.RawMessage` decodes lazily: consumers parse only the payload
   versions they support; unknown versions go to the DLQ with a clear
   reason.
 - Production-grade setups add Schema Registry + Avro/protobuf on top of
@@ -247,28 +247,28 @@ type Envelope struct {
 
 ## Common Mistakes
 
-- **Committing before processing** (or auto-commit with slow handlers) —
+- **Committing before processing** (or auto-commit with slow handlers),
   crash loses the in-flight batch: silent at-most-once. The tests in
   `examples/service_test.go` pin the process-then-commit order.
-- **Blocking the poll loop on long handlers** — exceed
+- **Blocking the poll loop on long handlers**: exceed
   `max.poll.interval` and the group kicks you out into rebalance hell.
   Bound batch size; hand long work to a per-partition worker pool only
   if you preserve per-partition ordering.
-- **DLQ without metadata** — an error message and the original bytes
+- **DLQ without metadata**: an error message and the original bytes
   are the minimum; without attempts/timestamps, triage is archaeology.
-- **Releasing idempotency claims after success** — then duplicates
+- **Releasing idempotency claims after success**: then duplicates
   re-apply; the claim table becomes the source of truth for "done."
-- **Non-idempotent handlers "because we commit carefully"** — rebalances
+- **Non-idempotent handlers "because we commit carefully"**: rebalances
   and crashes will duplicate; the design assumption fails at 3 a.m.
 
 ## Idiomatic Go
 
 - Client config errors `panic` at startup (programmer error, fail
   fast); runtime delivery errors return/log (operational, recoverable).
-- Context flows from the run loop into handlers — cancellation reaches
+- Context flows from the run loop into handlers: cancellation reaches
   the middle of processing.
 - The adapter layer stays thin: `adapt(record) Message`,
-  `recordsOf(fetches)` — no business logic in transport files.
+  `recordsOf(fetches)`: no business logic in transport files.
 
 ## Performance Considerations
 
@@ -279,7 +279,7 @@ type Envelope struct {
   tune linger down ([04-observability-tuning](04-observability-tuning.md)).
 - Per-partition processing preserves ordering at parallelism =
   partition count; adding more Go workers *within* a partition
-  serializes on the offset commit and breaks ordering — don't.
+  serializes on the offset commit and breaks ordering: don't.
 
 ## Concurrency Considerations
 
@@ -287,13 +287,13 @@ Everything from [08-concurrency](../08-concurrency/) applies: the
 consumer is a worker pool with a Kafka-shaped queue; cancellation
 propagation, bounded buffers, and leak-free drains are the same
 contracts. The Kafka-specific addition: partition-ordered processing
-with commit barriers — treat the commit as the happens-before edge for
+with commit barriers: treat the commit as the happens-before edge for
 "this work is done."
 
 ## Security Considerations
 
 - TLS + SASL (SCRAM-SHA-256 minimum, mTLS where policy allows) from day
-  one; clients configure it differently — audit each (ch. 02's parity
+  one; clients configure it differently: audit each (ch. 02's parity
   note).
 - DLQ and topics replicate data retention rules; PII in payloads needs
   the same lifecycle as your databases (retention, encryption, access
@@ -304,7 +304,7 @@ with commit barriers — treat the commit as the happens-before edge for
 The three tiers, all in `examples/`:
 
 1. **Unit** (`service_test.go`): handler contract, idempotency claim/
-   release, duplicate collapse — no Kafka, runs everywhere.
+   release, duplicate collapse: no Kafka, runs everywhere.
 2. **Contract** (adapter tests with a fake client): poll→process→commit
    ordering, DLQ on exhausted retries, drain-on-cancel.
 3. **Broker** (`broker_test.go`, `-tags=broker`): real group rebalances,
@@ -314,16 +314,16 @@ The three tiers, all in `examples/`:
 ## Interview Questions
 
 1. *Design a consumer that must never process the same payment
-   twice.* — Idempotency claims keyed by idempotency_key, claim-before-
+   twice.*: Idempotency claims keyed by idempotency_key, claim-before-
    apply, release-on-failure; the grade is the release-after-success
    trap.
-2. *A poison message blocks a partition. Options?* — Bounded retries →
+2. *A poison message blocks a partition. Options?*: Bounded retries →
    DLQ; the subtlety: DLQ preserves partition flow, and the alert on
    DLQ rate turns it into signal.
-3. *Why commit after the batch instead of per message?* — Throughput vs
+3. *Why commit after the batch instead of per message?*: Throughput vs
    reprocessing window; idempotency covers the window; the interview
    continuation is "when would per-message commit be right?"
-4. *How do you survive a rebalance mid-batch?* — Block-on-poll, drain,
+4. *How do you survive a rebalance mid-batch?*: Block-on-poll, drain,
    commit-marked-records; map it to the stage-5 Stop() contract.
 
 ## Practice Exercises
@@ -334,11 +334,11 @@ The three tiers, all in `examples/`:
    adapter; test it by triggering a rebalance (scale the group) while a
    slow handler runs.
 3. Add DLQ replay tooling (read DLQ, re-publish to source with
-   original headers preserved) — the boring tool that saves your next
+   original headers preserved): the boring tool that saves your next
    incident.
 
 ## Further Reading
 
-- [franz-go docs](https://github.com/twmb/franz-go/tree/master/docs) — client semantics, incl. rebalances
-- [Kafka: delivery semantics](https://kafka.apache.org/documentation/#semantics) — the official contracts
-- [Kafka: idempotent producer](https://kafka.apache.org/documentation/#producer_impls) — sequence-number dedup
+- [franz-go docs](https://github.com/twmb/franz-go/tree/master/docs): client semantics, incl. rebalances
+- [Kafka: delivery semantics](https://kafka.apache.org/documentation/#semantics): the official contracts
+- [Kafka: idempotent producer](https://kafka.apache.org/documentation/#producer_impls): sequence-number dedup

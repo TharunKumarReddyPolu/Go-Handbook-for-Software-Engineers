@@ -13,7 +13,7 @@ import (
 	"sync"
 )
 
-// cpuHog burns cycles with pointless math — shows up as flat time in
+// cpuHog burns cycles with pointless math: shows up as flat time in
 // `go tool pprof top`.
 func cpuHog(n int) int {
 	total := 0
@@ -23,7 +23,7 @@ func cpuHog(n int) int {
 	return total
 }
 
-// allocHog churns allocations — shows up in alloc_space/alloc_objects
+// allocHog churns allocations: shows up in alloc_space/alloc_objects
 // heap profiles and as GC work.
 var allocHogResults sync.Map // pretend-cache so live set is observable
 

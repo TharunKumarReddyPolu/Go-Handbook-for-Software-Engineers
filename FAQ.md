@@ -28,7 +28,7 @@ result is flatter, more refactorable code.
 
 Use a pointer when the receiver or function must mutate the value, when the
 value is large and copying is expensive, or when identity must be shared
-(e.g., a mutex must not be copied). Use a value for small immutable data —
+(e.g., a mutex must not be copied). Use a value for small immutable data,
 it is clearer and often faster because values avoid heap indirection and
 are easier for escape analysis. Default to value receivers; reach for
 pointer receivers when mutation is needed, and be consistent per type.
@@ -49,15 +49,15 @@ avoided where shared state exists).
 When the same algorithm applies across types with identical code and
 type-safe behavior: containers, utility functions like `slices.Map`, or
 constraints like `constraints.Ordered`. Do not use generics to fake
-inheritance, to avoid designing an interface, or for a single concrete use
-—"generify" only the second or third time you duplicate. Readability is
+inheritance, to avoid designing an interface, or for a single concrete use;
+"generify" only the second or third time you duplicate. Readability is
 the constraint that wins.
 → [07-generics](07-generics/)
 
 ## Why are interfaces implicit?
 
 So behavior can be attached to types you do not own. A type from another
-package satisfies your interface without importing it or being modified —
+package satisfies your interface without importing it or being modified,
 this is how `io.Writer` works across the entire ecosystem. Explicit
 implements-headers would force adapters everywhere and couple providers to
 consumers. Implicitness keeps dependencies pointing one way: toward the
@@ -67,8 +67,8 @@ consumer.
 ## Why does nil behave strangely with interfaces?
 
 An interface value is a pair (type, value). A nil interface has no type and
-no value. But a non-nil interface holding a typed nil pointer *has* a type
-— so it is not nil, and calling a method on it that dereferences the
+no value. But a non-nil interface holding a typed nil pointer *has* a type,
+so it is not nil, and calling a method on it that dereferences the
 pointer panics. `var w io.Writer = (*os.File)(nil); w == nil` is false.
 This is a consequence of representation, not a bug; check for nil at the
 value level when you construct interfaces.
@@ -77,7 +77,7 @@ value level when you construct interfaces.
 ## Why do goroutines leak?
 
 A goroutine leaks when it blocks forever on a channel send/receive, a lock,
-or a context that is never cancelled — typically because the other side
+or a context that is never cancelled: typically because the other side
 went away without closing the channel or because nobody calls cancel.
 Leaks accumulate until they exhaust memory or file descriptors. Prevent by
 design: whoever creates a goroutine owns its exit; every blocking operation
@@ -119,8 +119,8 @@ actual commands with expected output.
 
 Read the [contribution guide](https://go.dev/doc/contribute). Code changes
 start with an issue (proposal for language/stdlib changes), CLA signing,
-and Gerrit-based review (not GitHub PRs). Non-code contributions — docs,
-bugs with reproductions, proposals with data — are equally welcome. For
+and Gerrit-based review (not GitHub PRs). Non-code contributions: docs,
+bugs with reproductions, proposals with data: are equally welcome. For
 contributing to Go-based projects (Kubernetes, Kafka clients), section 27
 walks the general workflow.
 → [27-open-source](27-open-source/)
@@ -129,3 +129,4 @@ walks the general workflow.
 
 Search [GLOSSARY.md](GLOSSARY.md) for terminology, or open an issue with
 the question if it belongs in this FAQ.
+FAQ.

@@ -1,7 +1,7 @@
 # 26 · Go Interview Preparation
 
 Organized by difficulty, graded on reasoning rather than recall. Every
-answer here points back to the handbook chapter with the depth — this
+answer here points back to the handbook chapter with the depth: this
 section is the *revision layer*, not the source.
 
 ## How to use this section
@@ -10,7 +10,7 @@ section is the *revision layer*, not the source.
   the fact, the *why*, and the failure mode it prevents are senior
   answers.
 - Scenario questions ("What would you do if...") are graded on
-  process: clarify constraints, measure, propose, and state tradeoffs —
+  process: clarify constraints, measure, propose, and state tradeoffs,
   not on jumping to an implementation.
 - Interviewers probe depth with follow-ups ("why?", "what breaks?",
   "how would you prove it?"). Prepare the second layer of every answer.
@@ -26,7 +26,7 @@ section is the *revision layer*, not the source.
 
 ## Question format
 
-Each question shows a strong answer skeleton — the structure a strong
+Each question shows a strong answer skeleton: the structure a strong
 candidate fills in live:
 
 > **Q:** Why does nil behave strangely with interfaces?
@@ -36,7 +36,7 @@ candidate fills in live:
 > has a type, so it is not nil. The failure mode: passing a typed-nil
 > into an interface-returning function surprises `err != nil` checks.
 > The fix: return literal nil; check at value level before wrapping.
-> — depth in [08-concurrency/08-faq-notes](../08-concurrency/08-faq-notes.md)
+>: depth in [08-concurrency/08-faq-notes](../08-concurrency/08-faq-notes.md)
 
 ## Cross-references
 

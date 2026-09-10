@@ -21,7 +21,7 @@ One rule runs the whole section: **a test's value is the precision of
 its failure message.** `t.Errorf("got %v, want %v", got, want)` is a
 specification; `t.Error("wrong")` is noise.
 
-## Table-driven tests — the workhorse
+## Table-driven tests: the workhorse
 
 ```go
 func TestAdd(t *testing.T) {
@@ -50,16 +50,16 @@ Why this shape won the ecosystem:
 - Adding a case is one line; the test grows with the spec.
 - `t.Run` names each case, so failures name themselves:
   `TestAdd/overflow`.
-- Run a single case: `go test -run 'TestAdd/overflow' ./...` — debugging
+- Run a single case: `go test -run 'TestAdd/overflow' ./...`: debugging
   without re-running the world.
 - The table *documents* behavior, including edge cases you'd otherwise
   bury in a comment.
 
-When NOT to table-drive: one or two cases with different setup flows —
+When NOT to table-drive: one or two cases with different setup flows,
 forcing heterogeneous setups into one table makes the test harder to
 read, not easier.
 
-## Subtests — structure and scoping
+## Subtests: structure and scoping
 
 `t.Run` does more than name cases:
 
@@ -79,15 +79,15 @@ func TestStore(t *testing.T) {
 
 - `t.Parallel()` marks tests safe to run concurrently; use it after
   tests are genuinely independent, and let `-race` verify the claim.
-- Subtests inherit the parent's scope — resources created before
+- Subtests inherit the parent's scope: resources created before
   `t.Run` are shared, which is exactly what you want for per-suite
   fixtures.
 - Parallel subtests capture loop variables: pass them in
-  `t.Run(name, func(t *testing.T) { ... })` closures — safe since Go
+  `t.Run(name, func(t *testing.T) { ... })` closures: safe since Go
   1.22 loop-var changes, but explicit capture is still the clearest
   form.
 
-## Helpers — and the t.Helper() contract
+## Helpers, and the t.Helper() contract
 
 ```go
 // mustUser builds a valid User or fails the test. The t.Helper()
@@ -111,17 +111,17 @@ func newTestStore(t *testing.T) *Store {
 
 Three contracts every helper should honor:
 
-1. `t.Helper()` — failures report the real call site.
-2. First parameter `*testing.T` (or `*testing.B`) — enables the above
+1. `t.Helper()`: failures report the real call site.
+2. First parameter `*testing.T` (or `*testing.B`): enables the above
    and keeps helpers discoverable.
 3. Register cleanup with `t.Cleanup`, not manual deferred calls in every
-   test — the helper owns its resources' lifecycle.
+   test: the helper owns its resources' lifecycle.
 
 `t.Cleanup` beats `defer` for helper-created resources: it runs when the
 *test* ends (including after parallel subtests finish), not when the
 helper returns.
 
-## Assertions — what stdlib gives you and what it doesn't
+## Assertions: what stdlib gives you and what it doesn't
 
 Go's stdlib has no assertion library by design; you write `if` + `t.*`:
 
@@ -135,7 +135,7 @@ Go's stdlib has no assertion library by design; you write `if` + `t.*`:
 Compare whole structures with `reflect.DeepEqual` or (better, for
 results) `diff`-style output; compare with tolerance for floats using
 `math.Abs(got-want) < eps`. If the team wants richer diffs, the common
-choice is `google/go-cmp` — one dependency, used only in tests.
+choice is `google/go-cmp`: one dependency, used only in tests.
 
 ## Test organization
 
@@ -146,7 +146,7 @@ choice is `google/go-cmp` — one dependency, used only in tests.
 - Both in one package is normal: `calc_test.go` (internal) +
   `calc_public_test.go` (external).
 
-## Basic Example — the full pattern
+## Basic Example: the full pattern
 
 ```go
 // calc.go
@@ -204,10 +204,10 @@ func TestDivide(t *testing.T) {
 }
 ```
 
-Note `errors.Is` for error comparison — sentinel errors may be wrapped;
+Note `errors.Is` for error comparison: sentinel errors may be wrapped;
 `==` breaks under wrapping (see [05-errors](../05-errors/)).
 
-## Real-World Example — golden files for structured output
+## Real-World Example: golden files for structured output
 
 When output is large and structured (rendered reports, JSON), golden
 files pin it:
@@ -237,18 +237,18 @@ file is a diff nobody reads.
 ## Common Mistakes
 
 - **Asserting on unrelated implementation details** (internal field
-  values) — tests should verify observable behavior, so refactors don't
+  values): tests should verify observable behavior, so refactors don't
   mass-fail.
 - **One giant test function** with sequential steps: first failure
   hides the rest; use subtests.
-- **`t.Fatal` in goroutines** — undefined behavior; only the test
+- **`t.Fatal` in goroutines**: undefined behavior; only the test
   goroutine may call Fatal/Skip. Signal via channel and fail from the
   test goroutine.
-- **Reusing table entries across test functions** — tables belong to
+- **Reusing table entries across test functions**: tables belong to
   one test; sharing couples unrelated specs.
-- **Ignoring the error return in test setup** — `mustUser(t, ...)`
+- **Ignoring the error return in test setup**: `mustUser(t, ...)`
   patterns exist precisely so setup failures fail loudly.
-- **Testing time by sleeping** — inject clocks or shrink durations;
+- **Testing time by sleeping**: inject clocks or shrink durations;
   sleeps make suites slow and flaky (see the concurrency section's
   gated-channel pattern).
 
@@ -256,7 +256,7 @@ file is a diff nobody reads.
 
 - Name tests by behavior: `TestDivide_TruncatesTowardZero`, not
   `Test1`.
-- Want-error columns carry the sentinel, not a bool — the test then
+- Want-error columns carry the sentinel, not a bool: the test then
   verifies *which* error.
 - Helpers return values, never mutate global state; globals make
   parallel tests lie.
@@ -266,23 +266,23 @@ file is a diff nobody reads.
 - Unit tests should be fast enough to run on save; keep heavy cases in
   the integration tier.
 - `testing.Short()` gates long-running tests: `if testing.Short() {
-  t.Skip("slow") }` — pair with `go test -short` in fast loops.
+  t.Skip("slow") }`: pair with `go test -short` in fast loops.
 - Suite-wide: cached results (`go test` caches passing packages) keep
   the edit-test loop instant; tests that read the clock/network/paths
-  defeat the cache — mark them with `t.Setenv` (auto-disables caching
+  defeat the cache: mark them with `t.Setenv` (auto-disables caching
   for that test) or keep them behind tags.
 
 ## Concurrency Considerations
 
 - `t.Parallel()` on independent tests; `-race` in CI always. The
   handbook's concurrency section shows the full discipline.
-- Helpers that spawn goroutines must register cleanup that joins them —
+- Helpers that spawn goroutines must register cleanup that joins them,
   leaked test goroutines poison the next test's goroutine count.
 
 ## Security Considerations
 
 - Never commit real credentials/tokens as fixtures; use obviously-fake
-  values (`test-api-key-do-not-use`) — and structure code so tests
+  values (`test-api-key-do-not-use`), and structure code so tests
   cannot accidentally run against production endpoints.
 - Golden files and fixtures can leak PII from recorded sessions; scrub
   at capture time.
@@ -297,20 +297,20 @@ inter-test dependencies, race detection catches the rest.
 
 ## Interview Questions
 
-1. *Why does Go have no assertion library?* — Control flow stays in the
+1. *Why does Go have no assertion library?*: Control flow stays in the
    language (`if`, `return`); no macro magic; failures are plain
    function calls. Teams add go-cmp for diffs when needed.
-2. *Design tests for a function that parses cron expressions.* — Table
+2. *Design tests for a function that parses cron expressions.*: Table
    with valid/invalid/edge rows; want-value columns; fuzz for the
    long tail (see ch. 04).
-3. *Your test suite takes 8 minutes; how do you cut it?* — Profile the
+3. *Your test suite takes 8 minutes; how do you cut it?*: Profile the
    suite: parallelize independents, move infra tests to the integration
    tier, replace sleeps with synchronization, cache-friendly hygiene.
 
 ## Practice Exercises
 
 1. Extend the calculator's table with the four integer-division edge
-   cases (min-int, by -1, by zero, truncation signs) — then break the
+   cases (min-int, by -1, by zero, truncation signs): then break the
    implementation and verify each case fails with a precise message.
 2. Write `mustParse(t, expr string) Node` and refactor three tests to
    use it; observe the failure-line improvement.
@@ -319,6 +319,6 @@ inter-test dependencies, race detection catches the rest.
 
 ## Further Reading
 
-- [testing package docs](https://pkg.go.dev/testing) — the contract
-- [Table driven tests](https://go.dev/wiki/TableDrivenTests) — official wiki
-- [t.Cleanup proposal](https://go.dev/issue/37700) — rationale for cleanup ordering
+- [testing package docs](https://pkg.go.dev/testing): the contract
+- [Table driven tests](https://go.dev/wiki/TableDrivenTests): official wiki
+- [t.Cleanup proposal](https://go.dev/issue/37700): rationale for cleanup ordering

@@ -2,7 +2,7 @@
 
 Go releases every six months (currently February and August). Go is famous
 for its compatibility promise: almost all programs keep compiling forever.
-That promise is why this handbook can teach stable concepts confidently —
+That promise is why this handbook can teach stable concepts confidently,
 but it also means some claims need a version stamp.
 
 ## How this handbook handles versions
@@ -30,7 +30,7 @@ func(T) U) Ring[U]`. This is new enough that:
 - older tutorials and AI training data will not mention it, and may even
   deny it exists;
 - interface methods may **not** declare type parameters, and interface
-  methods cannot be implemented by generic methods — that restriction is
+  methods cannot be implemented by generic methods: that restriction is
   unchanged;
 - most production code will not need them for years. Prefer plain generic
   functions until a method-local type parameter genuinely removes friction.
@@ -54,7 +54,7 @@ list of behavior that differs by version:
 - Cite the version when behavior changed, was introduced, or was removed.
 - Verify claims against the release notes for that version
   (<https://go.dev/doc/devel/release>) before writing them down.
-- Do not write "as of Go 1.x" for stable, long-standing behavior — it
+- Do not write "as of Go 1.x" for stable, long-standing behavior: it
   invites silent rot.
 - If unsure whether a claim is version-dependent, test it with the toolchain
   and cite the test in the PR description.

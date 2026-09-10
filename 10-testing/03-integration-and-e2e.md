@@ -3,23 +3,23 @@
 ## Why Does This Matter?
 
 Unit tests prove your logic against doubles; integration tests prove
-your logic against *reality* — real Postgres parsing your SQL, real TLS
+your logic against *reality*: real Postgres parsing your SQL, real TLS
 negotiating, real serialization round-tripping. They cost more (setup,
 time, flake risk), so the craft is in the tiering: which tests run on
 every commit, which run in a separate job, and which run before release.
 
-## Mental Model — the test pyramid, Go-shaped
+## Mental Model: the test pyramid, Go-shaped
 
 ```mermaid
 flowchart TD
-    U["Unit — doubles, in-process, every commit<br/>milliseconds, thousands of them"] -->
-    I["Integration — real deps, every commit or PR job<br/>seconds, dozens"] -->
-    E["E2E — full system, pre-release / nightly<br/>minutes, a handful"]
+    U["Unit: doubles, in-process, every commit<br/>milliseconds, thousands of them"] -->
+    I["Integration: real deps, every commit or PR job<br/>seconds, dozens"] -->
+    E["E2E: full system, pre-release / nightly<br/>minutes, a handful"]
 ```
 
 Go pushes the pyramid's middle up: `httptest` makes HTTP integration
 in-process, and testcontainers-style tools make real databases cheap to
-spawn per suite. The tiers blur in Go more than in other ecosystems —
+spawn per suite. The tiers blur in Go more than in other ecosystems,
 that's a feature; use it.
 
 | Tier | Dependencies | When | Failure meaning |
@@ -28,7 +28,7 @@ that's a feature; use it.
 | Integration | real (local) DB, brokers, TLS | every PR | your wiring/reality assumptions are wrong |
 | E2E | full deployed stack | pre-release | user journeys break |
 
-## Integration tests in Go — the mechanics
+## Integration tests in Go: the mechanics
 
 ### Build tags and skip patterns
 
@@ -61,7 +61,7 @@ CI wiring:
 - run: go test ./... -tags=integration   # integration job, services in CI containers
 ```
 
-### Per-test isolation — the pattern that prevents flaky suites
+### Per-test isolation: the pattern that prevents flaky suites
 
 Integration tests share infrastructure; the fix is *fresh state per
 test*, not careful sequencing:
@@ -98,7 +98,7 @@ func newTestDB(t *testing.T) *sql.DB {
 
 Rules embedded here:
 
-- **Every test builds its own world** (schema, bucket, queue) — tests
+- **Every test builds its own world** (schema, bucket, queue): tests
   can then run in parallel and in any order (`-shuffle=on`).
 - **`t.Cleanup` owns teardown**, including failure paths.
 - **Skip vs fail:** missing *infrastructure* skips; a broken assumption
@@ -109,10 +109,10 @@ Rules embedded here:
 Integration tests must apply the same migrations production uses. If
 your suite creates tables with hand-written DDL, you have two schemas
 and one of them is lying. Flyway/golang-migrate/dbmate style tools or
-embedded SQL files — anything, as long as it's the same path to
+embedded SQL files: anything, as long as it's the same path to
 production.
 
-## Testing HTTP servers end-to-end — in-process
+## Testing HTTP servers end-to-end: in-process
 
 The Go superpower: full-stack tests without ports or deploy scripts:
 
@@ -134,7 +134,7 @@ func TestAPIEndToEnd(t *testing.T) {
 	defer resp.Body.Close()
 	if resp.StatusCode != http.StatusCreated { ... }
 
-	// Assert on the database — the real observable state.
+	// Assert on the database: the real observable state.
 	var total int64
 	if err := db.QueryRow("SELECT total_minor FROM orders LIMIT 1").Scan(&total); err != nil {
 		t.Fatalf("query: %v", err)
@@ -144,7 +144,7 @@ func TestAPIEndToEnd(t *testing.T) {
 ```
 
 This exercises routing, middleware, serialization, the repository, and
-SQL — the whole production path minus process boundaries. Most
+SQL: the whole production path minus process boundaries. Most
 "e2e-ish" coverage belongs here, not in expensive deployed-stack suites.
 
 ## Real infrastructure strategies
@@ -153,27 +153,27 @@ SQL — the whole production path minus process boundaries. Most
 |---|---|---|
 | Spun-up containers per suite | testcontainers-go | real versions, needs Docker in CI |
 | Pooled service instances | shared Postgres + per-test schema | fast, isolation by discipline |
-| In-process fakes | miniredis, in-memory Kafka substitutes | fastest; fidelity varies — label what's untested |
+| In-process fakes | miniredis, in-memory Kafka substitutes | fastest; fidelity varies: label what's untested |
 | Compose stack for CI | docker compose + healthchecks | e2e tier; slower, realistic |
 
 Pick per dependency. Common production split: Postgres/Redis real
 (testcontainers or pooled), Kafka real via testcontainers for the
-contract tests, in-process substitutes for the fast unit tier — and the
+contract tests, in-process substitutes for the fast unit tier, and the
 [18-kafka-with-go](../18-kafka-with-go/) section shows the broker-skip
 pattern for its examples.
 
 ## Common Mistakes
 
-- **Shared mutable test data** ("row id=1 must exist") — sequential
+- **Shared mutable test data** ("row id=1 must exist"): sequential
   suites, order-dependent flakes. Unique state per test instead.
-- **Skip without env var in CI** — the suite silently never runs; CI
+- **Skip without env var in CI**: the suite silently never runs; CI
   must fail if required service env vars are absent.
 - **Integration tests that mock at the HTTP layer** while calling a real
-  database — you've built the slowest unit test in existence; pick one
+  database: you've built the slowest unit test in existence; pick one
   reality per tier.
-- **No timeout on infra waits** — a dead Postgres hangs the suite; use
+- **No timeout on infra waits**: a dead Postgres hangs the suite; use
   `context.WithTimeout` around health-wait loops.
-- **Testing through the frontend for backend journeys** — e2e tier is
+- **Testing through the frontend for backend journeys**: e2e tier is
   for user journeys; API-level e2e for service contracts.
 
 ## Idiomatic Go
@@ -181,7 +181,7 @@ pattern for its examples.
 - `docker-compose.test.yml` + Makefile-free commands documented in the
   README beat bespoke CI scripting.
 - Test helpers for infrastructure live in an internal test package
-  (`internal/testinfra`) shared across suites — with the same `t.Helper()`
+  (`internal/testinfra`) shared across suites: with the same `t.Helper()`
   discipline.
 - `-race` and `-shuffle=on` apply to integration tiers too.
 
@@ -189,14 +189,14 @@ pattern for its examples.
 
 - Container-per-suite is minutes; container-per-test is hours. Pool
   infra, isolate per test via schemas/buckets/prefixes.
-- Parallel integration tests need infrastructure headroom — Postgres
+- Parallel integration tests need infrastructure headroom: Postgres
   `max_connections` sized to your `-parallel` count.
 
 ## Concurrency Considerations
 
 Parallel-safe integration tests require the per-test isolation pattern
 above; `-race` still applies; and DB drivers each have their own
-concurrency contract (pool sizes) — see
+concurrency contract (pool sizes): see
 [13-databases](../13-databases/) when it ships.
 
 ## Security Considerations
@@ -215,13 +215,13 @@ Kafka/fintech examples show the skip-if-absent pattern).
 
 ## Interview Questions
 
-1. *Which tests would you write for a money-transfer endpoint?* — Unit:
+1. *Which tests would you write for a money-transfer endpoint?*: Unit:
    validation, classification. Integration: real DB, transactions,
    idempotency across retries. E2E: journey with double-submission.
-2. *How do you keep integration suites from flaking?* — Per-test state,
+2. *How do you keep integration suites from flaking?*: Per-test state,
    deterministic infra waits, no sleeps, `-shuffle` to prove order
    independence.
-3. *Your CI has no Docker — what can still be integration-tested?* —
+3. *Your CI has no Docker: what can still be integration-tested?*,
    httptest full-stack (router→SQL needs a DB though), protocol-level
    fakes, and unit-tier everything else; be explicit about what's not
    covered.
@@ -233,11 +233,11 @@ Kafka/fintech examples show the skip-if-absent pattern).
 2. Write the in-process e2e test above for one of your own endpoints;
    measure its runtime vs the equivalent curl-script suite.
 3. Add a CI job that fails if `TEST_POSTGRES_DSN` is set but zero
-   integration tests ran (count via `-json` output) — skip-hiding is a
+   integration tests ran (count via `-json` output): skip-hiding is a
    real production incident generator.
 
 ## Further Reading
 
-- [build constraints](https://pkg.go.dev/go/build) — tag semantics
-- [testing: Short/Skip](https://pkg.go.dev/testing#T.Skip) — tier gating
-- [testcontainers-go](https://golang.testcontainers.org/) — container strategy
+- [build constraints](https://pkg.go.dev/go/build): tag semantics
+- [testing: Short/Skip](https://pkg.go.dev/testing#T.Skip): tier gating
+- [testcontainers-go](https://golang.testcontainers.org/): container strategy

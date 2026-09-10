@@ -14,23 +14,23 @@ Go is statically typed with a strict, explicit conversion rule:
 > A value of type T is only assignable to U if they are identical, or a
 > rule says so (interface satisfaction, unnamed-type identity, constants).
 
-There is no implicit numeric conversion anywhere — not even int→int64.
+There is no implicit numeric conversion anywhere: not even int→int64.
 That friction is deliberate: it makes every narrowing explicit and
 reviewable.
 
 ## Declaration: the three forms
 
 ```go
-// 1. var — full form: declare with type and/or initializer
+// 1. var: full form: declare with type and/or initializer
 var port int          // zero value 0
 var host = "localhost" // type inferred
 var timeout time.Duration = 5 * time.Second // explicit when inference loses clarity
 
-// 2. short declaration — inside functions only
+// 2. short declaration: inside functions only
 name := "handbook"
 i, j := 0, 1
 
-// 3. grouped — package-level constants and vars
+// 3. grouped: package-level constants and vars
 const (
 	StatusOK = 200
 	StatusCreated = 201
@@ -74,7 +74,7 @@ z := 1.5       // float64
 d := time.Second // time.Duration
 ```
 
-Untyped constants are the exception — they carry a default type only when
+Untyped constants are the exception: they carry a default type only when
 forced:
 
 ```go
@@ -89,11 +89,11 @@ Always explicit, always visible:
 
 ```go
 seconds := 90
-mins := seconds / 60        // integer division: 1 — classic bug
+mins := seconds / 60        // integer division: 1: classic bug
 ratio := float64(seconds) / 60.0 // 1.5
 
 var u uint8 = 255
-u++        // wraps to 0 — unsigned overflow, no panic, no warning
+u++        // wraps to 0: unsigned overflow, no panic, no warning
 ```
 
 Conversions between named types with the same underlying type are legal
@@ -106,11 +106,11 @@ type OrderID int64
 func (id UserID) String() string { return fmt.Sprintf("user-%d", int64(id)) }
 
 var uid UserID = 42
-// oid := uid            // compile error — different named types
+// oid := uid            // compile error: different named types
 oid := OrderID(uid)      // legal, but smells: IDs should not be interchangeable
 ```
 
-That last line compiles — the compiler cannot stop you from confusing a
+That last line compiles: the compiler cannot stop you from confusing a
 user ID with an order ID. Named types create vocabulary, not safety;
 conversion discipline is yours.
 
@@ -135,17 +135,17 @@ const (
 `iota` is the classic Go enumerator: it counts const blocks, and each
 `const` line repeats the previous expression. Constants may be typed or
 untyped, and untyped constants have arbitrary precision until they meet a
-type — that is why `math.MaxInt64` works in float expressions and why
+type: that is why `math.MaxInt64` works in float expressions and why
 bit flags above int32 compile on 32-bit platforms.
 
 When to use a constant vs a var: if the value is known at compile time
 and must never change, constant. Config that varies per environment is a
-var (or better, injected — see [14-backend-development](../14-backend-development/)).
+var (or better, injected: see [14-backend-development](../14-backend-development/)).
 
 ## Operators worth knowing
 
 - `/` on integers truncates; use float conversion when you mean it.
-- `%` follows the sign of the dividend (`-7 % 3 == -1`) — different from
+- `%` follows the sign of the dividend (`-7 % 3 == -1`): different from
   Python. For "always positive modulo": `((x % m) + m) % m`.
 - `&^` (AND NOT) is Go's bit-clear: `flags &^ Write`.
 - Strings compare lexicographically by bytes; for Unicode-aware
@@ -161,12 +161,12 @@ avg := total / count // if both int, truncates
 // MISTAKE: mixing types
 var a int32 = 1
 // b := a + 1        // fine; b is int32
-// c := a + int64(1) // fine — but stop and ask why you are mixing widths
+// c := a + int64(1) // fine, but stop and ask why you are mixing widths
 
 // MISTAKE: shadowing in a new scope
 err := doThing()
 if ok {
-	err := doOther() // NEW err — outer one never checked
+	err := doOther() // NEW err: outer one never checked
 	_ = err
 }
 // check outer err here... but it was silently fine above
@@ -201,7 +201,7 @@ func parseInt(s string) (int, error) {
 - Constants are free: no memory, folded at compile time. Prefer them for
   magic numbers even once.
 - Conversions between numeric types cost nothing meaningful; conversions
-  between string/[]byte copy — that one matters (see section 02).
+  between string/[]byte copy: that one matters (see section 02).
 
 ## Concurrency Considerations
 
@@ -215,7 +215,7 @@ goroutines is a race, not a pattern.
 - Unsigned wraparound is silent; validate inputs *before* arithmetic on
   sizes (an attacker-controlled `uint` count can wrap to 0 and pass a
   bounds check).
-- Floats for money is a defect, not a style issue —
+- Floats for money is a defect, not a style issue,
   [25-fintech-with-go](../25-fintech-with-go/) uses integer minor units.
 
 ## Testing Strategy
@@ -253,26 +253,26 @@ func TestParseInt(t *testing.T) {
 
 ## Interview Questions
 
-1. *What is the zero value and why does it matter for API design?* — See
+1. *What is the zero value and why does it matter for API design?*: See
    next chapter; the answer should mention usable-by-default types.
-2. *Why no implicit conversions?* — Explicit narrowing; reviewable loss of
+2. *Why no implicit conversions?*: Explicit narrowing; reviewable loss of
    precision; fewer surprise bugs at scale.
-3. *What is `iota`?* — Counter within a const block; repeated expressions;
+3. *What is `iota`?*: Counter within a const block; repeated expressions;
    the idiom for bit flags and sized enums.
-4. *int vs int64 — when do you care?* — Serialization formats, wire
+4. *int vs int64: when do you care?*: Serialization formats, wire
    protocols, FFI; `int` maps to platform word size.
 
 ## Practice Exercises
 
 1. Predict, then verify: `var x float32 = 0.1; x == 0.1` with a float64
    comparison. Explain the result.
-2. Write `Even(n int) bool` without `%` (hint: `&1`). Benchmark both — is
+2. Write `Even(n int) bool` without `%` (hint: `&1`). Benchmark both: is
    the difference measurable?
 3. Find one shadowing bug in your own old code with
    `go vet -vettool`-style tooling or by eye; fix it with `:=` → `=`.
 
 ## Further Reading
 
-- [The Go spec: constants](https://go.dev/ref/spec#Constants) — precise and readable
+- [The Go spec: constants](https://go.dev/ref/spec#Constants): precise and readable
 - [Go FAQ: unused variables](https://go.dev/doc/faq#unused_variables)
-- [Go Slices usage and internals](https://go.dev/blog/slices-intro) — for when types become collections (section 02)
+- [Go Slices usage and internals](https://go.dev/blog/slices-intro): for when types become collections (section 02)

@@ -1,6 +1,6 @@
 # 18 · Kafka with Go
 
-Kafka is the backbone of event-driven Go services — and the place where
+Kafka is the backbone of event-driven Go services, and the place where
 concurrency, delivery semantics, and operational discipline all meet.
 This section assumes no Kafka knowledge and builds to production
 consumers with retries, dead-letter queues, and idempotency.
@@ -9,7 +9,7 @@ consumers with retries, dead-letter queues, and idempotency.
 
 By the end of this section you can:
 
-- Explain partitions, offsets, and consumer groups — and what ordering
+- Explain partitions, offsets, and consumer groups, and what ordering
   guarantees actually exist
 - Choose a Go client with stated, defensible reasons
 - Write producers with batching, idempotence, and backpressure handling
@@ -31,11 +31,11 @@ By the end of this section you can:
 
 `examples/` is a complete order-events processor:
 
-- `service.go` — the *transport-free* processing logic (idempotency,
-  ordering, retries) — unit-tested without Kafka
-- `producer.go` / `consumer.go` — franz-go wiring around that logic
-- `service_test.go` — unit tests (run in CI)
-- `broker_test.go` — broker tests; skip cleanly without Kafka (set
+- `service.go`: the *transport-free* processing logic (idempotency,
+  ordering, retries): unit-tested without Kafka
+- `producer.go` / `consumer.go`: franz-go wiring around that logic
+- `service_test.go`: unit tests (run in CI)
+- `broker_test.go`: broker tests; skip cleanly without Kafka (set
   `KAFKA_BROKERS` to run them against a local broker)
 
 ```bash

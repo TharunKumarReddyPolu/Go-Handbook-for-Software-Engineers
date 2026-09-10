@@ -2,7 +2,7 @@
 
 ## Why Does This Matter?
 
-In Go, a failure is not an event that interrupts your program — it is a
+In Go, a failure is not an event that interrupts your program: it is a
 value your function returns, right beside the result. This single choice
 means every call site acknowledges failure, every signature documents it,
 and no failure is invisible. It also means error handling is a *design*
@@ -19,12 +19,12 @@ type error interface {
 }
 ```
 
-Everything else — `fmt.Errorf`, wrapping, `errors.Is`, `errors.As` — is
+Everything else: `fmt.Errorf`, wrapping, `errors.Is`, `errors.As`: is
 convention built on top. An error is:
 
-1. **A value** — returned, passed, stored, compared.
-2. **A message for humans** — `Error() string`.
-3. **Optionally, a structured type** — so callers can inspect it without
+1. **A value**: returned, passed, stored, compared.
+2. **A message for humans**: `Error() string`.
+3. **Optionally, a structured type**, so callers can inspect it without
    parsing text.
 
 The chain: `fmt.Errorf("...: %w", err)` wraps errors into a linked list.
@@ -116,7 +116,7 @@ if err != nil {
 }
 ```
 
-## Real-World Example — typed errors with fields
+## Real-World Example: typed errors with fields
 
 ```go
 // examples/errorslib/domain.go
@@ -161,7 +161,7 @@ Two methods make this type first-class: `Error()` (it is an error) and
 `Unwrap()` (it joins chains). Everything `errors.Is/As` does relies on
 those two.
 
-## Production Example — retryability
+## Production Example: retryability
 
 ```go
 // examples/errorslib/retryable.go
@@ -187,18 +187,18 @@ func Retryable(err error) bool {
 
 ## Common Mistakes
 
-- **`err == sentinel` instead of `errors.Is`** — breaks through one wrap.
-- **String matching** (`strings.Contains(err.Error(), "not found")`) —
+- **`err == sentinel` instead of `errors.Is`**: breaks through one wrap.
+- **String matching** (`strings.Contains(err.Error(), "not found")`),
   brittle, untranslatable, untestable.
-- **Wrapping with `%w` unconditionally** — every `%w` promises "you may
+- **Wrapping with `%w` unconditionally**: every `%w` promises "you may
   inspect my cause." If the cause is a client secret-laden error, you
   just exposed it; if it is a driver-specific type, you froze a
   dependency into your API. Use `%v` when inspection is not part of the
   contract.
-- **New error types without `Unwrap`** — invisible to Is/As.
-- **`errors.New` in a loop with a formatted message** — you wanted
+- **New error types without `Unwrap`**: invisible to Is/As.
+- **`errors.New` in a loop with a formatted message**: you wanted
   `fmt.Errorf`.
-- **Returning `nil` pointer of a custom error type** — the classic
+- **Returning `nil` pointer of a custom error type**: the classic
   typed-nil trap: `return (*DomainError)(nil)` as `error` is non-nil.
   Return literal `nil`.
 
@@ -221,11 +221,11 @@ if err != nil {
 ## Performance Considerations
 
 - Error construction allocates. In per-item loops where errors are
-  *expected* (not exceptional), a bool or `ok` return avoids allocation —
+  *expected* (not exceptional), a bool or `ok` return avoids allocation,
   that is why `map` lookups return `(v, ok)`.
-- `errors.Is/As` walk the chain at inspection time — cheap, but do not
+- `errors.Is/As` walk the chain at inspection time: cheap, but do not
   unwrap in a hot loop to then ignore the result.
-- String formatting of an error happens in `Error()` — avoid eager
+- String formatting of an error happens in `Error()`: avoid eager
   formatting of huge payloads; keep fields structured.
 
 ## Concurrency Considerations
@@ -233,7 +233,7 @@ if err != nil {
 Errors returned to multiple goroutines must be immutable after creation;
 a mutable error struct shared by goroutines is a data race. When merging
 errors from workers, `errors.Join(errs...)` builds a tree `errors.Is`
-walks correctly — see the pitfalls chapter of
+walks correctly: see the pitfalls chapter of
 [08-concurrency](../08-concurrency/) for the worker-pool version.
 
 ## Security Considerations
@@ -262,27 +262,27 @@ func TestNotFound_WrapsSentinel(t *testing.T) {
 
 ## Interview Questions
 
-1. *What is the difference between `%w` and `%v` in Errorf?* — Wrapping
+1. *What is the difference between `%w` and `%v` in Errorf?*: Wrapping
    (inspectable chain) vs text-only formatting.
-2. *When do you choose a sentinel vs a custom error type?* — Sentinel:
+2. *When do you choose a sentinel vs a custom error type?*: Sentinel:
    one condition, stable forever (`io.EOF`). Type: multiple fields or
    behavior attached; both can coexist via Unwrap.
-3. *How does errors.As differ from a type assertion?* — As walks the
+3. *How does errors.As differ from a type assertion?*: As walks the
    wrapped chain and doesn't panic; assertions check only the surface.
-4. *How would you merge errors from parallel workers?* — errors.Join or
+4. *How would you merge errors from parallel workers?*: errors.Join or
    a slice collected under mutex; Is/As traverse joined trees.
 
 ## Practice Exercises
 
 1. Extend `errorslib` with `CodeConflict` and a `Conflict()` constructor;
    add a test proving `Retryable` returns false for it.
-2. Break a test by changing `%w` to `%v` in `NotFound` — watch
+2. Break a test by changing `%w` to `%v` in `NotFound`: watch
    `errors.Is` fail; write down when you would legitimately choose `%v`.
 3. Write `func Multi(errs ...error) error` that returns nil for all-nil
    input and is `errors.Is`-transparent; compare with `errors.Join`.
 
 ## Further Reading
 
-- [Error handling and Go](https://go.dev/blog/error-handling-and-go) — official blog
-- [Working with Errors in Go 1.13](https://go.dev/blog/go1.13-errors) — wrapping/Is/As rationale
-- [Go blog: errors are values](https://go.dev/blog/errors-are-values) — Rob Pike's framing
+- [Error handling and Go](https://go.dev/blog/error-handling-and-go): official blog
+- [Working with Errors in Go 1.13](https://go.dev/blog/go1.13-errors): wrapping/Is/As rationale
+- [Go blog: errors are values](https://go.dev/blog/errors-are-values): Rob Pike's framing

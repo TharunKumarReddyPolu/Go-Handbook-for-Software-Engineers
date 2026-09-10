@@ -91,5 +91,5 @@ func main() {
 	for r := range Run(ctx, jobs, 2) {
 		fmt.Printf("job %d: %s (err=%v)\n", r.JobID, r.Output, r.Err)
 	}
-	fmt.Println("shutdown complete — no leaked goroutines")
+	fmt.Println("shutdown complete: no leaked goroutines")
 }

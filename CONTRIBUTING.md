@@ -11,7 +11,7 @@ contributing predictable for both sides.
 | Fix an inaccuracy | A wrong claim about map growth or GC pacing | Small |
 | Improve an example | Tighter, more idiomatic, better names | Small |
 | Add exercises or interview questions | To an existing chapter | Small |
-| Expand an outline section | Write chapters for a section marked [Outline] | Large — open an issue first |
+| Expand an outline section | Write chapters for a section marked [Outline] | Large: open an issue first |
 | New section | Something the roadmap does not cover | Discuss first, almost certainly |
 
 For anything beyond a small fix, open an issue using the
@@ -20,7 +20,7 @@ The handbook deliberately says no to topics that do not earn a full chapter.
 
 ## Before you start
 
-1. Read [README.md](README.md) — especially "The philosophy" and the chapter
+1. Read [README.md](README.md): especially "The philosophy" and the chapter
    contract.
 2. Skim two or three existing chapters to absorb the format and tone.
 3. Check [ROADMAP.md](ROADMAP.md) so planned work does not collide.
@@ -69,7 +69,7 @@ Not every section must exist for every topic, but the order is fixed:
 ```
 
 Every chapter **must** end with Further Reading. Link only authoritative
-sources — go.dev, official project documentation, official repositories.
+sources: go.dev, official project documentation, official repositories.
 Never fabricate a reference; if you cannot verify a link, do not include it.
 
 ## Writing standards
@@ -120,7 +120,7 @@ testable logic.
 
 ## Verifying your changes
 
-Run all of these before opening the PR — CI runs the same checks:
+Run all of these before opening the PR: CI runs the same checks:
 
 ```bash
 gofmt -l .                 # must print nothing
@@ -146,7 +146,7 @@ staticcheck ./...
 
 ## Review process
 
-- A maintainer reviews for accuracy, originality, and fit — in that order.
+- A maintainer reviews for accuracy, originality, and fit: in that order.
 - Technical corrections are usually merged quickly; new chapters may go
   through multiple rounds. That is normal and not a rejection.
 - If a claim in review is disputed, the tie-breaker is evidence: a

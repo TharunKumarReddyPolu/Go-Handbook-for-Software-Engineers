@@ -1,6 +1,6 @@
 // Command jobprocessor is stage 5 of the concurrency progression: a
-// production-shaped job processor. It combines every earlier stage —
-// bounded intake (backpressure), worker pool, context cancellation — and
+// production-shaped job processor. It combines every earlier stage,
+// bounded intake (backpressure), worker pool, context cancellation: and
 // adds the production concerns: bounded retries with backoff, graceful
 // shutdown that drains in-flight work, and snapshot-able metrics. The
 // same skeleton fronts Kafka consumers and webhook processors; see

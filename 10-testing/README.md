@@ -2,7 +2,7 @@
 
 Go made testing a first-class language feature: one command, one
 convention, zero configuration. This section covers the discipline on
-top of the machinery — what to test, how to structure tests that survive
+top of the machinery: what to test, how to structure tests that survive
 refactors, and when each layer (unit, integration, e2e) earns its cost.
 
 ## Objectives
@@ -26,15 +26,15 @@ By the end of this section you can:
 
 ## Examples
 
-Every chapter's code lives in `examples/calculator/` — one package with
+Every chapter's code lives in `examples/calculator/`: one package with
 a full, progressive test suite:
 
-- `calc.go` — the code under test (a tiny expression evaluator)
-- `calc_test.go` — table-driven unit tests, subtests, helpers
-- `api.go` / `api_test.go` — an HTTP layer tested with httptest
-- `bench_test.go` — benchmarks with allocations
-- `fuzz_test.go` — fuzz and property-style tests
-- `integration_test.go` — integration tier behind a build tag
+- `calc.go`: the code under test (a tiny expression evaluator)
+- `calc_test.go`: table-driven unit tests, subtests, helpers
+- `api.go` / `api_test.go`: an HTTP layer tested with httptest
+- `bench_test.go`: benchmarks with allocations
+- `fuzz_test.go`: fuzz and property-style tests
+- `integration_test.go`: integration tier behind a build tag
 
 Run it all:
 

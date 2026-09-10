@@ -3,8 +3,8 @@
 Money is the least forgiving domain software touches: every bug is
 accounting, every duplicate is a loss, every lost message is a
 regulatory finding. This section teaches the engineering patterns that
-make financial systems trustworthy — double-entry ledgers, idempotency,
-reconciliation — with Go implementations you can run and test.
+make financial systems trustworthy: double-entry ledgers, idempotency,
+reconciliation: with Go implementations you can run and test.
 
 > **Honesty labels.** Examples here are educational. They demonstrate
 > *patterns*, not audited, production-ready systems. Real financial
@@ -20,7 +20,7 @@ By the end of this section you can:
 - Design and implement a double-entry ledger with integrity invariants
 - Build idempotent payment processing (the claim pattern from 18, durable)
 - Reason about retries and distributed transactions without lying to yourself
-- Design reconciliation and audit trails — and know why they exist
+- Design reconciliation and audit trails, and know why they exist
 - Separate the exactly-once myths from what is actually achievable
 
 ## Chapters
@@ -34,11 +34,11 @@ By the end of this section you can:
 
 ## Examples
 
-`examples/ledger/` — an educational in-memory double-entry ledger:
+`examples/ledger/`: an educational in-memory double-entry ledger:
 
-- `money.go` — Money type: integer minor units + currency, no floats
-- `ledger.go` — accounts, balanced journal entries, query API
-- `money_test.go`, `ledger_test.go` — the invariant tests that make the
+- `money.go`: Money type: integer minor units + currency, no floats
+- `ledger.go`: accounts, balanced journal entries, query API
+- `money_test.go`, `ledger_test.go`: the invariant tests that make the
   design trustworthy (including concurrency tests under `-race`)
 
 ```bash

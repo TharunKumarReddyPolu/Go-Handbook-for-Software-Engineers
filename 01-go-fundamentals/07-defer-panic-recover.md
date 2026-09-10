@@ -4,7 +4,7 @@
 
 Go splits cleanup from teardown: `defer` schedules work for function exit,
 `panic` aborts the normal flow, `recover` catches panics. Most engineers
-learn defer and never learn the contract around panic — which is exactly
+learn defer and never learn the contract around panic, which is exactly
 how panics end up crossing API boundaries or, worse, killing servers
 silently. This chapter covers the mechanics and, more importantly, the
 production rules.
@@ -22,7 +22,7 @@ recover = "only meaningful inside a deferred function; stops the unwind"
 - Deferred calls run LIFO: last registered runs first. Cleanup mirrors
   setup: close what was opened most recently first.
 - Arguments are evaluated *at defer time*, not at run time (except
-  method receivers evaluate then too — capture matters).
+  method receivers evaluate then too: capture matters).
 - `panic` runs defers while unwinding; `recover` only works directly in a
   deferred function.
 
@@ -46,14 +46,14 @@ func handle(conn net.Conn) error {
 
 Costs and caveats:
 
-- A defer is cheap since Go 1.14 (open-coded defers) — ~ns when the
+- A defer is cheap since Go 1.14 (open-coded defers): ~ns when the
   function does not loop. In a tight loop over thousands of iterations,
   move it into a helper function instead.
 - Deferred *arguments* are evaluated immediately:
 
 ```go
 i := 0
-defer fmt.Println("i =", i) // prints i = 0 — arg evaluated now
+defer fmt.Println("i =", i) // prints i = 0: arg evaluated now
 i = 42
 ```
 
@@ -82,7 +82,7 @@ The rules that keep production sane:
 1. **Library code returns errors; it does not panic.** The caller cannot
    defend against what it cannot see.
 2. **Package-level init can panic** (e.g., `regexp.MustCompile`):
-   impossible-to-continue startup failures are the accepted exception —
+   impossible-to-continue startup failures are the accepted exception,
    fail fast at process start.
 3. **Never panic across API boundaries**; convert at the edge.
 
@@ -103,7 +103,7 @@ func safeHandler(next func(w http.ResponseWriter, r *http.Request)) http.Handler
 }
 ```
 
-Note `net/http` already does this per-request — the example shows the
+Note `net/http` already does this per-request: the example shows the
 pattern for your own goroutine boundaries. The rule: **each goroutine you
 start owns its panics.** A panic in a goroutine kills the process; if you
 spawn workers that call third-party code, wrap them.
@@ -127,10 +127,10 @@ corrupted. When in doubt, crash: restart from a known-good state.
 
 - **Using panic for validation errors.** Users send bad input; that is an
   error value, not an abort.
-- **recover() outside a deferred call** — always nil.
+- **recover() outside a deferred call**: always nil.
 - **Swallowing panics silently** (`recover()` with no log): hides bugs
   behind mysterious behavior. Log with stack, always.
-- **Assuming `os.Exit` runs defers.** It does not — `os.Exit` terminates
+- **Assuming `os.Exit` runs defers.** It does not: `os.Exit` terminates
   immediately. Buffer flushing, unlock, close: all skipped. The fix:
   return through main instead.
 - **Defers in loops** with large N: allocation + growth per iteration;
@@ -139,7 +139,7 @@ corrupted. When in doubt, crash: restart from a known-good state.
 ## Idiomatic Go
 
 ```go
-// Lock immediately, defer unlock on the next line — never in between.
+// Lock immediately, defer unlock on the next line: never in between.
 mu.Lock()
 defer mu.Unlock()
 
@@ -161,7 +161,7 @@ defer f.Close()
 
 ## Concurrency Considerations
 
-- A panic in any goroutine crashes the process — `recover` does not cross
+- A panic in any goroutine crashes the process: `recover` does not cross
   goroutine boundaries. Spawned workers need their own recover.
 - `defer mu.Unlock()` prevents the classic "forgot unlock on error path"
   deadlock. For conditional unlocks, prefer restructuring over
@@ -173,7 +173,7 @@ defer f.Close()
 - A panic message with sensitive data (tokens in URLs, PII) that reaches
   logs is a leak; sanitize what you log in the recover path.
 - Recovering all panics in request handlers prevents DoS-by-panic but
-  also hides bugs — the mitigations are stack-trace logging and
+  also hides bugs: the mitigations are stack-trace logging and
   alerting on panic-rate metrics (see [20-observability](../20-observability/)).
 
 ## Testing Strategy
@@ -194,14 +194,14 @@ documented behavior (e.g., must-style constructors).
 
 ## Interview Questions
 
-1. *When do deferred functions run, and in what order?* — Function exit,
+1. *When do deferred functions run, and in what order?*: Function exit,
    LIFO; args evaluated at defer time.
-2. *Does os.Exit run defers?* — No. Consequence for flushing logs and
+2. *Does os.Exit run defers?*: No. Consequence for flushing logs and
    buffers; fix by returning through main.
-3. *When is panic appropriate in library code?* — Almost never; the
+3. *When is panic appropriate in library code?*: Almost never; the
    accepted exceptions are must-style init and flagrant API misuse. Say
    "errors are for expected failures, panics for invariant violations."
-4. *A goroutine panics — what happens?* — Process crash; recover must be
+4. *A goroutine panics: what happens?*: Process crash; recover must be
    in the same goroutine; wrap worker bodies.
 
 ## Practice Exercises
@@ -217,6 +217,6 @@ documented behavior (e.g., must-style constructors).
 
 ## Further Reading
 
-- [Defer, Panic, and Recover](https://go.dev/blog/defer-panic-and-recover) — official blog
+- [Defer, Panic, and Recover](https://go.dev/blog/defer-panic-and-recover): official blog
 - [The Go spec: handling panics](https://go.dev/ref/spec#Handling_panics)
-- [Defer is getting faster](https://go.dev/blog/go1.14-defers) — Go 1.14 open-coded defers
+- [Defer is getting faster](https://go.dev/blog/go1.14-defers): Go 1.14 open-coded defers

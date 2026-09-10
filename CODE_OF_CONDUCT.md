@@ -6,7 +6,7 @@ This repository is a technical handbook with a public contribution trail.
 Discussions should make the handbook better and the community worth
 returning to. We expect:
 
-- Criticism of code, explanations, and ideas — directed at the artifact,
+- Criticism of code, explanations, and ideas: directed at the artifact,
   never the person.
 - Technical disagreement resolved by evidence: benchmarks, release notes,
   reproducible examples.

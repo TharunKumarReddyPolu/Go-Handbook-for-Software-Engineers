@@ -1,7 +1,7 @@
 // Command backpressure is stage 4 of the concurrency progression: the
 // pool with a bounded intake queue and explicit load shedding. When the
 // queue is full, work is rejected and counted instead of queued without
-// limit — the difference between degrading and dying. See
+// limit: the difference between degrading and dying. See
 // 08-concurrency/05-patterns.md.
 package main
 
@@ -20,7 +20,7 @@ var ErrOverloaded = errors.New("overloaded: queue at capacity")
 type Processor struct {
 	queue   chan Job
 	workers int
-	// Metrics — exported via Snapshot for dashboards.
+	// Metrics: exported via Snapshot for dashboards.
 	accepted  atomic.Int64
 	rejected  atomic.Int64
 	processed atomic.Int64

@@ -1,5 +1,5 @@
 // Package main holds the handbook's Kafka example: an order-events
-// processor. This file is the transport-free core — the handler
+// processor. This file is the transport-free core: the handler
 // contract, idempotency claims, and domain logic that unit tests
 // exercise without any broker. producer.go and consumer.go adapt
 // franz-go around it. See 18-kafka-with-go/03-producer-consumer.md.
@@ -15,7 +15,7 @@ import (
 )
 
 // Message is the transport-neutral envelope. Handlers depend on this,
-// never on client types — the seam that keeps the client swappable.
+// never on client types: the seam that keeps the client swappable.
 type Message struct {
 	Key     string
 	Value   []byte
@@ -64,7 +64,7 @@ type ClaimStore interface {
 	Release(ctx context.Context, id string) error
 }
 
-// OrderApplier is the side effect: persist, charge, notify — whatever
+// OrderApplier is the side effect: persist, charge, notify: whatever
 // "applying an order" means. Failures are retryable by contract.
 type OrderApplier interface {
 	Apply(ctx context.Context, order OrderPayload) error
@@ -135,7 +135,7 @@ func (s *OrderService) processV1(ctx context.Context, id string, env Envelope) e
 }
 
 // MemoryClaims is the in-memory ClaimStore: contract-faithful, safe for
-// concurrent tests, and obviously not durable — production uses a DB.
+// concurrent tests, and obviously not durable: production uses a DB.
 type MemoryClaims struct {
 	mu     sync.Mutex
 	active map[string]bool

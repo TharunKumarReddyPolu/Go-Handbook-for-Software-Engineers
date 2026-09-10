@@ -5,7 +5,7 @@
 The toolchain is the fastest way to feel Go's philosophy. There is no
 build-system zoo: one command compiles, one tests, one formats. Engineers
 coming from Maven, pip, webpack, or CMake routinely underestimate how much
-this changes daily work — dependency management, formatting, and testing
+this changes daily work: dependency management, formatting, and testing
 stop being topics of conversation.
 
 ## Mental Model
@@ -31,7 +31,7 @@ Two facts explain most of the design:
 
 ## The verbs you use daily
 
-### go run — write/run loop
+### go run: write/run loop
 
 ```bash
 go run ./examples/hello     # compile + run, binary discarded
@@ -40,7 +40,7 @@ go run ./examples/hello     # compile + run, binary discarded
 Use for the inner loop: edit, run, observe. It compiles to a temp
 directory, so startup includes compile time; it is not a "script mode."
 
-### go build — produce artifacts
+### go build: produce artifacts
 
 ```bash
 go build ./...              # compile everything, cache results, no output for main packages? no:
@@ -49,10 +49,10 @@ go build -o bin/api ./cmd/api
 ```
 
 Builds are cached aggressively. A second `go build ./...` after touching
-one file recompiles only that package and its dependents — this is why CI
+one file recompiles only that package and its dependents: this is why CI
 caches barely matter for Go.
 
-### Cross-compilation — the free party trick
+### Cross-compilation: the free party trick
 
 ```bash
 GOOS=linux GOARCH=arm64 go build -o bin/api-linux-arm64 ./cmd/api
@@ -61,7 +61,7 @@ GOOS=linux GOARCH=arm64 go build -o bin/api-linux-arm64 ./cmd/api
 No sysroot setup, no CI matrix. Container images are usually built with
 `CGO_ENABLED=0` for a fully static binary.
 
-### go install — put a tool in your PATH
+### go install: put a tool in your PATH
 
 ```bash
 go install golang.org/x/vuln/cmd/govulncheck@latest
@@ -71,17 +71,17 @@ Installs binaries from modules into `$GOBIN` (default `go env GOPATH`/bin).
 Version-pinned tool installs (`@v1.2.3`) are how teams keep tooling
 reproducible.
 
-### go env — know your machine
+### go env: know your machine
 
 ```bash
 go env GOPATH GOROOT GOBIN GOMODCACHE CGO_ENABLED
 go env -w GOMODCACHE=/somewhere   # persist a setting
 ```
 
-`GOPATH` is no longer your workspace — it is a cache and bin area. Your
+`GOPATH` is no longer your workspace: it is a cache and bin area. Your
 code can live anywhere; the module boundary (go.mod) is what matters.
 
-### go version / go doc — quick truth
+### go version / go doc: quick truth
 
 ```bash
 go version                      # toolchain version
@@ -89,7 +89,7 @@ go doc net/http.Client          # docs without leaving the terminal
 go doc -all sync.WaitGroup      # everything on a symbol
 ```
 
-### go vet — the built-in reviewer
+### go vet: the built-in reviewer
 
 ```bash
 go vet ./...
@@ -153,12 +153,12 @@ definition of done, not an afterthought.
 
 ## Interview Questions
 
-1. *What does `go mod tidy` do besides adding imports?* — Prunes unused
+1. *What does `go mod tidy` do besides adding imports?*: Prunes unused
    requirements, adds missing ones, and (Go 1.27+) consolidates duplicate
    require blocks.
-2. *How does Go make builds fast?* — Strict dependencies, content-addressed
+2. *How does Go make builds fast?*: Strict dependencies, content-addressed
    build cache, parallel compilation by package, no template metaprogramming.
-3. *Why is gofmt config-less?* — It removes the debate; uniform formatting
+3. *Why is gofmt config-less?*: It removes the debate; uniform formatting
    is a team-scale feature, not a personal preference.
 
 ## Practice Exercises
@@ -171,6 +171,6 @@ definition of done, not an afterthought.
 
 ## Further Reading
 
-- [Command documentation](https://go.dev/doc/cmd) — every go verb, official
+- [Command documentation](https://go.dev/doc/cmd): every go verb, official
 - [Module reference](https://go.dev/ref/mod)
-- [Cross-compiling with Go](https://go.dev/blog/ports) — official ports post
+- [Cross-compiling with Go](https://go.dev/blog/ports): official ports post

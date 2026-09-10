@@ -1,7 +1,7 @@
 # Beginner track
 
 Warm-ups that filter out surface familiarity. Interviewers expect
-crisp, correct answers — hesitation here is expensive.
+crisp, correct answers: hesitation here is expensive.
 
 ## Syntax & types
 
@@ -9,36 +9,36 @@ crisp, correct answers — hesitation here is expensive.
 what can you do with each?**
 
 Strong answer: all are `nil`. A nil slice supports `len`, `range`,
-`append` — reads are safe, no backing array. A nil map supports reads
-(zero value returned) but panics on writes — declare with `make` or a
+`append`: reads are safe, no backing array. A nil map supports reads
+(zero value returned) but panics on writes: declare with `make` or a
 literal when you will write. A nil channel blocks forever on every
 operation (feature in `select`, footgun elsewhere). A nil pointer
 panics on dereference. The design reasoning: Go guarantees usable zero
 values where possible; where it can't, it panics loudly instead of
-misbehaving quietly. — [05-zero-values](../01-go-fundamentals/05-zero-values.md)
+misbehaving quietly.: [05-zero-values](../01-go-fundamentals/05-zero-values.md)
 
 **Q: Why no implicit type conversions?**
 
-Strong answer: explicit narrowing is reviewable — every potential loss
+Strong answer: explicit narrowing is reviewable: every potential loss
 is visible in code. Cost: verbosity; benefit: an entire class of silent
 precision bugs disappears. Mention constants: untyped constants
 *do* adapt, which is why `var f float64 = 1<<40` compiles.
 
 **Q: Arrays vs slices?**
 
-Strong answer: array is a fixed-size value — length is part of the
+Strong answer: array is a fixed-size value: length is part of the
 type, assignment copies. Slice is a (pointer, len, cap) header over a
-backing array — assignment shares the backing array. Growth: `append`
+backing array: assignment shares the backing array. Growth: `append`
 may allocate a new array when cap is exceeded. Follow-up they'll ask:
 what does passing a slice to a function let the callee do? (Mutate
 shared backing array; also `append` past cap replaces the caller's
-view — hence "slices are not reference-safe under growth.")
+view: hence "slices are not reference-safe under growth.")
 
 ## Maps
 
 **Q: Why is map iteration order randomized?**
 
-Strong answer: deliberate — the runtime shuffles the start so programs
+Strong answer: deliberate: the runtime shuffles the start so programs
 cannot accidentally depend on hash order, which changes across
 runtimes/architectures. Sorted output: collect keys, `slices.Sort`,
 range keys.
@@ -46,15 +46,15 @@ range keys.
 **Q: How do maps behave under concurrency?**
 
 Strong answer: concurrent reads are fine; any write concurrent with
-another read/write is a *fatal* runtime error (`concurrent map writes`
-— not a recoverable panic). Fixes: mutex+map, sharded map, or sync.Map
-for its two niche shapes. Follow-up: why fatal instead of panic? —
+another read/write is a *fatal* runtime error (`concurrent map writes`,
+not a recoverable panic). Fixes: mutex+map, sharded map, or sync.Map
+for its two niche shapes. Follow-up: why fatal instead of panic?,
 because detecting it generally is undecidable; corruption is already
 possible.
 
 ## Functions & structs
 
-**Q: Multiple return values — show the idiom and the trap.**
+**Q: Multiple return values: show the idiom and the trap.**
 
 Strong answer: idiom is `(value, error)` with zero value on failure.
 Trap: named returns + `defer` can silently overwrite; and `:=`
@@ -63,10 +63,10 @@ checked.
 
 **Q: Struct embedding vs inheritance?**
 
-Strong answer: embedding promotes fields/methods — no subtyping, no
+Strong answer: embedding promotes fields/methods: no subtyping, no
 virtual dispatch, no super. The embedded value is a field; method
 resolution is compile-time name promotion. "Inheritance in Go" is a
-category error; composition with interfaces is the replacement. —
+category error; composition with interfaces is the replacement.,
 [04-functions-methods-interfaces](../04-functions-methods-interfaces/) (when it ships)
 
 ## Rapid-fire
@@ -93,8 +93,9 @@ category error; composition with interfaces is the replacement. —
 
 ## Common failure patterns at this level
 
-- Reciting "slices are references" — they're value headers over shared
+- Reciting "slices are references": they're value headers over shared
   backing arrays; the distinction has real bugs attached.
-- Writing `if err != nil { return err }` without wrapping — no context
+- Writing `if err != nil { return err }` without wrapping: no context
   for the caller ([05-errors](../05-errors/)).
-- Believing `defer` runs at block scope — it's function scope.
+- Believing `defer` runs at block scope: it's function scope.
+e.

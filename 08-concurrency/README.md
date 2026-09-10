@@ -2,7 +2,7 @@
 
 Go's defining feature, and the section most interviewers and production
 incidents live in. Concurrency is built into the language, but correct
-concurrency is built into *you* — this section is the training ground.
+concurrency is built into *you*: this section is the training ground.
 
 ## Objectives
 
@@ -29,7 +29,7 @@ By the end of this section you can:
 | 7 | [Pitfalls](07-pitfalls.md) | Deadlocks, races, leaks, starvation, the race detector |
 | 8 | [FAQ & quick reference](08-faq-notes.md) | Rapid answers, decision tables |
 
-## Examples — one problem, five stages
+## Examples: one problem, five stages
 
 The `examples/` directory deliberately re-solves the same problem (process
 jobs) at increasing production-readiness:

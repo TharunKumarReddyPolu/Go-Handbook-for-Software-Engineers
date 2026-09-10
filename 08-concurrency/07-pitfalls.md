@@ -4,10 +4,10 @@
 
 Concurrency bugs are the expensive ones: rare, unreproducible, and
 discovered in production by users. Every pitfall here has a detection
-method and a fix — the difference between an engineer who has been burned
+method and a fix: the difference between an engineer who has been burned
 and one who hasn't is knowing the detection *before* the burn.
 
-## Deadlock — everyone waits forever
+## Deadlock: everyone waits forever
 
 **The shape:** circular waiting. Goroutine A holds lock 1, wants lock 2;
 B holds lock 2, wants lock 1.
@@ -21,12 +21,12 @@ func transferAtoB(a, b *Account) {
 }
 func transferBtoA(a, b *Account) {
 	b.mu.Lock()
-	a.mu.Lock() // B: 2→1  — boom, occasionally, forever
+	a.mu.Lock() // B: 2→1 : boom, occasionally, forever
 	...
 }
 ```
 
-**Fix — global ordering:** always acquire in a canonical order (e.g., by
+**Fix: global ordering:** always acquire in a canonical order (e.g., by
 account ID):
 
 ```go
@@ -46,20 +46,20 @@ func transfer(x, y *Account, minor int64) {
 **Other shapes:**
 
 - Unbuffered channel send with no receiver (the runtime panics only when
-  *all* goroutines are asleep — partial deadlocks hang silently).
+  *all* goroutines are asleep: partial deadlocks hang silently).
 - Locking a non-reentrant mutex twice in one goroutine.
 - `wg.Wait()` before `wg.Add` (or Add inside the goroutine).
 - select with no ready case and no default/Done.
 
 **Detection:** the runtime's `all goroutines are asleep - deadlock!`
 panic for total deadlocks; for partial ones, pprof's goroutine profile
-shows thousands of stacks parked at the same line — the smoking gun.
+shows thousands of stacks parked at the same line: the smoking gun.
 
-## Data race — the undefined behavior
+## Data race: the undefined behavior
 
 **The definition:** two goroutines access the same memory, at least one
 write is involved, and there is no synchronization ordering the accesses.
-Under the Go memory model, the result is undefined — values can tear,
+Under the Go memory model, the result is undefined: values can tear,
 reads can see stale data, and it can *work in tests for months*.
 
 ```go
@@ -67,11 +67,11 @@ reads can see stale data, and it can *work in tests for months*.
 var cache = map[string]string{} // shared
 
 func Get(k string) string { return cache[k] }     // read
-func Set(k, v string)    { cache[k] = v }         // write — concurrent map writes
+func Set(k, v string)    { cache[k] = v }         // write: concurrent map writes
                                                   // are a runtime FATAL, not just UB
 ```
 
-**Fix — pick one:**
+**Fix: pick one:**
 
 ```go
 // 1. Mutex
@@ -84,7 +84,7 @@ mu.Lock(); defer mu.Unlock()
 // 3. Sync primitives sized to the access pattern (ch. 04).
 ```
 
-**Detection — the race detector, your CI staple:**
+**Detection: the race detector, your CI staple:**
 
 ```bash
 go test -race ./...
@@ -110,10 +110,10 @@ the *cause* (missing synchronization), not the symptom (add a sleep).
 **Race vs race condition:** every data race is a race condition; not
 every race condition is a data race. Two goroutines both checking-then-
 setting a file lock via well-synchronized memory can still be a race
-condition (logical interleaving bug) — the detector won't see it;
+condition (logical interleaving bug): the detector won't see it;
 invariants and tests must.
 
-## Goroutine leak — the slow bleed
+## Goroutine leak: the slow bleed
 
 **The shape:** a goroutine blocked forever on something that never
 arrives. Classic sources:
@@ -137,7 +137,7 @@ Leaks are silent until they aren't: memory creeps, file descriptors
 exhaust, GC pauses grow. **Detection:**
 
 ```go
-// In tests — the baseline pattern (use goleak in real projects):
+// In tests: the baseline pattern (use goleak in real projects):
 func TestMain(m *testing.M) {
 	before := runtime.NumGoroutine()
 	code := m.Run()
@@ -149,28 +149,28 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-// In production — pprof goroutine profile:
+// In production: pprof goroutine profile:
 //   curl localhost:6060/debug/pprof/goroutine?debug=1
 //   Look for many identical stacks = blocked at the same spot.
 ```
 
-**Fix — the ownership rule:** whoever starts a goroutine must provide
+**Fix: the ownership rule:** whoever starts a goroutine must provide
 its exit path. In practice: ctx on every blocking call, select around
 sends/receives that might wait, close channels from the owner.
 
-## Starvation — some goroutine never wins
+## Starvation: some goroutine never wins
 
 **The shapes:**
 
 - A hot mutex one goroutine hammers while others wait indefinitely
-  (queue-jumping is possible in Go's mutex — it's not FIFO).
+  (queue-jumping is possible in Go's mutex: it's not FIFO).
 - A chatty channel case in a select starving a rare-but-critical case
   (random pick mitigates, doesn't guarantee).
-- Scheduler starvation: tight loops without function calls pre-1.14 —
+- Scheduler starvation: tight loops without function calls pre-1.14,
   fixed by async preemption, but relying on preemption timing is still
   a design smell.
 
-**Fix:** fairness by design — round-robin queues, weighted semaphores,
+**Fix:** fairness by design: round-robin queues, weighted semaphores,
 or dedicating a goroutine to the critical work instead of fighting for
 shared ones. Measure with mutex/block profiles:
 
@@ -180,7 +180,7 @@ go test -mutexprofile=mutex.out ./...
 go tool pprof block.out   # where is time spent waiting, and by whom
 ```
 
-## Basic Example — a bug clinic
+## Basic Example: a bug clinic
 
 Four bugs in six lines; find them all:
 
@@ -196,7 +196,7 @@ func bad() {
 		}()
 	}
 	wg.Wait()
-	close(ch) // (4) fine here only because wg.Wait precedes it — fragile
+	close(ch) // (4) fine here only because wg.Wait precedes it: fragile
 	for v := range ch {
 		fmt.Println(v)
 	}
@@ -221,12 +221,12 @@ func good() {
 }
 ```
 
-(That "fix" is deliberately still awkward — the *real* fix is ownership:
+(That "fix" is deliberately still awkward: the *real* fix is ownership:
 one goroutine produces and closes; workers only consume. When you need
 multiple senders, collect with a WaitGroup and close after `Wait()`, as
 in [05-patterns](05-patterns.md).)
 
-## Production Example — the leak hunt
+## Production Example: the leak hunt
 
 An incident runbook for "memory climbing at steady traffic":
 
@@ -245,14 +245,14 @@ unbounded collections. Both are design bugs wearing runtime costumes.
 
 ## Common Mistakes
 
-- **Adding sleeps to "fix" flaky concurrent tests** — hides the race,
+- **Adding sleeps to "fix" flaky concurrent tests**: hides the race,
   slows the suite, fails at 3 a.m. Use barriers/channels/-race.
-- **Ignoring -race in CI because "it's slow"** — 2-10x on tests is
+- **Ignoring -race in CI because "it's slow"**: 2-10x on tests is
   cheap; a race incident is not.
-- **`recover()` as a leak fix** — catching panics from a leaked
+- **`recover()` as a leak fix**: catching panics from a leaked
   goroutine's broken invariants; the goroutine still leaks and the
   state is corrupt.
-- **Believing channels are always better than locks** — a channel where
+- **Believing channels are always better than locks**: a channel where
   a mutex belongs (protecting a big map) is slower *and* murkier.
 
 ## Idiomatic Go
@@ -280,7 +280,7 @@ else queues behind it). Debug from the goroutine profile outward.
 
 - CI: `-race -shuffle=on`, plus a GOMAXPROCS=1 job for concurrency-heavy
   packages.
-- Leak detection in package TestMain (goleak) — the cheap, automated
+- Leak detection in package TestMain (goleak): the cheap, automated
   version of the baseline pattern above.
 - Fault injection: cancel contexts mid-flight, close channels early,
   panic workers; assert cleanup, not just happy paths.
@@ -288,16 +288,16 @@ else queues behind it). Debug from the goroutine profile outward.
 ## Interview Questions
 
 1. *Your service's memory climbs 10MB/hour at steady traffic. Walk me
-   through your debugging.* — The leak-hunt flowchart; grade on
+   through your debugging.*: The leak-hunt flowchart; grade on
    goroutine profile before heap profile.
-2. *What exactly does -race detect, and what doesn't it?* — Unsynchronized
+2. *What exactly does -race detect, and what doesn't it?*: Unsynchronized
    conflicting accesses at runtime during instrumented execution; not
    logical race conditions, not races that didn't happen this run.
 3. *Write the fix for a producer/consumer where the producer outlives the
-   consumer.* — ctx + Done case in producer, or owner-close with
+   consumer.*: ctx + Done case in producer, or owner-close with
    consumers exiting on close; the grade is "who owns the exit."
-4. *Go's mutexes are not reentrant — show the deadlock and the redesign.*
-   — Locked method calling another locking method; redesign with
+4. *Go's mutexes are not reentrant: show the deadlock and the redesign.*
+  : Locked method calling another locking method; redesign with
    internal unlocked variants.
 
 ## Practice Exercises
@@ -305,7 +305,7 @@ else queues behind it). Debug from the goroutine profile outward.
 1. Write a program with an intentional goroutine leak; detect it two
    ways: runtime.NumGoroutine in a test, and via a pprof goroutine
    profile. Fix it with ctx.
-2. Reproduce the map-write fatal (concurrent map writes) — observe that
+2. Reproduce the map-write fatal (concurrent map writes): observe that
    it's a FATAL, not a race report. Then fix with a mutex and confirm
    -race silence.
 3. Starvation lab: one writer goroutine + nine readers on an RWMutex;
@@ -314,6 +314,6 @@ else queues behind it). Debug from the goroutine profile outward.
 
 ## Further Reading
 
-- [Introducing the Go Race Detector](https://go.dev/blog/race-detector) — official
+- [Introducing the Go Race Detector](https://go.dev/blog/race-detector): official
 - [Data Race Detector docs](https://go.dev/doc/articles/race_detector)
-- [Go memory model](https://go.dev/ref/mem) — what counts as synchronization
+- [Go memory model](https://go.dev/ref/mem): what counts as synchronization

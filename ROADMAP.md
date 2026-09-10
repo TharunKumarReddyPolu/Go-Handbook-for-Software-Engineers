@@ -6,66 +6,66 @@ also live inside each section's README; this file is the top-level view.
 
 Last updated: 2026-09-09
 
-## Phase 1 — Fundamentals
+## Phase 1: Fundamentals
 
-- [x] 01-go-fundamentals — complete (7 chapters, compiled examples, transition guide)
-- [ ] 02-go-language — outline ready, chapters next
-- [ ] 03-data-structures — outline ready
-- [ ] 04-functions-methods-interfaces — outline ready
+- [x] 01-go-fundamentals: complete (7 chapters, compiled examples, transition guide)
+- [ ] 02-go-language: outline ready, chapters next
+- [ ] 03-data-structures: outline ready
+- [ ] 04-functions-methods-interfaces: outline ready
 
-## Phase 2 — Core Go
+## Phase 2: Core Go
 
-- [x] 05-errors — complete (2 chapters, examples with tests)
-- [ ] 06-packages-modules — outline ready
-- [ ] 07-generics — outline ready (Go 1.27 generic methods noted)
+- [x] 05-errors: complete (2 chapters, examples with tests)
+- [ ] 06-packages-modules: outline ready
+- [ ] 07-generics: outline ready (Go 1.27 generic methods noted)
 
-## Phase 3 — Concurrency
+## Phase 3: Concurrency
 
-- [x] 08-concurrency — complete (8 chapters, examples 1→5 with tests)
+- [x] 08-concurrency: complete (8 chapters, examples 1→5 with tests)
 
-## Phase 4 — Testing & Tooling
+## Phase 4: Testing & Tooling
 
-- [x] 10-testing — complete (4 chapters, compiled test suites)
-- [ ] 11-tooling — outline ready
+- [x] 10-testing: complete (4 chapters, compiled test suites)
+- [ ] 11-tooling: outline ready
 
-## Phase 5 — Backend
+## Phase 5: Backend
 
-- [ ] 12-http-networking — outline ready
-- [ ] 13-databases — outline ready
-- [ ] 14-backend-development — outline ready
+- [ ] 12-http-networking: outline ready
+- [ ] 13-databases: outline ready
+- [ ] 14-backend-development: outline ready
 
-## Phase 6 — Distributed Systems
+## Phase 6: Distributed Systems
 
-- [ ] 15-microservices — outline ready
-- [ ] 16-distributed-systems — outline ready
-- [ ] 17-messaging — outline ready
-- [x] 18-kafka-with-go — complete (3 chapters + client comparison + examples with skip-if-no-broker tests)
+- [ ] 15-microservices: outline ready
+- [ ] 16-distributed-systems: outline ready
+- [ ] 17-messaging: outline ready
+- [x] 18-kafka-with-go: complete (3 chapters + client comparison + examples with skip-if-no-broker tests)
 
-## Phase 7 — Performance
+## Phase 7: Performance
 
-- [x] 19-performance — complete (4 chapters with before/after benchmarks)
+- [x] 19-performance: complete (4 chapters with before/after benchmarks)
 
-## Phase 8 — Security
+## Phase 8: Security
 
-- [ ] 21-security — outline ready
-- [ ] 20-observability — outline ready (planned alongside 21)
+- [ ] 21-security: outline ready
+- [ ] 20-observability: outline ready (planned alongside 21)
 
-## Phase 9 — Production
+## Phase 9: Production
 
-- [ ] 22-production-go — outline ready
-- [ ] 23-go-internals — outline ready
-- [ ] 24-system-design — outline ready
+- [ ] 22-production-go: outline ready
+- [ ] 23-go-internals: outline ready
+- [ ] 24-system-design: outline ready
 
-## Phase 10 — FinTech
+## Phase 10: FinTech
 
-- [x] 25-fintech-with-go — complete (4 chapters + tested ledger example)
+- [x] 25-fintech-with-go: complete (4 chapters + tested ledger example)
 
-## Phase 11 — Interview, Open Source, Capstone
+## Phase 11: Interview, Open Source, Capstone
 
-- [x] 26-go-interview-preparation — complete (tiered tracks + scenarios)
-- [ ] 27-open-source — outline ready
-- [ ] 28-projects — outline with five levels; project guides come last so they can reference finished sections
-- [ ] 09-memory-runtime — outline ready (fits best after 23-go-internals drafting starts)
+- [x] 26-go-interview-preparation: complete (tiered tracks + scenarios)
+- [ ] 27-open-source: outline ready
+- [ ] 28-projects: outline with five levels; project guides come last so they can reference finished sections
+- [ ] 09-memory-runtime: outline ready (fits best after 23-go-internals drafting starts)
 
 ## Planned order for remaining sections
 

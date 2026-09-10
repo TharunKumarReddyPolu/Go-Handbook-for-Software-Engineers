@@ -77,7 +77,7 @@ func TestTypedNilTrap(t *testing.T) {
 	// 1. A nil *DomainError converted to error is NOT == nil (the
 	//    interface holds a type), so callers checking err != nil will
 	//    treat it as a failure. Return literal nil from functions.
-	// 2. errors.As still "finds" the type — but the target ends up nil,
+	// 2. errors.As still "finds" the type, but the target ends up nil,
 	//    so callers must re-check for nil after As.
 	err := asError(nil)
 	if err == nil {

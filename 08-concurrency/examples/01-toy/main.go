@@ -18,7 +18,7 @@ func Produce(n int) <-chan int {
 	return ch
 }
 
-// Collect ranges the channel until it closes — the receive-only contract
+// Collect ranges the channel until it closes: the receive-only contract
 // means the consumer cannot close or send on it, even by accident.
 func Collect(in <-chan int) []int {
 	var out []int

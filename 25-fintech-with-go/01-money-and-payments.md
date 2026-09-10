@@ -2,7 +2,7 @@
 
 ## Why Does This Matter?
 
-Most payment-system bugs are not exotic distributed-systems failures —
+Most payment-system bugs are not exotic distributed-systems failures,
 they are money represented wrong, retries applied twice, and errors
 swallowed at boundaries. This chapter fixes the representation problem
 permanently and builds the idempotent payment pattern that every later
@@ -11,21 +11,21 @@ chapter assumes.
 ## Mental Model
 
 ```text
-money = (amount, currency)   — always together, always integers
-retries are certain           — therefore idempotency is mandatory
-failure is the normal path    — design for it, don't handle it "if it happens"
+money = (amount, currency)  : always together, always integers
+retries are certain          : therefore idempotency is mandatory
+failure is the normal path   : design for it, don't handle it "if it happens"
 ```
 
-## Money representation — the non-negotiables
+## Money representation: the non-negotiables
 
 ### 1. Integers in minor units. Never floats.
 
 ```go
-// WRONG — binary floats cannot represent 0.1 exactly; drift compounds
+// WRONG: binary floats cannot represent 0.1 exactly; drift compounds
 var amount float64 = 19.99
 amount += 0.01 // 20.000000000000004 on many platforms
 
-// RIGHT — minor units (cents, pence, satoshi, agorot...)
+// RIGHT: minor units (cents, pence, satoshi, agorot...)
 var amountMinor int64 = 1999
 amountMinor += 1 // 2000
 ```
@@ -37,16 +37,16 @@ real system that used float64 for money has a bug list to prove it.
 ### 2. Currency rides with amount. Always.
 
 ```go
-// WRONG — add USD to EUR because both are "int64 at a boundary"
+// WRONG: add USD to EUR because both are "int64 at a boundary"
 total := usdTotal + eurTotal
 
-// RIGHT — the type makes it unrepresentable
+// RIGHT: the type makes it unrepresentable
 total, err := money.Add(usdTotal, eurTotal) // returns error: currency mismatch
 ```
 
 ### 3. Overflow is a design input.
 
-int64 minor units hold ~92 quadrillion cents — far beyond any single
+int64 minor units hold ~92 quadrillion cents: far beyond any single
 transaction, but *summation* over millions of rows can overflow; your
 aggregation layer decides the width (int64 vs big.Int) explicitly.
 
@@ -109,14 +109,14 @@ func (m Money) String() string {
 
 Design notes that matter in review:
 
-- The zero value is *invalid*, forcing construction through `New` — a
+- The zero value is *invalid*, forcing construction through `New`: a
   deliberate exception to the zero-value-usability rule, because a
   silently-zero money value is a loss.
 - Amounts are unexported; nothing can build a mixed-currency sum by
   struct literal.
 - Comparisons compare currency first; equality includes currency.
 
-## Idempotent payments — the durable claim pattern
+## Idempotent payments: the durable claim pattern
 
 Section 18 introduced claim/apply/release against an in-memory store.
 For payments, the store is durable (a database) and the pattern
@@ -147,7 +147,7 @@ The rules that make this correct:
 1. **Claim and result live in the same transaction** as the money
    movement. A payment recorded without its claim, or a claim without
    its payment, is a reconciliation finding.
-2. **Replays return the original result** — same status, same body
+2. **Replays return the original result**: same status, same body
    shape. A client that retries a *succeeded* payment must not get a
    fresh 201 with a new ID (that reads as a second payment).
 3. **Timeouts vs errors**: a PSP timeout is *unknown*, not failure. The
@@ -157,7 +157,7 @@ The rules that make this correct:
 4. **Keys are scoped per operation** (payment creation vs capture are
    different key namespaces).
 
-## Retries — the classification applied to money
+## Retries: the classification applied to money
 
 The [errors section's Retryable](../05-errors/02-error-design.md) gets
 stricter where money moves:
@@ -170,11 +170,11 @@ stricter where money moves:
 | 4xx validation | final | no retry; fix input |
 
 The regex: **money never retries blind.** Either the operation is
-idempotent-keyed (PSP sees the same key and collapses it — Stripe-style,
+idempotent-keyed (PSP sees the same key and collapses it: Stripe-style,
 see Further Reading) or it queries for the outcome first. Both, done
 right, compose.
 
-## Basic Example — a payment service boundary
+## Basic Example: a payment service boundary
 
 ```go
 // Educational: the shape, not an audited implementation.
@@ -226,23 +226,23 @@ reconciliation), not loops.
 
 ## Common Mistakes
 
-- **float64 anywhere near money** — including "just for display";
+- **float64 anywhere near money**: including "just for display";
   formatting from minor units at the edge.
-- **Idempotency keys optional** — a client without a key cannot retry
+- **Idempotency keys optional**: a client without a key cannot retry
   safely; the API makes the key required.
-- **Replaying errors as fresh errors** — a replayed decline must return
+- **Replaying errors as fresh errors**: a replayed decline must return
   the same decline; fresh error text leaks processing state.
-- **Treating timeouts as declines** — the double-charge machine; the
+- **Treating timeouts as declines**: the double-charge machine; the
   pending-claim workflow exists for exactly this.
-- **Rounding during currency conversion inside business logic** —
+- **Rounding during currency conversion inside business logic**,
   conversions are their own logged, audited operation with explicit
   rounding rules.
-- **Storing money as string in JSON APIs** — parse to int64 minor
+- **Storing money as string in JSON APIs**: parse to int64 minor
   units at the boundary; strings invite locale errors.
 
 ## Idiomatic Go (money-shaped)
 
-- `Money` is a value type; pass by value, no pointers — it is 24-ish
+- `Money` is a value type; pass by value, no pointers: it is 24-ish
   bytes and identity never matters.
 - Ledger entries are immutable once posted: no update API exists, which
   the type system encourages by unexporting mutators.
@@ -256,12 +256,12 @@ reconciliation), not loops.
 - Ledger posting throughput is DB-bound; batch inserts of entry lines
   and serialize per-account ordering (ch. 02/03).
 - High-throughput payment rails (thousands TPS) are a *sharding +
-  batching* problem — see [19-performance](../19-performance/) for the
+  batching* problem: see [19-performance](../19-performance/) for the
   measurement discipline before believing any scaling claim.
 
 ## Concurrency Considerations
 
-- Claims must be atomic across concurrent replays — the DB's unique
+- Claims must be atomic across concurrent replays: the DB's unique
   constraint is the arbiter, not application-level checks.
 - Account balance invariants under concurrency are ledger-internal
   (single-writer per account or row locks); `ledger_test.go` includes
@@ -291,17 +291,17 @@ reconciliation), not loops.
 
 ## Interview Questions
 
-1. *Why are floats wrong for money? Show the failure.* — 0.1
+1. *Why are floats wrong for money? Show the failure.*: 0.1
    representation, addition drift; the candidate who mentions
    decimal-vs-minor-units tradeoffs (fixed-point vs arbitrary
    precision) grades highest.
-2. *Design idempotent payment creation.* — The sequence diagram; grade
+2. *Design idempotent payment creation.*: The sequence diagram; grade
    on: claim+result same tx, replay-returns-original, unknown-outcome
    handling.
-3. *A charge succeeded but your DB write failed. What happens next?* —
+3. *A charge succeeded but your DB write failed. What happens next?*,
    No blind retry; reconcile; the answer that invents a compensating
    "refund" before reconciliation loses points.
-4. *Your PSP charges twice on a timeout. Whose bug?* — Both sides:
+4. *Your PSP charges twice on a timeout. Whose bug?*: Both sides:
    your client retried without the idempotency key (or before
    reconciliation), the PSP collapsed or didn't per its contract; the
    fix is workflow, not blame.
@@ -320,6 +320,6 @@ reconciliation), not loops.
 
 ## Further Reading
 
-- [Stripe: idempotency keys](https://docs.stripe.com/api/idempotent_requests) — the industry reference contract
-- [ISO 4217 currency codes](https://www.iso.org/iso-4217-currency-codes.html) — minor-unit reality (JPY has 0 decimals!)
-- [Go blog: constants](https://go.dev/blog/constants) — why untyped constants ease integer money math
+- [Stripe: idempotency keys](https://docs.stripe.com/api/idempotent_requests): the industry reference contract
+- [ISO 4217 currency codes](https://www.iso.org/iso-4217-currency-codes.html): minor-unit reality (JPY has 0 decimals!)
+- [Go blog: constants](https://go.dev/blog/constants): why untyped constants ease integer money math

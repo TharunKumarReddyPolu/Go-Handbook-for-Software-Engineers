@@ -26,9 +26,9 @@ By the end of this section you can:
 
 `examples/` contains a working module used by both chapters:
 
-- `examples/errorslib/` — a small error package: domain errors, wrapping,
+- `examples/errorslib/`: a small error package: domain errors, wrapping,
   retryability classification, with tests
-- `examples/service/` — a fake "payment" service mapping domain errors to
+- `examples/service/`: a fake "payment" service mapping domain errors to
   HTTP responses, with tests
 
 ## Progress checklist

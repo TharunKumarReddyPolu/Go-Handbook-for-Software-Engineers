@@ -5,7 +5,7 @@
 Every variable in Go has a value the moment it exists. Not "undefined,"
 not garbage in safe code, not null-by-default: a *specific* zero value the
 language guarantees. This one decision ripples through the entire
-ecosystem — it is why `var b bytes.Buffer` just works, why you do not
+ecosystem: it is why `var b bytes.Buffer` just works, why you do not
 write constructors for every struct, and why "nil pointer" is the most
 common panic in production Go. Engineers who internalize zero values
 design better APIs; engineers who do not write initialization ceremony
@@ -48,15 +48,15 @@ Zeroing is not a constructor convention; it is a memory-model guarantee.
 Two consequences:
 
 1. **Allocation is safe by default.** `new(T)`, `&T{}`, `make`, a fresh
-   goroutine's stack frame — all zero memory first. C++ classes teach you
+   goroutine's stack frame: all zero memory first. C++ classes teach you
    to fear uninitialized members; Go eliminates the fear by paying a
    zeroing cost.
 2. **Types should be designed to be *useful* at zero.** The standard
    library is the proof:
-   - `bytes.Buffer{}` — ready to write, no constructor.
-   - `sync.Mutex{}` — ready to lock.
-   - `sync.WaitGroup{}` — ready to Add.
-   - `time.Time{}` — the specific instant January 1, year 1 — a defined,
+   - `bytes.Buffer{}`: ready to write, no constructor.
+   - `sync.Mutex{}`: ready to lock.
+   - `sync.WaitGroup{}`: ready to Add.
+   - `time.Time{}`: the specific instant January 1, year 1: a defined,
      comparable value.
 
 ## Basic Example
@@ -68,8 +68,8 @@ package main
 import "fmt"
 
 type Config struct {
-	Retries int           // 0 means "no retries" — or does it?
-	Timeout time.Duration // 0 means "no timeout" — a footgun!
+	Retries int           // 0 means "no retries", or does it?
+	Timeout time.Duration // 0 means "no timeout": a footgun!
 	TLS     bool
 	Host    string
 }
@@ -147,8 +147,8 @@ func (c ServerConfig) Validate() error {
 ```
 
 The design rule: **decide what zero means for every field you expose.**
-Three legitimate answers — "invalid, validate it," "default it
-explicitly," "a meaningful zero (off/false/empty)" — and one illegitimate
+Three legitimate answers: "invalid, validate it," "default it
+explicitly," "a meaningful zero (off/false/empty)", and one illegitimate
 one: "we never thought about it."
 
 ## Common Mistakes
@@ -173,7 +173,7 @@ buf := new(bytes.Buffer)     // fine, but...
 var buf bytes.Buffer         // ...this is the Go-native way: no pointer,
                              // zero value ready, no allocation question.
 
-var mu sync.Mutex            // zero value ready to Lock — no init.
+var mu sync.Mutex            // zero value ready to Lock: no init.
 
 counters := map[string]int{} // explicit empty, non-nil map when you will
                              // write soon but not necessarily now.
@@ -185,7 +185,7 @@ counters := map[string]int{} // explicit empty, non-nil map when you will
   return zeroed pages from the OS for free, so often it is not.
 - Escape analysis interacts with zero values: values that stay on the
   stack still get zeroed; see [09-memory-runtime](../09-memory-runtime/).
-- Do not add constructors that only set fields to defaults — expose a
+- Do not add constructors that only set fields to defaults: expose a
   `WithDefaults()` method (or document zero semantics) and let callers
   compose.
 
@@ -193,7 +193,7 @@ counters := map[string]int{} // explicit empty, non-nil map when you will
 
 Zero values make it safe to *create* shared state before coordination
 exists: a zero mutex protects nothing yet but is ready. The dangerous
-zero is the nil channel: sending/receiving on it blocks forever — the
+zero is the nil channel: sending/receiving on it blocks forever: the
 basis of both the "nil channel disables a select case" pattern and many
 deadlocks. See [08-concurrency](../08-concurrency/).
 
@@ -219,16 +219,16 @@ func TestRetryPolicy_ZeroIsNoRetry(t *testing.T) {
 }
 ```
 
-If zero semantics of a type are load-bearing, they are spec — test them
+If zero semantics of a type are load-bearing, they are spec: test them
 like it.
 
 ## Interview Questions
 
 1. *What are the zero values of slice, map, and channel, and what
-   operations do they support?* — The table above; this is asked constantly.
-2. *Why does Go zero memory instead of leaving it uninitialized?* —
+   operations do they support?*: The table above; this is asked constantly.
+2. *Why does Go zero memory instead of leaving it uninitialized?*,
    Determinism, safety, and no UB class of bugs; cost paid at allocation.
-3. *Design a config type whose zero value is safe.* — The answer should
+3. *Design a config type whose zero value is safe.*: The answer should
    mention: either make zero valid (off/disabled) or require explicit
    defaults via `WithDefaults()`/validation, and cite `http.Client{}`
    Timeout as the cautionary tale.
@@ -246,4 +246,4 @@ like it.
 
 - [The Go spec: the zero value](https://go.dev/ref/spec#The_zero_value)
 - [Effective Go: allocation with new](https://go.dev/doc/effective_go#allocation_new)
-- [net/http Client docs](https://pkg.go.dev/net/http#Client) — read the Timeout paragraph
+- [net/http Client docs](https://pkg.go.dev/net/http#Client): read the Timeout paragraph

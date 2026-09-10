@@ -4,7 +4,7 @@
 
 Every financial system answers one question constantly: *where is the
 money?* Answers assembled from mutable balances ("update the user's
-balance row") rot — they cannot explain their own history, survive
+balance row") rot: they cannot explain their own history, survive
 concurrency, or satisfy auditors. Double-entry bookkeeping is the
 500-year-old answer: every movement of value is recorded as balanced
 entries, so the *ledger itself* is the source of truth, and balances are
@@ -14,14 +14,14 @@ make it trustworthy enforced by tests.
 ## Mental Model
 
 A **journal entry** records one business event as a set of **lines**.
-Each line debits one account and credits another — every line has two
+Each line debits one account and credits another: every line has two
 sides, and the sides sum to zero:
 
 ```text
 Customer pays 25.00 USD for an order:
 
-  line 1:  +2500  customer_cash      (debit  — money in)
-  line 2:  -2500  revenue            (credit — value out)
+  line 1:  +2500  customer_cash      (debit : money in)
+  line 2:  -2500  revenue            (credit: value out)
 
   sum: 0 ✓
 ```
@@ -35,14 +35,14 @@ flowchart LR
     A2["Account: revenue<br/>balance = sum of its lines"] -.-> L2
 ```
 
-The invariants — the entire safety story:
+The invariants: the entire safety story:
 
 1. **Every entry sums to zero.** Money appears from nowhere and
    vanishes to nowhere, ever.
 2. **Entries are immutable.** Mistakes are corrected by *new* reversing
    entries, never edits. The ledger is the audit trail.
 3. **Accounts are derived.** Balance(account) = sum of its lines.
-   Recomputable from entries alone — that is what makes reconciliation
+   Recomputable from entries alone: that is what makes reconciliation
    possible.
 4. **Per-account ordering.** An account's lines apply in a total order
    (entry sequence); concurrent postings to one account serialize.
@@ -74,7 +74,7 @@ type Line struct {
 type Entry struct {
 	ID        int64
 	PostedAt  time.Time
-	Reference string // e.g. "payment:k1", "order:o42" — the audit hook
+	Reference string // e.g. "payment:k1", "order:o42": the audit hook
 	Lines     []Line
 }
 
@@ -130,7 +130,7 @@ func (j *Journal) Post(_ context.Context, ref string, lines []Line) (Entry, erro
 
 ```go
 // Balance returns the account balance by summing its lines in entry
-// order. Derived, never stored — the ledger is the source of truth.
+// order. Derived, never stored: the ledger is the source of truth.
 func (j *Journal) Balance(_ context.Context, a AccountID) (Money, error) {
 	j.mu.Lock()
 	defer j.mu.Unlock()
@@ -163,12 +163,12 @@ func (j *Journal) Balance(_ context.Context, a AccountID) (Money, error) {
 
 Real ledgers keep this fast with per-account running balances maintained
 *in the same transaction* as the posting, periodically re-derived from
-entries to prove the derivation hasn't drifted — that re-derivation is
+entries to prove the derivation hasn't drifted: that re-derivation is
 reconciliation (ch. 03).
 
 ## The tests that make it trustworthy
 
-The invariants are load-bearing, so they are tested like it — including
+The invariants are load-bearing, so they are tested like it: including
 the concurrency shape:
 
 ```go
@@ -206,13 +206,13 @@ func TestConcurrentPosts_StayBalanced(t *testing.T) {
 }
 ```
 
-## Production notes — where the toy ends
+## Production notes: where the toy ends
 
 The educational journal is in-memory; the production contract differs
 in exactly three places, and it is worth stating them because they are
 the whole engineering gap:
 
-1. **Durability**: entries go to a database in one transaction — the
+1. **Durability**: entries go to a database in one transaction: the
    entry INSERT and any balance-cache update commit together (ch. 03's
    transaction boundary discussion).
 2. **Ordering**: the entry sequence comes from a DB sequence; per-
@@ -220,30 +220,30 @@ the whole engineering gap:
 3. **Immutability**: enforced by permissions and append-only design,
    not just by Go's unexported fields. Audit access is its own role.
 
-Everything else — balanced lines, immutable entries, derived balances,
-reversal entries for corrections — transfers directly.
+Everything else: balanced lines, immutable entries, derived balances,
+reversal entries for corrections: transfers directly.
 
 ## Common Mistakes
 
-- **Storing balances without entries** — the balance row is a cache; if
+- **Storing balances without entries**: the balance row is a cache; if
   it is the only representation, history and reconciliation are gone.
-- **Editing entries** (or allowing "delete + repost") — the audit trail
+- **Editing entries** (or allowing "delete + repost"): the audit trail
   dies; corrections are reversing entries.
-- **Multi-currency entries summed carelessly** — the journal's Add
+- **Multi-currency entries summed carelessly**: the journal's Add
   chain rejects mixed currencies at line 2, which is the test that
   saves you.
-- **Entries with one line** — "external" sides (fees, settlements,
+- **Entries with one line**: "external" sides (fees, settlements,
   PSPs) are accounts too; model the counterparty, don't special-case.
-- **Non-atomic posting** — writing line 1 and line 2 in separate
+- **Non-atomic posting**: writing line 1 and line 2 in separate
   transactions can store an unbalanced world state; the entry is the
   transaction unit.
 
 ## Idiomatic Go
 
-- `Journal.Post` takes `[]Line` and copies defensively — ownership
+- `Journal.Post` takes `[]Line` and copies defensively: ownership
   boundaries are explicit (see the concurrency chapters).
 - Errors carry the entry reference: `entry "payment:k1": unbalanced
-  (sums to 12 USD)` — incidents get named evidence for free.
+  (sums to 12 USD)`: incidents get named evidence for free.
 - The journal exposes `Post` and queries; nothing else. The narrow API
   is what makes the immutability claim believable.
 
@@ -254,12 +254,12 @@ reversal entries for corrections — transfers directly.
 - Posting hot paths are DB-bound; batch independent postings and shard
   by account for write throughput ([19-performance](../19-performance/)
   discipline applies verbatim).
-- Integer money means arithmetic never appears in profiles — if it
+- Integer money means arithmetic never appears in profiles: if it
   does, something is converting to float or big.Int on the hot path.
 
 ## Concurrency Considerations
 
-- `sync.Mutex` per journal serializes postings — correct and slow;
+- `sync.Mutex` per journal serializes postings: correct and slow;
   production replaces it with DB transaction semantics, where the
   invariant enforcement (sum-to-zero CHECK, per-account locks) lives in
   the schema.
@@ -287,22 +287,22 @@ reversal entries for corrections — transfers directly.
 - Concurrency: parallel postings under `-race`; parallel
   Balance-during-Post reads see a consistent prefix.
 - Replay test: serialize entries, rebuild balances in a fresh journal,
-  compare — the reconciliation smoke test.
+  compare: the reconciliation smoke test.
 
 ## Interview Questions
 
-1. *Why double-entry instead of balance rows?* — History, invariants,
+1. *Why double-entry instead of balance rows?*: History, invariants,
    reconciliation, audit; the candidate who says "balances are derived
    views" is the one who has built it.
-2. *How do you correct a mis-posted entry in production?* — Reversing
+2. *How do you correct a mis-posted entry in production?*: Reversing
    entry pairs; never edit; the audit trail stays append-only.
-3. *Design the DB schema for this journal.* — entries + lines tables,
+3. *Design the DB schema for this journal.*: entries + lines tables,
    sum-to-zero enforced per entry (trigger or app-level in-tx check),
    per-account ordering, reference linking; the follow-up is isolation
    level and why.
-4. *Where does double-entry break down?* — Legitimately tricky corners:
+4. *Where does double-entry break down?*: Legitimately tricky corners:
    FX (multi-currency entries need per-currency balance rules), custody
-   movements, off-ledger state machines — the honest "it's still the
+   movements, off-ledger state machines: the honest "it's still the
    right foundation, with extra rules" answer.
 
 ## Practice Exercises
@@ -314,11 +314,11 @@ reversal entries for corrections — transfers directly.
    that reconstructs a fresh journal from serialized entries and
    compares balances exactly.
 3. Benchmark Post on your machine; then batch 100 postings per
-   transaction (fake DB layer) and measure the amortization — the
+   transaction (fake DB layer) and measure the amortization: the
    number justifies ch. 03's batching advice.
 
 ## Further Reading
 
-- [Stripe: how we built it — design of financial ledgers](https://stripe.com/blog/ledger) — a production ledger's design notes
-- [Double-entry bookkeeping](https://en.wikipedia.org/wiki/Double-entry_bookkeeping) — the 500-year-old model, for vocabulary
-- *Designing Data-Intensive Applications*, ch. 7 (Transactions) — Kleppmann; the isolation-level context for posting
+- [Stripe: how we built it: design of financial ledgers](https://stripe.com/blog/ledger): a production ledger's design notes
+- [Double-entry bookkeeping](https://en.wikipedia.org/wiki/Double-entry_bookkeeping): the 500-year-old model, for vocabulary
+- *Designing Data-Intensive Applications*, ch. 7 (Transactions): Kleppmann; the isolation-level context for posting

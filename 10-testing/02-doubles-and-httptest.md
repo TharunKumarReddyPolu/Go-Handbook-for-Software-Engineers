@@ -3,7 +3,7 @@
 ## Why Does This Matter?
 
 Units under test depend on databases, APIs, clocks, and queues. Test
-doubles replace those dependencies with fast, controllable stand-ins —
+doubles replace those dependencies with fast, controllable stand-ins,
 but the *kind* of stand-in determines what your test proves. This
 chapter gives you the vocabulary, the decision rules, and the httptest
 patterns for the dependency every web service has: HTTP.
@@ -14,7 +14,7 @@ patterns for the dependency every web service has: HTTP.
 |---|---|---|
 | **Fake** | Working lightweight implementation (in-memory store) | The system works against a *behavioral* contract |
 | **Stub** | Hard-coded responses for calls made during the test | Your code reacts correctly to specific return values |
-| **Mock** | Expects specific calls; fails on unexpected ones (or records them for assertion) | *Interactions* — that your code asked the right questions |
+| **Mock** | Expects specific calls; fails on unexpected ones (or records them for assertion) | *Interactions*: that your code asked the right questions |
 | **Spy** | Real call wrapped with recording | Both behavior and how it was invoked |
 
 The ordering rule that prevents most double-ology debates:
@@ -31,12 +31,12 @@ submitted exactly once"). Everything else deserves a fake.
 Doubles live behind interfaces, and interface width decides everything:
 
 ```go
-// TOO WIDE — mocks HTTP: you end up asserting on transport details
+// TOO WIDE: mocks HTTP: you end up asserting on transport details
 type Client interface {
 	Do(req *http.Request) (*http.Response, error)
 }
 
-// RIGHT WIDTH — mocks intent: what the domain needs
+// RIGHT WIDTH: mocks intent: what the domain needs
 type CardCharger interface {
 	Charge(ctx context.Context, amountMinor int64, token string) (ChargeID, error)
 }
@@ -45,19 +45,19 @@ type CardCharger interface {
 Declare interfaces **where they are consumed** (consumer-side), not
 where implemented. The payments service defines `CardCharger`; the
 Stripe adapter satisfies it without importing the service. This is why
-Go doesn't need a mocking *framework* to decouple — the language did the
+Go doesn't need a mocking *framework* to decouple: the language did the
 decoupling.
 
-## Fakes — the primary double
+## Fakes: the primary double
 
 ```go
-// store.go — the real dependency's contract, defined by its consumer
+// store.go: the real dependency's contract, defined by its consumer
 type UserStore interface {
 	Get(ctx context.Context, id string) (User, error)
 	Put(ctx context.Context, u User) error
 }
 
-// fake_test.go — a working in-memory implementation
+// fake_test.go: a working in-memory implementation
 type fakeStore struct {
 	mu     sync.Mutex
 	users  map[string]User
@@ -92,7 +92,7 @@ func (f *fakeStore) Put(ctx context.Context, u User) error {
 The critical line is the comment on `ErrNotFound`: a fake must honor the
 real dependency's error contract, or tests pass while production 500s.
 
-## Stubs and mock-style checks — minimal, inline
+## Stubs and mock-style checks: minimal, inline
 
 Go's culture prefers small hand-rolled doubles over frameworks:
 
@@ -141,14 +141,14 @@ func TestCheckout_ChargesOnce(t *testing.T) {
 
 When a codebase grows past a dozen doubles, `matryer/moq` (generate
 mocks from interfaces) or `uber-go/mock` are common; the *decision rules
-above don't change* — generation is just mechanical convenience.
+above don't change*: generation is just mechanical convenience.
 
-## httptest — testing HTTP without servers
+## httptest: testing HTTP without servers
 
 ### Testing your handler
 
 ```go
-// api.go — the layer under test
+// api.go: the layer under test
 func NewHandler(svc *CheckoutService) http.Handler {
 	mux := http.NewServeMux()
 	mux.HandleFunc("POST /checkout", func(w http.ResponseWriter, r *http.Request) {
@@ -193,7 +193,7 @@ func TestCheckoutHandler(t *testing.T) {
 ```
 
 `httptest.NewRequest` + `httptest.NewRecorder` run the handler
-*synchronously in-process* — no ports, no TLS, no flakes. This is the
+*synchronously in-process*: no ports, no TLS, no flakes. This is the
 default for handler tests.
 
 ### Testing your HTTP *client*
@@ -228,7 +228,7 @@ covers TLS paths when needed.
 ### Injecting failure into clients
 
 ```go
-// RoundTripper stub — the client-side interface seam
+// RoundTripper stub: the client-side interface seam
 type failingTransport struct{ status int }
 func (f failingTransport) RoundTrip(r *http.Request) (*http.Response, error) {
 	return nil, errors.New("connection reset")
@@ -237,46 +237,46 @@ func (f failingTransport) RoundTrip(r *http.Request) (*http.Response, error) {
 client := &http.Client{Transport: failingTransport{}} // inject into client code via a seam
 ```
 
-RoundTripper is the client-side equivalent of the store interface —
+RoundTripper is the client-side equivalent of the store interface,
 narrow, standard, and mockable without frameworks.
 
 ## Common Mistakes
 
-- **Interface declared by the provider, 14 methods wide** — the mock
+- **Interface declared by the provider, 14 methods wide**: the mock
   implements a cathedral; every test stubs 12 methods it doesn't care
   about. Split the interface at the consumer.
-- **Fake with different error semantics** than the real dependency —
+- **Fake with different error semantics** than the real dependency,
   the highest-value bug source in double-land. Mirror sentinels and
   wrap behavior.
 - **Asserting mock call counts that aren't requirements** ("cached.Get
-  called exactly twice") — locks in implementation; the refactor tax
+  called exactly twice"): locks in implementation; the refactor tax
   follows.
-- **httptest server without Close()** — leaks listeners; port
+- **httptest server without Close()**: leaks listeners; port
   exhaustion in big suites.
-- **Using `time.Now()` in code with no seam, then sleeping in tests** —
+- **Using `time.Now()` in code with no seam, then sleeping in tests**,
   inject a `now func() time.Time` field; delete the sleeps.
 
 ## Idiomatic Go
 
 - Doubles live in `_test.go` files beside their consumers, not a
   `testutil` dumping ground (a shared `testutil` package is fine for
-  genuinely cross-cutting helpers — keep it small).
+  genuinely cross-cutting helpers: keep it small).
 - Constructor injection via struct fields: `svc := &Service{store: s,
-  charger: c}` — no DI framework, visible wiring.
+  charger: c}`: no DI framework, visible wiring.
 - Integration point of the real dependency is tested in the
   integration tier (ch. 03); the unit tier proves *your* logic.
 
 ## Performance Considerations
 
 - In-process handler tests run in microseconds; server tests add
-  localhost round-trips (~50-200µs) — fine for dozens, heavy for
+  localhost round-trips (~50-200µs): fine for dozens, heavy for
   thousands.
 - Fakes are the fastest double; network-protocol fakes (e.g., miniredis)
-  trade fidelity for speed — decide per tier.
+  trade fidelity for speed: decide per tier.
 
 ## Concurrency Considerations
 
-- Doubles must be as thread-safe as the real thing — a fake store
+- Doubles must be as thread-safe as the real thing: a fake store
   without a mutex will (correctly) trip `-race` in parallel tests, and
   that's a *good* outcome: fix the fake.
 - `httptest` handler assertions run on the server's goroutine; use
@@ -286,7 +286,7 @@ narrow, standard, and mockable without frameworks.
 
 - Test doubles embedding real tokens/keys is an incident waiting to
   happen; generate fake credentials with obviously fake formats.
-- `httptest.NewServer` binds localhost only — but do not point test
+- `httptest.NewServer` binds localhost only, but do not point test
   clients at real third-party URLs; it makes suites network-dependent
   and can trigger real charges.
 
@@ -299,14 +299,14 @@ thread-safe doubles verifiable.
 
 ## Interview Questions
 
-1. *Fake vs mock — when does each earn its place?* — Behavioral contract
+1. *Fake vs mock: when does each earn its place?*: Behavioral contract
    vs required interaction; grades on preferring fakes.
-2. *Where do you declare the interface for a dependency, and why?* —
+2. *Where do you declare the interface for a dependency, and why?*,
    Consumer-side; decouples without imports, enables doubles.
-3. *Test an HTTP client that must retry on 503.* — httptest server that
+3. *Test an HTTP client that must retry on 503.*: httptest server that
    fails N times then succeeds; assert the final result and (if it's a
    requirement) the request count.
-4. *How do you test time-based logic (cache TTL)?* — Inject a clock
+4. *How do you test time-based logic (cache TTL)?*: Inject a clock
    interface/func; never sleep.
 
 ## Practice Exercises
@@ -321,6 +321,6 @@ thread-safe doubles verifiable.
 
 ## Further Reading
 
-- [httptest package](https://pkg.go.dev/net/http/httptest) — the three constructors and when
-- [go-cmp](https://github.com/google/go-cmp) — the common diff library
-- [Keep tests on a tight leash](https://www.uber.com/blog/ghosts-of-tested-code/) — interaction-test economics
+- [httptest package](https://pkg.go.dev/net/http/httptest): the three constructors and when
+- [go-cmp](https://github.com/google/go-cmp): the common diff library
+- [Keep tests on a tight leash](https://www.uber.com/blog/ghosts-of-tested-code/): interaction-test economics

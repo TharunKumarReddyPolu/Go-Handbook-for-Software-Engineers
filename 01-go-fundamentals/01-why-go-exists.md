@@ -2,8 +2,8 @@
 
 ## Why Does This Matter?
 
-You will spend years with this language. Knowing what it optimizes for —
-and what it deliberately gives up — explains almost every design decision
+You will spend years with this language. Knowing what it optimizes for,
+and what it deliberately gives up: explains almost every design decision
 you will otherwise find odd: no inheritance, no exceptions, unused
 variables are compile errors, no REPL-driven culture. Go is not a pile of
 features; it is a set of trade-offs aimed at a specific kind of work.
@@ -55,24 +55,24 @@ more than it needs to be *concise*.
 
 Be honest about this in design docs and interviews:
 
-- **GUIs and games** — ecosystems live elsewhere.
-- **Heavy numeric computing** — no SIMD ergonomics, no BLAS culture;
+- **GUIs and games**: ecosystems live elsewhere.
+- **Heavy numeric computing**: no SIMD ergonomics, no BLAS culture;
   Python + native libs or Rust win.
-- **Rich domain modeling with deep hierarchies** — you *can* do DDD in Go,
+- **Rich domain modeling with deep hierarchies**: you *can* do DDD in Go,
   but modeling tools that rely on inheritance or macros will fight you.
-- **Sub-microsecond latency budgets** — possible in Go, but C++/Rust give
+- **Sub-microsecond latency budgets**: possible in Go, but C++/Rust give
   more control (this handbook still covers real-time-adjacent Go in
   [19-performance](../19-performance/) and fintech use in
   [25-fintech-with-go](../25-fintech-with-go/)).
 
 ## Interview Questions
 
-1. *Why did Google build Go instead of improving C++?* — Answer in terms of
+1. *Why did Google build Go instead of improving C++?*: Answer in terms of
    build times, onboarding, and dependency hygiene, not syntax taste.
-2. *What does Go deliberately lack, and why is that a feature?* — Inheritance,
+2. *What does Go deliberately lack, and why is that a feature?*: Inheritance,
    exceptions, ternary, operator overloading; each answer should cite the
    maintainability cost it avoids.
-3. *Name two runtime features Go gives you that C++ does not.* — Goroutines
+3. *Name two runtime features Go gives you that C++ does not.*: Goroutines
    with a work-stealing scheduler, and a garbage collector with sub-ms
    pauses.
 
@@ -85,6 +85,6 @@ Be honest about this in design docs and interviews:
 
 ## Further Reading
 
-- [Go at Google: Language Design in the Service of Software Engineering](https://go.dev/talks/2012/splash.article) — Rob Pike's own account
+- [Go at Google: Language Design in the Service of Software Engineering](https://go.dev/talks/2012/splash.article): Rob Pike's own account
 - [Go FAQ: Design](https://go.dev/doc/faq#design)
-- [The Go Memory Model](https://go.dev/ref/mem) — for later, after section 08
+- [The Go Memory Model](https://go.dev/ref/mem): for later, after section 08

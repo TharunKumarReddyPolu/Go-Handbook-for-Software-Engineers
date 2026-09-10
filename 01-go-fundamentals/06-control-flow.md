@@ -2,22 +2,22 @@
 
 ## Why Does This Matter?
 
-Go has three loop forms, one conditional, and one multi-way branch —
+Go has three loop forms, one conditional, and one multi-way branch,
 deliberately fewer constructs than any mainstream language. The discipline
 shows up in reviews: Go code has a recognizable shape because control flow
 options are limited. This chapter covers the syntax *and* the shape.
 
 ## Mental Model
 
-- **if** — condition, no parens, braces mandatory, may start with a statement.
-- **for** — the only loop keyword; three forms cover while, C-style, and
+- **if**: condition, no parens, braces mandatory, may start with a statement.
+- **for**: the only loop keyword; three forms cover while, C-style, and
   range.
-- **switch** — no fallthrough by default (opposite of C); may switch on
+- **switch**: no fallthrough by default (opposite of C); may switch on
   nothing (true-switch); `case` values need not be constants.
-- **range** — iterate anything with a defined iteration: slices, maps,
+- **range**: iterate anything with a defined iteration: slices, maps,
   channels, strings, integers (Go 1.22+), and functions (Go 1.23+).
 
-## if — with the initialization clause
+## if: with the initialization clause
 
 ```go
 if n, err := strconv.Atoi(s); err != nil {
@@ -25,7 +25,7 @@ if n, err := strconv.Atoi(s); err != nil {
 } else if n > 100 {
 	return 0, ErrTooBig
 }
-// n and err are out of scope here — deliberate
+// n and err are out of scope here: deliberate
 ```
 
 The init clause scopes the variables to the conditional: the idiomatic
@@ -41,7 +41,7 @@ if err != nil {
 // ... continue
 ```
 
-## for — all three forms
+## for: all three forms
 
 ```go
 // C-style
@@ -54,28 +54,28 @@ for x < 100 { x = step(x) }
 for { ... }  // exit via break, return, or panic
 ```
 
-### range — and its version history
+### range, and its version history
 
 | Since | Form | Variables |
 |---|---|---|
 | forever | slice/array | `i`, or `i, v` |
 | forever | map | `k`, or `k, v` (order randomized) |
-| forever | string | `i, r` — r is a **rune**, not byte |
-| forever | channel | `v` — receives until closed |
-| Go 1.22 | integer | `i := range n` — 0..n-1 |
+| forever | string | `i, r`: r is a **rune**, not byte |
+| forever | channel | `v`: receives until closed |
+| Go 1.22 | integer | `i := range n`: 0..n-1 |
 | Go 1.23 | function iterator | `k, v := range seq` |
 
 Two footguns worth permanent memory:
 
 1. **Map order is randomized** by design (the runtime shuffles the start)
    so nobody accidentally depends on it. Sort keys if you need order.
-2. **Loop variable capture** — since Go 1.22, each iteration gets a fresh
+2. **Loop variable capture**: since Go 1.22, each iteration gets a fresh
    variable, so the classic "all closures see the last value" bug is
    fixed for modules with `go >= 1.22`. On older versions the bug is real
    and the fix is `v := v` inside the loop. Know both worlds; interviewers
    love this one (see [meta/versioning.md](../meta/versioning.md)).
 
-## switch — no fallthrough, and the true-switch
+## switch: no fallthrough, and the true-switch
 
 ```go
 // expression switch
@@ -88,7 +88,7 @@ default:
 	return nil, fmt.Errorf("unknown op %q", op)
 }
 
-// no condition = switch true — the clean if-else chain
+// no condition = switch true: the clean if-else chain
 switch {
 case err != nil:
 	return err
@@ -98,7 +98,7 @@ case ctx.Err() != nil:
 	return ctx.Err()
 }
 
-// type switch — on interfaces
+// type switch: on interfaces
 switch v := x.(type) {
 case string:
 	return len(v)
@@ -112,14 +112,14 @@ default:
 ```
 
 Fallthrough exists (`fallthrough` keyword) but using it is a code smell
-in Go — cases are semantically independent by default. `break` is implied
+in Go: cases are semantically independent by default. `break` is implied
 at each case end; `break label` exits an enclosing loop from inside a
 switch, which is one of the few justified uses of labels.
 
 ## Common Mistakes
 
 ```go
-// MISTAKE: ranging a map and appending — order will bite you in tests.
+// MISTAKE: ranging a map and appending: order will bite you in tests.
 for k, v := range m {      // randomized order
 	out = append(out, k+"="+v)
 }
@@ -162,10 +162,10 @@ func classify(code int) string {
 ## Performance Considerations
 
 - `for range` over a slice with index-only access (`for i := range s`)
-  avoids copying elements — relevant for large structs; `for i, v := range`
+  avoids copying elements: relevant for large structs; `for i, v := range`
   copies each element into `v` (in Go < 1.22 this variable was reused per
   iteration; since 1.22 it is fresh but still a copy).
-- Maps have no cheap "in order" path — if you need sorted iteration on a
+- Maps have no cheap "in order" path: if you need sorted iteration on a
   hot path, maintain a sorted key slice instead.
 - Switch on integer/string constants compiles to efficient dispatch;
   long if-else chains of function calls do not.
@@ -186,7 +186,7 @@ Forgetting to close the channel is the top cause of goroutine leaks
 ## Security Considerations
 
 Unbounded loops that process untrusted input (`for { read() }`) need a
-termination bound: max iterations, timeouts via context, or size caps —
+termination bound: max iterations, timeouts via context, or size caps,
 otherwise a hostile input becomes a DoS. See [21-security](../21-security/).
 
 ## Testing Strategy
@@ -196,12 +196,12 @@ Test branch boundaries, not just branches: for `classify`, test 299, 300,
 
 ## Interview Questions
 
-1. *How many loop constructs does Go have?* — One keyword, three forms;
+1. *How many loop constructs does Go have?*: One keyword, three forms;
    range over integers (1.22) and functions (1.23) are recent additions.
-2. *Why is map iteration order randomized?* — To prevent accidental
+2. *Why is map iteration order randomized?*: To prevent accidental
    dependence on hash order; deliberate runtime shuffling.
 3. *What changed about loop variables in Go 1.22, and what bug did it
-   fix?* — Per-iteration variables; the classic closure-capture bug. Know
+   fix?*: Per-iteration variables; the classic closure-capture bug. Know
    the pre-1.22 workaround (`v := v`).
 
 ## Practice Exercises
@@ -216,5 +216,5 @@ Test branch boundaries, not just branches: for `classify`, test 299, 300,
 ## Further Reading
 
 - [The Go spec: for statements](https://go.dev/ref/spec#For_statements)
-- [Range over function iterators](https://go.dev/blog/range-functions) — Go 1.23
-- [Go 1.22 release notes: loopvar](https://go.dev/doc/go1.22#language) — per-iteration loop variables
+- [Range over function iterators](https://go.dev/blog/range-functions): Go 1.23
+- [Go 1.22 release notes: loopvar](https://go.dev/doc/go1.22#language): per-iteration loop variables

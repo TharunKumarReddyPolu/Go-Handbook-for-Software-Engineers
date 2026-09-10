@@ -13,7 +13,7 @@ By the end of this section you can:
 - Read CPU, heap, and goroutine pprof profiles and act on them
 - Find and fix the usual culprits: allocations, lock contention, chatty I/O
 - Use escape analysis output to understand where your memory goes
-- Batch, pool, and cache with evidence — and know when NOT to
+- Batch, pool, and cache with evidence, and know when NOT to
 - Configure GC (GOGC/GOMEMLIMIT) and PGO deliberately
 
 ## Chapters
@@ -29,9 +29,9 @@ By the end of this section you can:
 
 `examples/` carries the worked measurements:
 
-- `examples/join/` — string building: O(n²) vs O(n), with the actual
+- `examples/join/`: string building: O(n²) vs O(n), with the actual
   output from this repo's CI-capable machine
-- `examples/profiling/` — a deliberately slow service handler with the
+- `examples/profiling/`: a deliberately slow service handler with the
   pprof workflow documented in code comments
 
 Run the benchmarks:

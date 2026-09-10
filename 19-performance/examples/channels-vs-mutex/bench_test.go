@@ -1,6 +1,6 @@
 // Counter structures compared: protect-one-word shows up as atomic,
 // protect-an-invariant as mutex, transfer-ownership as channel. The
-// benchmark proves the fit — see 19-performance/03-concurrency-performance.md.
+// benchmark proves the fit: see 19-performance/03-concurrency-performance.md.
 package main
 
 import (

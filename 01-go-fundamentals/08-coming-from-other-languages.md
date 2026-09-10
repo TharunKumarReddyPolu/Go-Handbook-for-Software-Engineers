@@ -3,7 +3,7 @@
 ## Why Does This Matter?
 
 Most engineers meet Go while fluent elsewhere. The fastest route to
-idiomatic Go is not learning new syntax — it is noticing which habits
+idiomatic Go is not learning new syntax: it is noticing which habits
 transfer, which must be unlearned, and why Go made the opposite choice.
 This chapter is the map.
 
@@ -25,7 +25,7 @@ This chapter is the map.
 The deepest mindset shift: **no exceptions**. In Java, a method's
 signature lies about its failure modes. In Go, `error` is a return value;
 *every* call site decides. Expect code to look more verbose and be far
-more predictable. Related: `null` practically disappears — pointers can be
+more predictable. Related: `null` practically disappears: pointers can be
 nil, but the zero values and `ok` idioms push nil checks to boundaries.
 
 ## Python → Go
@@ -56,10 +56,10 @@ is the static typing paying off in month three (refactoring without fear).
 | Multiple inheritance | embedding (no virtual dispatch) | Composition without the diamond |
 | Move semantics | value semantics + GC | Copying is safe and often fast |
 | Undefined behavior on races | data race = undefined, but `-race` detects it | Same danger, real tooling |
-| Header/impl split | none — single file per package unit | Builds are fast; duplication is fine |
+| Header/impl split | none: single file per package unit | Builds are fast; duplication is fine |
 
 C++ engineers over-apply escape-analysis intuitions ("pass by pointer to
-avoid the copy!") — Go's compiler often allocates less with clean value
+avoid the copy!"): Go's compiler often allocates less with clean value
 code than with defensive pointers. Measure before copying your old
 instincts (see [19-performance](../19-performance/)).
 
@@ -82,10 +82,10 @@ call site (`go f()`), not in the signature.
 
 ## What transfers beautifully
 
-- **Systems thinking**: ownership, lifetimes, invariants — all transfer.
+- **Systems thinking**: ownership, lifetimes, invariants: all transfer.
 - **Testing discipline**: table-driven tests will feel familiar if you
   used pytest/Jest parameterization.
-- **API design**: small surfaces, clear contracts — same goals.
+- **API design**: small surfaces, clear contracts: same goals.
 - **Debugging**: your process (hypothesize, bisect, verify) transfers;
   the tools change ([11-tooling](../11-tooling/)).
 
@@ -106,13 +106,13 @@ call site (`go f()`), not in the signature.
 ## Interview Questions
 
 1. *"You're a Python team lead; your team moves to Go. What are the first
-   three friction points?"* — Error handling verbosity, type declarations,
+   three friction points?"*: Error handling verbosity, type declarations,
    missing comprehensions; pair each with the payoff that follows.
 2. *"How do you handle 'checked exceptions' style flows without
-   exceptions?"* — errors as values, wrapping with `%w`, sentinel/domain
+   exceptions?"*: errors as values, wrapping with `%w`, sentinel/domain
    errors ([05-errors](../05-errors/)).
 3. *"A Java engineer writes a 5-level type hierarchy for a plugin system.
-   What do you suggest?"* — Small interface at the consumer, registered
+   What do you suggest?"*: Small interface at the consumer, registered
    implementations, embedding for shared code; show the refactor.
 
 ## Practice Exercises
@@ -128,6 +128,6 @@ call site (`go f()`), not in the signature.
 
 ## Further Reading
 
-- [Effective Go](https://go.dev/doc/effective_go) — read once early, again after a month of Go
-- [Go for JavaScript Developers](https://github.com/breo/go-for-javascript-developers) — community reference comparison
-- [Go wiki: ComeFrom sections](https://go.dev/wiki) — community notes on migrating from specific languages
+- [Effective Go](https://go.dev/doc/effective_go): read once early, again after a month of Go
+- [Go for JavaScript Developers](https://github.com/breo/go-for-javascript-developers): community reference comparison
+- [Go wiki: ComeFrom sections](https://go.dev/wiki): community notes on migrating from specific languages

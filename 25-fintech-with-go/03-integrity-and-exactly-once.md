@@ -30,18 +30,18 @@ Claims decompose like this:
 
 | Layer claims exactly-once | What it actually guarantees |
 |---|---|
-| Kafka transactions (EOS) | atomic produce across topics + consume offsets, for consumers reading committed data — within the Kafka boundary only |
-| Idempotent producer | no broker-side duplicates from client retries — again, one boundary |
-| "Our HTTP API is idempotent" | replays of the *same request* collapse — your *workflows* still span many calls |
-| DB transactions | atomicity within one database — no statement about the network outside |
+| Kafka transactions (EOS) | atomic produce across topics + consume offsets, for consumers reading committed data: within the Kafka boundary only |
+| Idempotent producer | no broker-side duplicates from client retries: again, one boundary |
+| "Our HTTP API is idempotent" | replays of the *same request* collapse: your *workflows* still span many calls |
+| DB transactions | atomicity within one database: no statement about the network outside |
 
 End-to-end exactly-once requires the *effect* (money moved, order
-recorded) to be deduplicated at its destination — that is idempotent
+recorded) to be deduplicated at its destination: that is idempotent
 consumers + idempotency claims (ch. 01), not a checkbox on a broker.
 The production default: **at-least-once delivery + idempotent
 processing + reconciliation**. Say it exactly that way in design docs.
 
-## Distributed transactions — the options, honestly ranked
+## Distributed transactions: the options, honestly ranked
 
 1. **Single DB transaction** (when both sides live in one database):
    the claim INSERT and the entry INSERT commit together. This is why
@@ -81,7 +81,7 @@ sequenceDiagram
 ```
 
 The relay is at-least-once (it may republish after a crash between
-publish and mark) — so *consumers are idempotent*, and the outbox rows
+publish and mark), so *consumers are idempotent*, and the outbox rows
 carry the same idempotency keys the API did. One key namespace from
 HTTP request through Kafka through the ledger claim: that thread is
 what makes the system debuggable.
@@ -112,14 +112,14 @@ func (r *Relay) Run(ctx context.Context) {
 }
 ```
 
-## Reconciliation — the discipline that closes the loop
+## Reconciliation: the discipline that closes the loop
 
 Invariants prevent drift; reconciliation *finds* it anyway. The
 standard flows:
 
 1. **Internal**: derived balances vs re-computed from entries (the
    ledger's replay test, run against production data on a schedule).
-2. **External**: your ledger vs the PSP's settlement report —
+2. **External**: your ledger vs the PSP's settlement report,
    every auth, capture, refund, and fee matched line by line. Mismatches
    become investigate items with SLAs; unmatched PSP records are money
    you don't know about.
@@ -151,7 +151,7 @@ func (r *Reconciler) DailySettlement(ctx context.Context, report []PSPLine) (*Re
 ```
 
 Reconciliation output is an operations surface with alerting (any
-non-empty mismatch report pages someone — see
+non-empty mismatch report pages someone: see
 [20-observability](../20-observability/)), not a nightly log nobody
 reads.
 
@@ -163,34 +163,34 @@ correlation IDs end to end. Requirements: tamper-evidence (hash chains
 or WORM storage for regulated environments), access control separate
 from business data access, retention per regulation. In Go terms:
 audit writes go through the same transactional boundary as the money
-movement — an audit trail written after the fact is a nice-to-have,
+movement: an audit trail written after the fact is a nice-to-have,
 not an audit trail.
 
 ## Common Mistakes
 
-- **Dual writes** (DB write + broker publish as two steps) — the outbox
+- **Dual writes** (DB write + broker publish as two steps): the outbox
   exists because this fails predictably; audit every `db.Write(); 
   kafka.Send()` pair in your codebase.
-- **Compensation as undo** — sagas compensate business-wise (refund,
+- **Compensation as undo**: sagas compensate business-wise (refund,
   not "un-post"), because some effects cannot undo; design
   compensations that are themselves idempotent and auditable.
-- **Retrying unknown outcomes** — ch. 01's cardinal rule; this chapter
+- **Retrying unknown outcomes**: ch. 01's cardinal rule; this chapter
   adds: the *resolution* (reconciliation query) is also a workflow with
   its own idempotency.
-- **Reconciliation as a report nobody owns** — unmatched items need
+- **Reconciliation as a report nobody owns**: unmatched items need
   assignees and SLAs; unowned reports rot into normalcy.
-- **Believing "we use Kafka transactions so we're exactly-once"** —
+- **Believing "we use Kafka transactions so we're exactly-once"**,
   re-read the teardown table; the boundary is the point.
 
 ## Idiomatic Go
 
 - One idempotency-key namespace per business operation, threaded from
   HTTP header through outbox row through Kafka header through ledger
-  claim — a single string field, documented in the envelope (18's
+  claim: a single string field, documented in the envelope (18's
   envelope pattern).
 - The relay and reconciler are long-running loops with ctx, bounded
-  batches, and structured logging — the stage-5 processor shape again.
-- Reconciliation results are plain structs with diff semantics — test
+  batches, and structured logging: the stage-5 processor shape again.
+- Reconciliation results are plain structs with diff semantics: test
   them like the ledger (property tests over injected drift).
 
 ## Performance Considerations
@@ -201,14 +201,14 @@ not an audit trail.
 - Reconciliation is a batch workload: run it off-peak, index on
   idempotency/auth IDs, and stream large reports rather than loading
   them.
-- The double-entry posting path remains the latency-critical one —
+- The double-entry posting path remains the latency-critical one,
   ch. 02's notes hold.
 
 ## Concurrency Considerations
 
 - Outbox relays racing: SKIP LOCKED (or per-relay ID sharding) prevents
   duplicate publish storms; duplicates are tolerated by idempotent
-  consumers regardless — defense in depth, both layers.
+  consumers regardless: defense in depth, both layers.
 - Claim store contention on hot keys (payment retries hammering the
   same key) is a per-key serialization point; bound with per-key rate
   limits ([21-security](../21-security/)).
@@ -236,17 +236,17 @@ not an audit trail.
 
 ## Interview Questions
 
-1. *Is exactly-once possible? Defend your answer at three layers.* —
+1. *Is exactly-once possible? Defend your answer at three layers.*,
    The teardown table; grade on boundary-awareness.
 2. *Design "payment accepted, then the event must reach 3 downstream
-   systems reliably."* — Outbox + relay + idempotent consumers; the
+   systems reliably."*: Outbox + relay + idempotent consumers; the
    follow-up "what if the relay dies mid-publish" separates the
    memorized from the understood.
 3. *Walk me through your first day after a PSP settlement mismatch.*
-   — Reconciliation flow, evidence, ownership, SLA; grade on treating
+  : Reconciliation flow, evidence, ownership, SLA; grade on treating
    it as operations, not archaeology.
-4. *Saga vs 2PC for a payment + inventory + shipping flow — decide and
-   justify.* — Saga for availability and auditability; compensation
+4. *Saga vs 2PC for a payment + inventory + shipping flow: decide and
+   justify.*: Saga for availability and auditability; compensation
    design; the 2PC discussion shows you know what you rejected.
 
 ## Practice Exercises
@@ -263,7 +263,7 @@ not an audit trail.
 
 ## Further Reading
 
-- [Stripe: idempotency keys](https://docs.stripe.com/api/idempotent_requests) — the workflow contract, again
-- [Microservices.io: transactional outbox](https://microservices.io/patterns/data/transactional-outbox.html) — the pattern reference
-- [Kafka: exactly-once semantics](https://www.confluent.io/blog/exactly-once-semantics-are-possible-heres-how-apache-kafka-does-it/) — what EOS does and does not cover, from the implementers
-- [Designing Data-Intensive Applications](https://dataintensive.net/) — ch. 7 and 9 for transactions and consistency
+- [Stripe: idempotency keys](https://docs.stripe.com/api/idempotent_requests): the workflow contract, again
+- [Microservices.io: transactional outbox](https://microservices.io/patterns/data/transactional-outbox.html): the pattern reference
+- [Kafka: exactly-once semantics](https://www.confluent.io/blog/exactly-once-semantics-are-possible-heres-how-apache-kafka-does-it/): what EOS does and does not cover, from the implementers
+- [Designing Data-Intensive Applications](https://dataintensive.net/): ch. 7 and 9 for transactions and consistency

@@ -20,7 +20,7 @@ type EvalResponse struct {
 }
 
 // NewHandler returns the HTTP layer. It logs once per failed request and
-// maps internal errors to safe responses — the boundary discipline from
+// maps internal errors to safe responses: the boundary discipline from
 // 05-errors applied to a tiny service.
 func NewHandler(logger *slog.Logger) http.Handler {
 	mux := http.NewServeMux()
