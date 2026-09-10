@@ -1,0 +1,34 @@
+# Binaries and build output
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+/bin/
+/dist/
+
+# Go coverage and profiling
+*.prof
+*.pprof
+*.test.out
+coverage.out
+coverage.html
+
+# Editors and OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db
+
+# Local agent state
+.freebuff/
+
+# Local environment files
+.env
+.env.local
+
+# Kubernetes local secrets
+*.kubeconfig
