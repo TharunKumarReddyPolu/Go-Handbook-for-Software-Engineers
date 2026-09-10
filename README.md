@@ -36,7 +36,6 @@ Every chapter follows the same contract:
 - [How examples are verified](#how-examples-are-verified)
 - [Reading version-specific content](#reading-version-specific-content)
 - [Contributing and community](#contributing-and-community)
-- [About the author](#about-the-author)
 
 ## Who this is for
 
@@ -269,16 +268,3 @@ and the verification commands every PR must pass. By participating you
 agree to the [Code of Conduct](CODE_OF_CONDUCT.md). Good first
 contributions: fixing an inaccuracy (file an issue with the quote), adding
 an exercise, improving a diagram.
-
-## About the author
-
-Created and maintained by [Tharun Kumar Reddy Polu](https://tharunpolu.com),
-[GitHub](https://github.com/TharunKumarReddyPolu).
-
-This handbook is a sibling project of the
-[DSA Handbook for Coding Interviews](https://github.com/TharunKumarReddyPolu/DSA-Handbook-for-Coding-Interviews).
-Same philosophy: structured, practical, depth-first, and free.
-
-If this handbook helps you, a star helps other engineers find it.
-
-Licensed under [Apache-2.0](LICENSE).
