@@ -1,28 +1,69 @@
 # 14 · Backend Development
 
-**Status: outline: chapters are planned work (see
-[ROADMAP.md](../ROADMAP.md)).** The structure question is answered at
-interview depth in
-[26 §4](../26-go-interview-preparation/04-senior-scenarios.md); the
-error-boundary and httptest layers already exist in
-[05 §2](../05-errors/02-error-design.md) and
-[10 §2](../10-testing/02-doubles-and-httptest.md).
+**Status: in depth: 5 chapters + a complete layered service example.**
+This section composes the API layer of [12](../12-http-networking/)
+and the store discipline of [13](../13-databases/) into the production
+layout, and completes the backend phase of the ROADMAP. Error
+boundaries come from [05 §2](../05-errors/02-error-design.md); the
+shutdown lifecycle from [12 §5](../12-http-networking/05-graceful-shutdown.md).
 
-## Planned chapters
+## Chapters
 
-1. **API architecture**: layering (domain / service / transport),
-   dependency direction, package layout
-   (cmd/internal shape from [01 §3](../01-go-fundamentals/03-program-structure.md))
-2. **Configuration**: env-first loading, validation, the zero-value
-   rules from [01 §5](../01-go-fundamentals/05-zero-values.md)
-3. **Dependency injection without frameworks**: constructor wiring,
-   functional options, consumer-side interfaces
-4. **Validation & authn/authz**: boundary validation patterns;
-   middleware composition from [12](../12-http-networking/) (planned)
-5. **Logging, metrics & tracing in the service**: the request-scoped
-   plumbing ([20-observability](../20-observability/) pairs)
-6. **Graceful shutdown & health**: full lifecycle
-7. **Secrets & feature flags**: boundary handling
-8. **Complete production-style example**: a small service assembling
-   every chapter: one codebase, fully tested, the capstone's skeleton
-   ([28-projects](../28-projects/))
+| # | Chapter | Focus |
+|---|---|---|
+| 1 | [Service layout & layering](01-service-layout.md) | domain-shaped packages, dependency direction, the request's path through layers |
+| 2 | [Configuration & secrets](02-configuration-and-secrets.md) | env-first loading, boot-time validation, the redaction seam |
+| 3 | [Wiring & dependency injection](03-wiring-and-dependency-injection.md) | the explicit graph in main, constructor escalation, init() demotion, the extracted run loop |
+| 4 | [Validation, authn & authz](04-authn-authz-and-validation.md) | the three gates, coarse vs fine authz, the 403-vs-404 decision |
+| 5 | [Logging, health & flags](05-observability-health-flags.md) | request-scoped slog, liveness vs readiness, flags as the config boundary |
+
+## The example
+
+`examples/service/` is the layout in miniature, zero setup to run:
+
+```
+main.go                       # wiring only: config, constructors, run
+internal/
+├── config/                   # ch 2: typed, validated, redacting loader
+│   └── config.go (+ tests)
+├── platform/                 # ch 1's rule: knows no domain
+│   ├── httpjson/             # 12 §3's boundary helpers
+│   └── httpmw/               # 12 §2's chain + scoped logger (ch 5)
+└── payments/                 # the domain
+    ├── service.go            # decisions; owns PaymentStore interface
+    ├── memory.go             # STORE=memory implementation
+    ├── http.go               # transport: wire types, policy table, error map
+    └── service_test.go       # both tiers: domain + full-chain contract
+```
+
+The test suite (~15 cases) pins the contracts each chapter promised:
+batched validation errors (ch 2), the ownership matrix with the
+service-tier `ErrForbidden` → transport 404 mapping (ch 4), the
+status-code contract across the whole chain (401/400/422/201), and
+the scoped-logger request ID reaching the response header (ch 5).
+
+```bash
+go test ./14-backend-development/...   # runs the example's tests
+go run ./14-backend-development/examples/service   # then curl :8080/livez
+```
+
+The Postgres store is deliberately not wired here: 13-databases's
+`bank` package carries the full SQL implementation with its two-tier
+tests, and wiring it is the capstone's exercise
+([28-projects](../28-projects/)). The config switch
+(`STORE=postgres`) documents exactly where it lands.
+
+## Progress checklist
+
+- [x] Layered layout with one-way dependency direction
+- [x] Configuration: env-first, batched validation, secret redaction
+- [x] Wiring: explicit graph, constructor escalation, extracted run loop
+- [x] Validation vs authn vs authz: the three gates
+- [x] Coarse (middleware) vs fine (service) authorization
+- [x] Request-scoped logging plumbing
+- [x] Liveness vs readiness with tiered dependency probes
+- [x] Feature flags as the config/behavior boundary
+- [x] Complete runnable example with two-tier tests
+- [ ] Metrics and tracing wiring (20-observability)
+- [ ] Token verification mechanics (21-security)
+- [ ] Container/CI/CD packaging (22-production-go)

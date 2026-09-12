@@ -32,7 +32,7 @@ Last updated: 2026-09-12
 
 - [x] 12-http-networking: complete (5 chapters: routing, middleware, JSON, clients, shutdown + runnable stdlib-only API example)
 - [x] 13-databases: complete (5 chapters: database/sql, transactions, pooling, repositories, caching + two-tier bank example)
-- [ ] 14-backend-development: outline ready
+- [x] 14-backend-development: complete (5 chapters: layout, config, wiring, authz, observability seams + layered service example; backend phase finished)
 
 ## Phase 6: Distributed Systems
 
