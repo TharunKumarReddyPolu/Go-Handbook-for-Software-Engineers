@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="assets/banner.svg" alt="Go Handbook for Software Engineers" width="900"/>
+  <img width="1608" height="483" alt="go-handbook" src="https://github.com/user-attachments/assets/ba12a0dd-6253-469c-ab63-950a73347b46" />
 </div>
 
 # Go Handbook for Software Engineers
