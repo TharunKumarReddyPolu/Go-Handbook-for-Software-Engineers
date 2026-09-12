@@ -1,28 +1,55 @@
 # 12 · HTTP & Networking
 
-**Status: outline: chapters are planned work (see
-[ROADMAP.md](../ROADMAP.md)).** Boundary patterns already demonstrated
-in [05 §2](../05-errors/02-error-design.md) and
-[10 §2 httptest](../10-testing/02-doubles-and-httptest.md); shutdown in
-[08 §3 context](../08-concurrency/03-context.md).
+**Status: in depth: 5 chapters + a runnable stdlib-only API example.**
+Standard library first; frameworks discussed only where they earn their
+place. Error mapping builds on [05 §2](../05-errors/02-error-design.md);
+httptest mechanics live in [10 §2](../10-testing/02-doubles-and-httptest.md);
+context rules in [08 §3](../08-concurrency/03-context.md).
 
-## Planned chapters: standard library first, frameworks only where
-useful
+## Chapters
 
-1. **Handlers & the request lifecycle**: ServeMux patterns (incl.
-   method/wildcard routing), handler composition
-2. **Middleware**: the wrapping pattern, ordering, context
-   propagation; a full middleware chain worked example
-3. **JSON & REST APIs**: encoding hygiene, validation at the boundary,
-   error mapping from [05 §2](../05-errors/02-error-design.md)
-4. **HTTP clients**: transport pooling, timeouts (every level),
-   retries with idempotency, connection lifetime
-5. **TLS**: servers, clients, internal mTLS
-6. **Cookies, authn & authz**: session patterns, OAuth2/JWT pitfalls
-   (pairs with [21-security](../21-security/))
-7. **CORS**: what the browser actually enforces
-8. **Rate limiting**: per-route/per-source; extends
-   [08 §5](../08-concurrency/05-patterns.md)
-9. **Health, readiness & liveness**: Kubernetes probes done right
-10. **Graceful shutdown**: full server lifecycle; extends
-    [08 §3](../08-concurrency/03-context.md)
+| # | Chapter | Focus |
+|---|---|---|
+| 1 | [Handlers & routing](01-handlers-and-routing.md) | Go 1.22 ServeMux patterns, handler discipline, what still needs a framework |
+| 2 | [Middleware](02-middleware.md) | the wrapping pattern, Chain, ordering rules, stdlib TimeoutHandler |
+| 3 | [JSON & REST APIs](03-json-and-rest-apis.md) | wire types vs domain types, decode/encode helpers, status-code decisions |
+| 4 | [HTTP clients & timeouts](04-clients-and-timeouts.md) | the knob map, pooling judgment, idempotent retries |
+| 5 | [Graceful shutdown](05-graceful-shutdown.md) | the full lifecycle, readiness, dependency close order |
+
+## The example
+
+`examples/api/` is a payments API composed entirely from the standard
+library: mux routing with Go 1.22 patterns, a middleware chain
+(request ID, logging, recover), bounded handlers via
+`http.TimeoutHandler`, the JSON helpers from chapter 3, error mapping
+from [05-errors](../05-errors/), and the graceful-shutdown lifecycle
+from chapter 5.
+
+Its tests cover the layers independently: handler table tests
+(`httptest.NewRequest` + `httptest.NewRecorder`, no ports), middleware
+behavior (panic → 500, no rewrite after commit), method-mismatch 405s,
+readiness draining, and an in-process shutdown test proving an
+in-flight request completes after `Shutdown` begins. The store test is
+race-detector bait on purpose.
+
+Deliberately out of scope here: authentication details, rate-limiting
+implementations, and TLS configuration live in
+[21-security](../21-security/) (outline until written); observability
+wiring in [20-observability](../20-observability/); the full
+production service layout in [14-backend-development](../14-backend-development/).
+
+## Progress checklist
+
+- [x] ServeMux patterns, method matching, wildcards, PathValue
+- [x] Handler discipline and error mapping at the boundary
+- [x] Middleware: shapes, chain construction, ordering, recovery
+- [x] stdlib TimeoutHandler and MaxBytesHandler
+- [x] JSON: wire types, strict decoding, status codes
+- [x] Clients: transport cloning, the timeout knob map, pooling
+- [x] Retries with idempotency judgment
+- [x] Graceful shutdown: lifecycle, readiness, close ordering
+- [x] Runnable example with layered tests
+- [ ] TLS servers and internal mTLS (21-security)
+- [ ] Cookies, sessions, OAuth2/JWT (21-security)
+- [ ] CORS specifics (21-security)
+- [ ] Rate limiting implementation (08 §5 has the primitives)

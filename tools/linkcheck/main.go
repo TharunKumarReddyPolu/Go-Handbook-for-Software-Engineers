@@ -78,30 +78,51 @@ func main() {
 }
 
 // linksIn reads a Markdown file and returns every relative link target.
+// Lines inside fenced code blocks (``` or ~~~) are skipped: Go code
+// legitimately contains [i](h) shapes (indexing followed by a call)
+// that the inline-link regex would otherwise misread.
 func linksIn(path string) ([]string, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
 	var targets []string
-	for _, match := range linkPattern.FindAllStringSubmatch(string(data), -1) {
-		raw := match[1]
-		// Strip anchors and resolve URL escapes such as %20.
-		if idx := strings.IndexByte(raw, '#'); idx >= 0 {
-			raw = raw[:idx]
-		}
-		decoded, err := url.PathUnescape(raw)
-		if err != nil {
-			decoded = raw
-		}
-		// Skip empty anchors (#), external links, and mailto links.
-		if decoded == "" ||
-			strings.HasPrefix(decoded, "http://") ||
-			strings.HasPrefix(decoded, "https://") ||
-			strings.HasPrefix(decoded, "mailto:") {
+	inFence := false
+	var fenceMarker string
+	for _, line := range strings.Split(string(data), "\n") {
+		trimmed := strings.TrimSpace(line)
+		if strings.HasPrefix(trimmed, "```") || strings.HasPrefix(trimmed, "~~~") {
+			marker := strings.Repeat(string(trimmed[0]), 3)
+			if !inFence {
+				inFence = true
+				fenceMarker = marker
+			} else if strings.HasPrefix(trimmed, fenceMarker) {
+				inFence = false
+			}
 			continue
 		}
-		targets = append(targets, decoded)
+		if inFence {
+			continue
+		}
+		for _, match := range linkPattern.FindAllStringSubmatch(line, -1) {
+			raw := match[1]
+			// Strip anchors and resolve URL escapes such as %20.
+			if idx := strings.IndexByte(raw, '#'); idx >= 0 {
+				raw = raw[:idx]
+			}
+			decoded, err := url.PathUnescape(raw)
+			if err != nil {
+				decoded = raw
+			}
+			// Skip empty anchors (#), external links, and mailto links.
+			if decoded == "" ||
+				strings.HasPrefix(decoded, "http://") ||
+				strings.HasPrefix(decoded, "https://") ||
+				strings.HasPrefix(decoded, "mailto:") {
+				continue
+			}
+			targets = append(targets, decoded)
+		}
 	}
 	return targets, nil
 }

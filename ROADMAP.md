@@ -30,7 +30,7 @@ Last updated: 2026-09-12
 
 ## Phase 5: Backend
 
-- [ ] 12-http-networking: outline ready
+- [x] 12-http-networking: complete (5 chapters: routing, middleware, JSON, clients, shutdown + runnable stdlib-only API example)
 - [ ] 13-databases: outline ready
 - [ ] 14-backend-development: outline ready
 
