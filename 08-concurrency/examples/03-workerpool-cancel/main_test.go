@@ -65,16 +65,33 @@ func TestRun_CancellationStopsPromptly(t *testing.T) {
 	cancel()
 	wg.Wait()
 
-	if after := runtime.NumGoroutine(); after > before {
-		t.Errorf("goroutines before=%d after=%d: cancellation leaked", before, after)
-	}
+	assertGoroutinesSettled(t, before)
 }
 
 func TestRun_NoGoroutineLeak_HappyPath(t *testing.T) {
 	before := runtime.NumGoroutine()
 	wg := drainAsync(Run(context.Background(), feed(okJob(1), okJob(2)), 4))
 	wg.Wait()
-	if after := runtime.NumGoroutine(); after > before {
-		t.Errorf("goroutines before=%d after=%d: leak", before, after)
+	assertGoroutinesSettled(t, before)
+}
+
+// assertGoroutinesSettled retries the goroutine count briefly: a
+// worker that has finished its work may still be microseconds from
+// exiting when a channel closes, so a single sample races (CI-caught).
+// A real leak never settles; a scheduling artifact settles fast.
+func assertGoroutinesSettled(t *testing.T, before int) {
+	t.Helper()
+	deadline := time.Now().Add(2 * time.Second)
+	for {
+		after := runtime.NumGoroutine()
+		if after <= before {
+			return
+		}
+		if time.Now().After(deadline) {
+			t.Errorf("goroutines before=%d after=%d: leak", before, after)
+			return
+		}
+		runtime.Gosched()
+		time.Sleep(time.Millisecond)
 	}
 }
