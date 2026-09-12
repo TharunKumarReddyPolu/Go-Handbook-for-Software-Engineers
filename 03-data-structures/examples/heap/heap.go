@@ -9,7 +9,6 @@ package heap
 type Heap[T any] struct {
 	data []T
 	less func(a, b T) bool
-	idx  map[*T]int // live only when constructed with WithIndex
 }
 
 func New[T any](less func(a, b T) bool) *Heap[T] {
