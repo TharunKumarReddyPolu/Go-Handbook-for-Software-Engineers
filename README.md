@@ -30,9 +30,9 @@ go test ./08-concurrency/... -race   # every example in the repo is CI-verified
 | | |
 |---|---|
 | **Depth before breadth** | A topic is not "covered" until it answers: what is it, why does it exist, how does it work, when should I *not* use it, what goes wrong in production, and how would I debug it? |
-| **Everything compiles** | 23 example packages pass `go build ./...`, `go vet`, `go test -race`, and staticcheck on every push |
+| **Everything compiles** | 24 example packages pass `go build ./...`, `go vet`, `go test -race`, and staticcheck on every push |
 | **No copying** | Original explanations; official docs are linked under *Further Reading*, never reproduced |
-| **Honest status** | 14 of 28 sections fully written; the other 14 have complete outlines tracked in [ROADMAP.md](ROADMAP.md) |
+| **Honest status** | 15 of 28 sections fully written; the other 13 have complete outlines tracked in [ROADMAP.md](ROADMAP.md) |
 
 Every chapter follows the same contract:
 
@@ -230,7 +230,7 @@ written: see [ROADMAP.md](ROADMAP.md) for status and ordering.
 ### Backend and APIs
 
 - **[12 HTTP & Networking](12-http-networking/)** [In depth]: stdlib-first HTTP: Go 1.22 routing, middleware, JSON APIs, clients and timeouts, graceful shutdown, with a runnable API example
-- **[13 Databases](13-databases/)** [Outline]: database/sql, Postgres, transactions, pooling, Redis, caching
+- **[13 Databases](13-databases/)** [In depth]: database/sql, transactions and isolation, pooling, repositories, two-tier testing, Redis caching
 - **[14 Backend Development](14-backend-development/)** [Outline]: layering, configuration, DI, validation, a complete production-style service
 
 ### Distributed systems
