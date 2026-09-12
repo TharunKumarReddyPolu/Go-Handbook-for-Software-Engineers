@@ -1,33 +1,45 @@
 # 02 · The Go Language
 
-**Status: outline: chapters are planned work (see
-[ROADMAP.md](../ROADMAP.md)).** The topic map below is complete and
-sequenced; the flagship chapters cross-reference it where they already
-cover material.
+**Status: complete.** Eight chapters with a compiled, tested example
+package. Every chapter follows the standard contract (see
+[CONTRIBUTING](../CONTRIBUTING.md)).
 
-## Planned chapters
+The core data model of Go: how values, headers, and pointers really
+behave, and what that means for correctness, performance, and
+concurrency. This is the section to read slowly; nearly every later
+chapter assumes its mental models.
 
-1. **Arrays & slices**: header semantics, growth, the backing-array
-   sharing model; full treatment previewed in
-   [01-fundamentals ch. 4](../01-go-fundamentals/04-variables-types-constants.md)
-2. **Maps**: invariants, iteration, the two niche sync.Map shapes
-3. **Strings, runes & bytes**: UTF-8 reality, conversion costs
-4. **Structs**: tags, comparison, zero-value design
-5. **Pointers**: value vs pointer semantics; decision rules in
-   [FAQ](../FAQ.md)
-6. **Methods & method sets**: receiver rules, interface satisfaction
-7. **Interfaces & embedding**: internals of the (type, value) pair;
-   the nil traps from
-   [08-faq-notes](../08-concurrency/08-faq-notes.md)
-8. **Type assertions & switches**: safe extraction patterns
-9. **Function types, closures & variadics**: capture semantics
-10. **Multiple & named returns**: the shadowing traps
+## Chapters
 
-## Coverage notes
+1. **[Arrays & slices](01-arrays-and-slices.md)**: header semantics,
+   growth, the backing-array sharing model, aliasing and the leak
+2. **[Maps](02-maps.md)**: invariants, iteration randomness,
+   addressability, nil maps, the sync.Map pointer
+3. **[Strings, runes & bytes](03-strings-runes-bytes.md)**: UTF-8
+   reality, indexing vs ranging, the string vs []byte table
+4. **[Structs](04-structs.md)**: zero-value design, tags,
+   comparability, embedding
+5. **[Pointers & receivers](05-pointers-and-receivers.md)**: value vs
+   pointer semantics, method sets, escape analysis primer
+6. **[Interfaces & embedding](06-interfaces-and-embedding.md)**: the
+   two-word model, implicit satisfaction, the nil trap, decorators
+7. **[Function types, closures & variadics](07-closures-functions.md)**:
+   capture semantics, middleware, functional options
+8. **[Multiple & named returns](08-multiple-returns.md)**: tuple
+   unpacking, naked returns, the shadowing trap, defer-repair
 
-Every chapter answers the standard contract (see
-[CONTRIBUTING](../CONTRIBUTING.md)): why it exists, how it works,
-common mistakes, performance/concurrency/security notes, testing,
-interview questions, exercises, further reading. Memory/reference
-semantics chapters include diagrams; the string vs []byte and
-value-receiver vs pointer-receiver comparisons land as tables.
+## Runnable example
+
+[examples/seqops](examples/seqops/): generic chunking (aliasing and
+copy variants, each with a test asserting the sharing contract),
+in-place vs allocating filters, and rune-safe truncation, including
+the test that proves rune-level truncation splits ZWJ emoji families.
+
+```bash
+go test ./02-go-language/... -v
+```
+
+Cross-references: slice memory behavior pairs with
+[09-memory-runtime](../09-memory-runtime/README.md); interface design
+philosophy (consumer-side, small interfaces, DI) is in
+[04-functions-methods-interfaces](../04-functions-methods-interfaces/README.md).

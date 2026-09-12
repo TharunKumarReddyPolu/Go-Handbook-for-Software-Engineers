@@ -4,12 +4,12 @@ The handbook grows in phases. This file tracks what is done, what is next,
 and in what order remaining sections will be written. Progress checklists
 also live inside each section's README; this file is the top-level view.
 
-Last updated: 2026-09-09
+Last updated: 2026-09-12
 
 ## Phase 1: Fundamentals
 
 - [x] 01-go-fundamentals: complete (7 chapters, compiled examples, transition guide)
-- [ ] 02-go-language: outline ready, chapters next
+- [x] 02-go-language: complete (8 chapters, seqops example package with tests)
 - [ ] 03-data-structures: outline ready
 - [ ] 04-functions-methods-interfaces: outline ready
 
@@ -69,7 +69,7 @@ Last updated: 2026-09-09
 
 ## Planned order for remaining sections
 
-1. 02-go-language, 03-data-structures, 04-functions-methods-interfaces (Phase 1 finish)
+1. 02-go-language (done), 03-data-structures, 04-functions-methods-interfaces (Phase 1 finish)
 2. 06-packages-modules, 07-generics
 3. 12-http-networking, 13-databases, 14-backend-development
 4. 09-memory-runtime (pairs with 19-performance)
