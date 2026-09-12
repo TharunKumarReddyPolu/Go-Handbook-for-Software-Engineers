@@ -16,8 +16,8 @@ Last updated: 2026-09-12
 ## Phase 2: Core Go
 
 - [x] 05-errors: complete (2 chapters, examples with tests)
-- [ ] 06-packages-modules: outline ready
-- [ ] 07-generics: outline ready (Go 1.27 generic methods noted)
+- [x] 06-packages-modules: complete (6 chapters: design, modules, multi-repo, hygiene, reproducible builds, semver)
+- [x] 07-generics: complete (6 chapters, genlib example with instantiation-table tests, Go 1.27 baseline)
 
 ## Phase 3: Concurrency
 
@@ -70,7 +70,7 @@ Last updated: 2026-09-12
 ## Planned order for remaining sections
 
 1. 02-go-language (done), 03-data-structures (done), 04-functions-methods-interfaces (done: Phase 1 finished)
-2. 06-packages-modules, 07-generics
+2. 06-packages-modules (done), 07-generics (done)
 3. 12-http-networking, 13-databases, 14-backend-development
 4. 09-memory-runtime (pairs with 19-performance)
 5. 15-microservices, 16-distributed-systems, 17-messaging

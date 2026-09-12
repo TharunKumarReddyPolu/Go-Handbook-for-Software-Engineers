@@ -15,7 +15,7 @@
 
 </div>
 
-> **TL;DR:** 28 sections organized into 7 learning paths, 62 fully written chapters with compiled, CI-verified examples, and honest progress tracking for the rest. Not another syntax tutorial: it also covers how Go behaves under load, why the runtime does what it does, how to structure a service you can page someone about at 3 a.m., and how to design distributed and financial systems with the tools Go gives you.
+> **TL;DR:** 28 sections organized into 7 learning paths, 74 fully written chapters with compiled, CI-verified examples, and honest progress tracking for the rest. Not another syntax tutorial: it also covers how Go behaves under load, why the runtime does what it does, how to structure a service you can page someone about at 3 a.m., and how to design distributed and financial systems with the tools Go gives you.
 
 **Try it in 30 seconds** (Go 1.27+):
 
@@ -32,7 +32,7 @@ go test ./08-concurrency/... -race   # every example in the repo is CI-verified
 | **Depth before breadth** | A topic is not "covered" until it answers: what is it, why does it exist, how does it work, when should I *not* use it, what goes wrong in production, and how would I debug it? |
 | **Everything compiles** | 22 example packages pass `go build ./...`, `go vet`, `go test -race`, and staticcheck on every push |
 | **No copying** | Original explanations; official docs are linked under *Further Reading*, never reproduced |
-| **Honest status** | 11 of 28 sections fully written; the other 17 have complete outlines tracked in [ROADMAP.md](ROADMAP.md) |
+| **Honest status** | 13 of 28 sections fully written; the other 15 have complete outlines tracked in [ROADMAP.md](ROADMAP.md) |
 
 Every chapter follows the same contract:
 
@@ -205,7 +205,7 @@ Sections marked **[Outline]** have a complete topic map and are being
 written: see [ROADMAP.md](ROADMAP.md) for status and ordering.
 
 <details>
-<summary><b>Browse all 28 sections</b> (11 in depth, 17 outlined)</summary>
+<summary><b>Browse all 28 sections</b> (13 in depth, 15 outlined)</summary>
 
 ### Foundations
 
@@ -217,8 +217,8 @@ written: see [ROADMAP.md](ROADMAP.md) for status and ordering.
 ### Core Go
 
 - **[05 Error Handling](05-errors/)** [In depth]: errors are values, wrapping, sentinel and domain errors, retryability, HTTP mapping, logging
-- **[06 Packages & Modules](06-packages-modules/)** [Outline]: package design, visibility, modules, workspaces, reproducible builds
-- **[07 Generics](07-generics/)** [Outline]: type parameters, constraints, when generics help and hurt (includes Go 1.27 generic methods)
+- **[06 Packages & Modules](06-packages-modules/)** [In depth]: package design, visibility, modules, workspaces, reproducible builds
+- **[07 Generics](07-generics/)** [In depth]: type parameters, constraints, when generics help and hurt (includes Go 1.27 generic methods)
 - **[08 Concurrency](08-concurrency/)** [In depth]: goroutines, channels, context, sync primitives, patterns, pitfalls, race detection; examples progress from toy to production
 - **[09 Memory & Runtime](09-memory-runtime/)** [Outline]: stack vs heap, escape analysis, GC, scheduler
 
