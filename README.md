@@ -15,7 +15,7 @@
 
 </div>
 
-> **TL;DR:** 28 sections organized into 7 learning paths, 55 fully written chapters with compiled, CI-verified examples, and honest progress tracking for the rest. Not another syntax tutorial: it also covers how Go behaves under load, why the runtime does what it does, how to structure a service you can page someone about at 3 a.m., and how to design distributed and financial systems with the tools Go gives you.
+> **TL;DR:** 28 sections organized into 7 learning paths, 62 fully written chapters with compiled, CI-verified examples, and honest progress tracking for the rest. Not another syntax tutorial: it also covers how Go behaves under load, why the runtime does what it does, how to structure a service you can page someone about at 3 a.m., and how to design distributed and financial systems with the tools Go gives you.
 
 **Try it in 30 seconds** (Go 1.27+):
 
@@ -30,9 +30,9 @@ go test ./08-concurrency/... -race   # every example in the repo is CI-verified
 | | |
 |---|---|
 | **Depth before breadth** | A topic is not "covered" until it answers: what is it, why does it exist, how does it work, when should I *not* use it, what goes wrong in production, and how would I debug it? |
-| **Everything compiles** | 20 example packages pass `go build ./...`, `go vet`, `go test -race`, and staticcheck on every push |
+| **Everything compiles** | 22 example packages pass `go build ./...`, `go vet`, `go test -race`, and staticcheck on every push |
 | **No copying** | Original explanations; official docs are linked under *Further Reading*, never reproduced |
-| **Honest status** | 10 of 28 sections fully written; the other 18 have complete outlines tracked in [ROADMAP.md](ROADMAP.md) |
+| **Honest status** | 11 of 28 sections fully written; the other 17 have complete outlines tracked in [ROADMAP.md](ROADMAP.md) |
 
 Every chapter follows the same contract:
 
@@ -205,14 +205,14 @@ Sections marked **[Outline]** have a complete topic map and are being
 written: see [ROADMAP.md](ROADMAP.md) for status and ordering.
 
 <details>
-<summary><b>Browse all 28 sections</b> (10 in depth, 18 outlined)</summary>
+<summary><b>Browse all 28 sections</b> (11 in depth, 17 outlined)</summary>
 
 ### Foundations
 
 - **[01 Go Fundamentals](01-go-fundamentals/)** [In depth]: toolchain, program structure, variables and types, zero values, control flow, defer/panic/recover, coming from other languages
 - **[02 The Go Language](02-go-language/)** [In depth]: arrays, slices, maps, strings and runes, structs, pointers, methods, interfaces, embedding
 - **[03 Data Structures](03-data-structures/)** [In depth]: built-ins and idiomatic implementations, complexity, memory behavior
-- **[04 Functions, Methods & Interfaces](04-functions-methods-interfaces/)** [Outline]: method sets, small interfaces, composition over inheritance, dependency inversion
+- **[04 Functions, Methods & Interfaces](04-functions-methods-interfaces/)** [In depth]: method sets, small interfaces, composition over inheritance, dependency inversion
 
 ### Core Go
 

@@ -1,29 +1,47 @@
 # 04 · Functions, Methods & Interfaces
 
-**Status: outline: chapters are planned work (see
-[ROADMAP.md](../ROADMAP.md)).** Interview-level summaries already exist
-in [26 §2](../26-go-interview-preparation/02-intermediate.md).
+**Status: complete.** Seven chapters plus the runnable `di` example
+package. Every chapter follows the standard contract (see
+[CONTRIBUTING](../CONTRIBUTING.md)).
 
-## Planned chapters
+Go's approach to abstraction: signatures as contracts, methods with
+honest receiver rules, tiny consumer-side interfaces, and composition
+replacing inheritance. The section's centerpiece is the design clinic
+(chapter 4), which builds the same feature three ways from
+class-habit Go to idiomatic Go.
 
-1. **Functions**: signatures as contracts, first-class function types,
-   closures and capture semantics
-2. **Methods & method sets**: value vs pointer receivers (decision
-   rules), promotion through embedding
-3. **Interfaces**: implicit satisfaction, the (type, value) internals,
-   small-interface philosophy, composition (`io.ReaderWriter` shapes)
-4. **BAD → BETTER → IDIOMATIC design clinic**: the same feature built
-   three ways: class-hierarchy Go, pragmatic Go, idiomatic Go
-5. **Dependency inversion in Go**: consumer-side interfaces vs
-   Java-style DI containers; functional options
-6. **Constructors & invariants**: `NewX` conventions, zero-value-first
-   design from [05-zero-values](../01-go-fundamentals/05-zero-values.md)
-7. **Composition over inheritance**: why Go dropped class hierarchies,
-   and the embedding patterns that replace them
+## Chapters
 
-## Standing cross-references
+1. **[Functions: signatures as contracts](01-functions-as-contracts.md)**:
+   what a signature promises, the three dependency styles, closures at
+   seams
+2. **[Methods & method sets](02-methods-and-method-sets.md)**: the
+   per-type receiver rule, promotion, method values vs expressions
+3. **[Interfaces: the philosophy](03-interfaces-philosophy.md)**:
+   consumer-side definition, small interfaces, when generics replace
+   them
+4. **[Design clinic](04-design-clinic.md)**: the same feature built
+   BAD, BETTER, and IDIOMATIC, with the generalizable checklist
+5. **[Dependency inversion](05-dependency-inversion.md)**: constructor
+   injection, functional options, wiring packages, no DI container
+6. **[Constructors & invariants](06-constructors-and-invariants.md)**:
+   zero-value-first design, the NewX gate, Parse/New/Must
+7. **[Composition over inheritance](07-composition-over-inheritance.md)**:
+   why Go dropped class hierarchies, the four replacement patterns
 
-- The errors section demonstrates interface-first design against
-  transport layers: [05 §2](../05-errors/02-error-design.md)
-- The Kafka client seam is dependency inversion applied:
-  [18 §2](../18-kafka-with-go/02-go-clients.md)
+## Runnable example
+
+[examples/di](examples/di/): the clinic's UserService with inline fakes
+(needing no mock library), a validation-table domain type, injected
+clock, and tests proving storage failures propagate while notification
+failures stay best-effort.
+
+```bash
+go test ./04-functions-methods-interfaces/... -v
+```
+
+Standing cross-references: the errors section demonstrates
+interface-first design against transport layers
+([05-errors/02](../05-errors/02-error-design.md)); the Kafka client
+seam is dependency inversion applied
+([18/02](../18-kafka-with-go/02-go-clients.md)).

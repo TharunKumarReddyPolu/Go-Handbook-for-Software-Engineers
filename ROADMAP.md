@@ -11,7 +11,7 @@ Last updated: 2026-09-12
 - [x] 01-go-fundamentals: complete (7 chapters, compiled examples, transition guide)
 - [x] 02-go-language: complete (8 chapters, seqops example package with tests)
 - [x] 03-data-structures: complete (9 chapters, dsbench + ring + lru examples with tests)
-- [ ] 04-functions-methods-interfaces: outline ready
+- [x] 04-functions-methods-interfaces: complete (7 chapters, design clinic + di example)
 
 ## Phase 2: Core Go
 
@@ -69,7 +69,7 @@ Last updated: 2026-09-12
 
 ## Planned order for remaining sections
 
-1. 02-go-language (done), 03-data-structures (done), 04-functions-methods-interfaces (Phase 1 finish)
+1. 02-go-language (done), 03-data-structures (done), 04-functions-methods-interfaces (done: Phase 1 finished)
 2. 06-packages-modules, 07-generics
 3. 12-http-networking, 13-databases, 14-backend-development
 4. 09-memory-runtime (pairs with 19-performance)
