@@ -1,27 +1,61 @@
 # 15 · Microservices
 
-**Status: outline: chapters are planned work (see
-[ROADMAP.md](../ROADMAP.md)).** The decision question is answered in
+**Status: in depth: 5 chapters + the resilience quartet example.**
+Phase 6 begins here. The decision question is summarized from
 [26 §4](../26-go-interview-preparation/04-senior-scenarios.md); the
-event backbone in [17-18](../18-kafka-with-go/01-kafka-concepts.md).
+event backbone is [18-kafka-with-go](../18-kafka-with-go/); the
+financial-grade saga/outbox builds are
+[25 §3](../25-fintech-with-go/03-integrity-and-exactly-once.md).
 
-## Planned chapters
+## Chapters
 
-1. **Monolith → modular monolith → microservices**: the honest
-   progression; boundaries as team contracts
-2. **Service boundaries**: DDD-in-Go pragmatics, data ownership,
-   the "one database per service" reality
-3. **API contracts**: REST vs gRPC (a table, not a war), versioning,
-   backward compatibility discipline
-4. **Service discovery & load balancing**: client-side vs server-side,
-   Go's defaults
-5. **Timeouts, retries, circuit breakers, bulkheads**: the resilience
-   quartet with Go implementations; extends the retry tables in
-   [05 §2](../05-errors/02-error-design.md)
-6. **Idempotency across services**: the payment patterns from
-   [25 §1](../25-fintech-with-go/01-money-and-payments.md) generalized
-7. **Distributed transactions**: sagas and outboxes in depth; extends
-   [25 §3](../25-fintech-with-go/03-integrity-and-exactly-once.md)
-8. **Event-driven architecture**: when events replace calls
-9. **When NOT to use microservices**: the anti-chapter, treated with
-   equal depth
+| # | Chapter | Focus |
+|---|---|---|
+| 1 | [Monolith to microservices](01-monolith-to-microservices.md) | the honest progression, split-ready layout, the signals that actually justify splitting |
+| 2 | [Boundaries & contracts](02-boundaries-and-contracts.md) | data ownership, REST vs gRPC table, versioning and deprecation discipline |
+| 3 | [The resilience quartet](03-resilience-patterns.md) | timeouts, retries with jitter, circuit breakers, bulkheads; retry-storm arithmetic |
+| 4 | [Idempotency, sagas & the outbox](04-idempotency-sagas-outbox.md) | the three-promise key contract, orchestration vs choreography, atomic events |
+| 5 | [Discovery, events & when NOT to](05-discovery-events-and-when-not.md) | gRPC vs VIP balancing, the call-vs-event rule, the refusal checklist |
+
+## The example
+
+`examples/resilience/` implements chapter 3's quartet as small,
+composable pieces with deterministic tests:
+
+- `Retry`: exponential backoff with jitter, budget-aware (no attempt
+  starts when the backoff cannot fit the remaining deadline),
+  classification-gated
+- `Breaker`: the closed/open/half-open state machine with an injected
+  clock; half-open admits exactly one probe; a failed probe reopens
+- `Bulkhead`: per-dependency semaphore with immediate rejection
+  (`ErrBulkheadFull`)
+
+The centerpiece is the storm test: 50 goroutines against a failing
+dependency produce roughly the breaker threshold's downstream hits
+(not 50), while the same storm *with retries and no breaker*
+amplifies to ~150. The gap between those two numbers is what the
+quartet is for, and the test prints both.
+
+```bash
+go test ./15-microservices/... -v   # watch the storm arithmetic
+```
+
+## Progress checklist
+
+- [x] The progression: monolith, modular monolith, microservices
+- [x] Split-ready layout and the dependency-direction test
+- [x] Data ownership and the two rules of a real boundary
+- [x] REST vs gRPC as a decision table, not a war
+- [x] Versioning, compatibility discipline, deprecation process
+- [x] Timeout budgets propagated per hop
+- [x] Retries: classification, backoff, jitter, budget awareness
+- [x] Circuit breakers: state machine, half-open probing
+- [x] Bulkheads and the retry-storm arithmetic
+- [x] Idempotency keys: the three-promise contract
+- [x] Sagas: orchestration vs choreography, compensations
+- [x] The outbox and consumer idempotency (mechanics in 25 §3)
+- [x] Discovery and load balancing (incl. the gRPC/VIP trap)
+- [x] The call-vs-event decision rule
+- [x] The when-NOT-to anti-chapter with a refusal checklist
+- [ ] Service mesh deep dive (22-production-go)
+- [ ] Container/Kubernetes deployment mechanics (22-production-go)

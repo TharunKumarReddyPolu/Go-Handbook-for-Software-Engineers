@@ -30,9 +30,9 @@ go test ./08-concurrency/... -race   # every example in the repo is CI-verified
 | | |
 |---|---|
 | **Depth before breadth** | A topic is not "covered" until it answers: what is it, why does it exist, how does it work, when should I *not* use it, what goes wrong in production, and how would I debug it? |
-| **Everything compiles** | 28 example packages pass `go build ./...`, `go vet`, `go test -race`, and staticcheck on every push |
+| **Everything compiles** | 29 example packages pass `go build ./...`, `go vet`, `go test -race`, and staticcheck on every push |
 | **No copying** | Original explanations; official docs are linked under *Further Reading*, never reproduced |
-| **Honest status** | 16 of 28 sections fully written; the other 12 have complete outlines tracked in [ROADMAP.md](ROADMAP.md) |
+| **Honest status** | 17 of 28 sections fully written; the other 11 have complete outlines tracked in [ROADMAP.md](ROADMAP.md) |
 
 Every chapter follows the same contract:
 
@@ -235,7 +235,7 @@ written: see [ROADMAP.md](ROADMAP.md) for status and ordering.
 
 ### Distributed systems
 
-- **[15 Microservices](15-microservices/)** [Outline]: boundaries, contracts, resilience patterns, when NOT to use microservices
+- **[15 Microservices](15-microservices/)** [In depth]: boundaries, REST/gRPC contracts, the resilience quartet, idempotency and sagas, and the when-NOT anti-chapter
 - **[16 Distributed Systems](16-distributed-systems/)** [Outline]: CAP, replication, delivery semantics, idempotency, backpressure
 - **[17 Messaging](17-messaging/)** [Outline]: queues and pub/sub concepts, broker comparisons
 - **[18 Kafka with Go](18-kafka-with-go/)** [In depth]: architecture, client tradeoffs, producers, consumers, offsets, reliability, observability
