@@ -47,7 +47,7 @@ written; they are revisited opportunistically, not rewritten wholesale.
 ## Phase 4: Testing & Tooling
 
 - [x] 10-testing: complete (4 chapters, compiled test suites)
-- [ ] 11-tooling: outline ready (4 chapters planned)
+- [x] 11-tooling: complete (4 chapters: professional workflow, pprof & trace in practice, Delve, supply chain & modernizers)
 
 ## Phase 5: Backend
 
@@ -89,9 +89,8 @@ written; they are revisited opportunistically, not rewritten wholesale.
 
 ## Planned order for remaining sections
 
-1. 11-tooling (4 chapters: the professional workflow)
-2. 27-open-source (4 chapters + the Go/Kafka/infrastructure special sections)
-3. 28-projects (5 level guides, written last)
+1. 27-open-source (4 chapters + the Go/Kafka/infrastructure special sections)
+2. 28-projects (5 level guides, written last)
 
 ## Standing work
 

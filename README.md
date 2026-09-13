@@ -36,7 +36,7 @@ written; the rest have outlines tracked in [ROADMAP.md](ROADMAP.md).
 | 08 | [Concurrency](08-concurrency/) | ✅ In depth |
 | 09 | [Memory & Runtime](09-memory-runtime/) | ✅ In depth |
 | 10 | [Testing](10-testing/) | ✅ In depth |
-| 11 | [Tooling](11-tooling/) | 📝 Outline |
+| 11 | [Tooling](11-tooling/) | ✅ In depth |
 | 12 | [HTTP & Networking](12-http-networking/) | ✅ In depth |
 | 13 | [Databases](13-databases/) | ✅ In depth |
 | 14 | [Backend Development](14-backend-development/) | ✅ In depth |
