@@ -52,7 +52,7 @@ Last updated: 2026-09-12
 
 ## Phase 9: Production
 
-- [ ] 22-production-go: outline ready
+- [x] 22-production-go: complete (6 chapters: config & secrets, server lifecycle, resource limits, dependency degradation, containers/Kubernetes, releases & rollbacks)
 - [ ] 23-go-internals: outline ready
 - [ ] 24-system-design: outline ready
 
