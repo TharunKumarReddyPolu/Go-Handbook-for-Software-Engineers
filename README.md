@@ -34,7 +34,7 @@ written; the rest have outlines tracked in [ROADMAP.md](ROADMAP.md).
 | 06 | [Packages & Modules](06-packages-modules/) | ✅ In depth |
 | 07 | [Generics](07-generics/) | ✅ In depth |
 | 08 | [Concurrency](08-concurrency/) | ✅ In depth |
-| 09 | [Memory & Runtime](09-memory-runtime/) | 📝 Outline |
+| 09 | [Memory & Runtime](09-memory-runtime/) | ✅ In depth |
 | 10 | [Testing](10-testing/) | ✅ In depth |
 | 11 | [Tooling](11-tooling/) | 📝 Outline |
 | 12 | [HTTP & Networking](12-http-networking/) | ✅ In depth |

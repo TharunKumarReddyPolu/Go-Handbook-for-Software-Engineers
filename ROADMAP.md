@@ -32,6 +32,7 @@ written; they are revisited opportunistically, not rewritten wholesale.
 - [x] 02-go-language: complete (8 chapters, seqops example package with tests)
 - [x] 03-data-structures: complete (9 chapters, dsbench + ring + lru examples with tests)
 - [x] 04-functions-methods-interfaces: complete (7 chapters, design clinic + di example)
+- [x] 09-memory-runtime: complete (5 chapters: stack & heap, escape analysis, GC, scheduler, leak taxonomy + memwatch example)
 
 ## Phase 2: Core Go
 
@@ -85,15 +86,13 @@ written; they are revisited opportunistically, not rewritten wholesale.
 - [x] 26-go-interview-preparation: complete (tiered tracks + scenarios)
 - [ ] 27-open-source: outline ready (4 chapters + 3 special sections)
 - [ ] 28-projects: outline ready (five levels; one guide per level, so project guides can reference finished sections)
-- [ ] 09-memory-runtime: outline ready (5 chapters planned; fits best after 23-go-internals drafting starts)
 
 ## Planned order for remaining sections
 
-1. 09-memory-runtime (5 chapters: pairs with 19 §2 and 23 §3)
-2. 24-system-design (7 paired walkthroughs using the handbook's own tested examples)
-3. 11-tooling (4 chapters: the professional workflow)
-4. 27-open-source (4 chapters + the Go/Kafka/infrastructure special sections)
-5. 28-projects (5 level guides, written last)
+1. 24-system-design (7 paired walkthroughs using the handbook's own tested examples)
+2. 11-tooling (4 chapters: the professional workflow)
+3. 27-open-source (4 chapters + the Go/Kafka/infrastructure special sections)
+4. 28-projects (5 level guides, written last)
 
 ## Standing work
 
