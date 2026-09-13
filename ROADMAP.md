@@ -38,7 +38,7 @@ Last updated: 2026-09-12
 
 - [x] 15-microservices: complete (5 chapters: progression, contracts, resilience quartet, idempotency/sagas/outbox, when-NOT + storm-tested resilience example)
 - [x] 16-distributed-systems: complete (5 chapters: failure model/CAP, replication & consistency, leases & fencing, quorums & sharding, delivery & backpressure + zombie-leader lease example)
-- [ ] 17-messaging: outline ready
+- [x] 17-messaging: complete (4 chapters: queue/log/pubsub models, broker comparison, portable patterns, schemas & testing + deterministic in-memory broker example)
 - [x] 18-kafka-with-go: complete (3 chapters + client comparison + examples with skip-if-no-broker tests)
 
 ## Phase 7: Performance
@@ -73,7 +73,7 @@ Last updated: 2026-09-12
 2. 06-packages-modules (done), 07-generics (done)
 3. 12-http-networking, 13-databases, 14-backend-development
 4. 09-memory-runtime (pairs with 19-performance)
-5. 15-microservices, 16-distributed-systems, 17-messaging
+5. 15-microservices (done), 16-distributed-systems (done), 17-messaging (done: Phase 6 finished)
 6. 20-observability, 21-security, 22-production-go
 7. 11-tooling, 23-go-internals, 24-system-design
 8. 27-open-source, 28-projects (project guides reference finished sections)
