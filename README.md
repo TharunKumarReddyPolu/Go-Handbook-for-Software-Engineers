@@ -4,299 +4,93 @@
 
 # Go Handbook for Software Engineers
 
-<div align="center">
-
-**A comprehensive Go handbook covering fundamentals, idiomatic Go, concurrency, generics, testing, APIs, databases, performance, microservices, system design, and production engineering.**
+**A practical, engineering-focused Go handbook: from the fundamentals to production-grade, distributed, and financial systems.** Every runnable example compiles and is verified by CI on every push.
 
 [![CI](https://github.com/TharunKumarReddyPolu/Go-Handbook-for-Software-Engineers/actions/workflows/ci.yml/badge.svg)](https://github.com/TharunKumarReddyPolu/Go-Handbook-for-Software-Engineers/actions/workflows/ci.yml)
 [![Go version](https://img.shields.io/badge/go-1.27-00ADD8?logo=go&logoColor=white)](https://go.dev/doc/go1.27)
 [![License](https://img.shields.io/badge/license-Apache--2.0-blue)](LICENSE)
 [![PRs welcome](https://img.shields.io/badge/PRs-welcome-brightgreen)](CONTRIBUTING.md)
 
-</div>
-
-> **TL;DR:** 28 sections organized into 7 learning paths, 74 fully written chapters with compiled, CI-verified examples, and honest progress tracking for the rest. Not another syntax tutorial: it also covers how Go behaves under load, why the runtime does what it does, how to structure a service you can page someone about at 3 a.m., and how to design distributed and financial systems with the tools Go gives you.
-
-**Try it in 30 seconds** (Go 1.27+):
+## Start here
 
 ```bash
 git clone https://github.com/TharunKumarReddyPolu/Go-Handbook-for-Software-Engineers.git
 cd Go-Handbook-for-Software-Engineers
-go test ./08-concurrency/... -race   # every example in the repo is CI-verified
+go test ./08-concurrency/... -race   # see the examples run
 ```
 
-## Why this handbook
+Read the Markdown in any editor. Sections marked **[In depth]** are fully
+written; the rest have outlines tracked in [ROADMAP.md](ROADMAP.md).
 
-| | |
-|---|---|
-| **Depth before breadth** | A topic is not "covered" until it answers: what is it, why does it exist, how does it work, when should I *not* use it, what goes wrong in production, and how would I debug it? |
-| **Everything compiles** | 30 example packages pass `go build ./...`, `go vet`, `go test -race`, and staticcheck on every push |
-| **No copying** | Original explanations; official docs are linked under *Further Reading*, never reproduced |
-| **Honest status** | 19 of 28 sections fully written; the other 9 have complete outlines tracked in [ROADMAP.md](ROADMAP.md) |
+## The sections
 
-Every chapter follows the same contract:
-
-- **Why it exists**: the problem, not just the feature
-- **Mental model**: how to think about it before memorizing syntax
-- **Compiled examples**: everything labeled runnable compiles and runs; `go test ./...` verifies them in CI
-- **Common mistakes**: the bugs this handbook's author has seen (or committed)
-- **Production notes**: performance, concurrency, and security implications
-- **Interview questions and exercises**, so learning turns into retention
-
-## Table of Contents
-
-- [Why this handbook](#why-this-handbook)
-- [Who this is for](#who-this-is-for)
-- [The philosophy](#the-philosophy)
-- [Learning paths](#learning-paths)
-- [Quick start](#quick-start)
-- [The handbook](#the-handbook)
-- [How examples are verified](#how-examples-are-verified)
-- [Reading version-specific content](#reading-version-specific-content)
-- [Contributing and community](#contributing-and-community)
-- [⭐ Support the Project](#-support-the-project)
-
-## Who this is for
-
-| You are... | Start with | Why |
+| # | Section | Status |
 |---|---|---|
-| A complete beginner | [Path 1](#path-1-complete-beginner--go-engineer) | Sections 01–03 build the vocabulary; skip nothing in 01 |
-| A Java, Python, C++, or JavaScript developer | [Path 2](#path-2-java--python--c--javascript-developer--go-engineer) | Section 01.07 maps your old habits to Go's; unlearn inheritance early |
-| A backend engineer new to Go | [Path 3](#path-3-backend-engineer--production-go) | Errors → HTTP → databases → backend structure |
-| An experienced Go engineer | [Path 4](#path-4-go-engineer--distributed-systems-engineer) | Concurrency, distributed systems, performance, internals |
-| Building fintech or payment systems | [Path 5](#path-5-go-engineer--fintech-engineer) | Ledgers, idempotency, reconciliation, exactly-once myths |
-| Preparing for interviews | [Path 7](#path-7-go-engineer--interview-ready) | Section 26, then drills in 08 and 19 |
-| Wanting to contribute to open source | [Path 6](#path-6-go-engineer--open-source-contributor) | Section 27 plus the CONTRIBUTING guide of this repo as a worked example |
+| 01 | [Go Fundamentals](01-go-fundamentals/) | ✅ In depth |
+| 02 | [The Go Language](02-go-language/) | ✅ In depth |
+| 03 | [Data Structures](03-data-structures/) | ✅ In depth |
+| 04 | [Functions, Methods & Interfaces](04-functions-methods-interfaces/) | ✅ In depth |
+| 05 | [Error Handling](05-errors/) | ✅ In depth |
+| 06 | [Packages & Modules](06-packages-modules/) | ✅ In depth |
+| 07 | [Generics](07-generics/) | ✅ In depth |
+| 08 | [Concurrency](08-concurrency/) | ✅ In depth |
+| 09 | [Memory & Runtime](09-memory-runtime/) | 📝 Outline |
+| 10 | [Testing](10-testing/) | ✅ In depth |
+| 11 | [Tooling](11-tooling/) | 📝 Outline |
+| 12 | [HTTP & Networking](12-http-networking/) | ✅ In depth |
+| 13 | [Databases](13-databases/) | ✅ In depth |
+| 14 | [Backend Development](14-backend-development/) | ✅ In depth |
+| 15 | [Microservices](15-microservices/) | ✅ In depth |
+| 16 | [Distributed Systems](16-distributed-systems/) | ✅ In depth |
+| 17 | [Messaging](17-messaging/) | ✅ In depth |
+| 18 | [Kafka with Go](18-kafka-with-go/) | ✅ In depth |
+| 19 | [Performance](19-performance/) | ✅ In depth |
+| 20 | [Observability](20-observability/) | ✅ In depth |
+| 21 | [Security](21-security/) | 📝 Outline |
+| 22 | [Production Go](22-production-go/) | 📝 Outline |
+| 23 | [Go Internals](23-go-internals/) | 📝 Outline |
+| 24 | [System Design with Go](24-system-design/) | 📝 Outline |
+| 25 | [FinTech with Go](25-fintech-with-go/) | ✅ In depth |
+| 26 | [Go Interview Preparation](26-go-interview-preparation/) | ✅ In depth |
+| 27 | [Open Source](27-open-source/) | 📝 Outline |
+| 28 | [Projects](28-projects/) | 📝 Outline |
 
-## The philosophy
+Progress and the writing order live in [ROADMAP.md](ROADMAP.md).
 
-The handbook is organized around a deliberate ladder. Each rung depends on
-the ones below it:
+## How to read it
 
-```text
-Learn Go
-  ↓
-Understand Go
-  ↓
-Write Idiomatic Go
-  ↓
-Build Reliable Software
-  ↓
-Build Production Systems
-  ↓
-Understand Go Internals
-  ↓
-Build Distributed Systems
-  ↓
-Use Go in Real-World Domains
-  ↓
-Contribute to Open Source
-```
+Pick the row that matches you, read the sections in order:
 
-Two rules follow from this and are enforced throughout:
+| You are... | Read in this order |
+|---|---|
+| New to Go | 01 → 02 → 03 → 04 → 05 → 10 → 08 |
+| Coming from Java/Python/C++/JS | [01 §8](01-go-fundamentals/08-coming-from-other-languages.md) → 04 → 05 → 02 → 07 → 08 |
+| A backend engineer | 12 → 13 → 05 → 14 → 10 → 20 → 22 → 21 |
+| Building distributed systems | 08 → 15 → 16 → 17 → 18 → 19 → 24 |
+| Building fintech systems | 25 → 16 → 18 → 21 → 28 |
+| Preparing for interviews | 26 → 08 → 19 → 09 → 23 → 24 |
+| Contributing to open source | 27 → [CONTRIBUTING.md](CONTRIBUTING.md) → 11 → 06 |
 
-1. **Depth before breadth.** A topic is not "covered" until it answers:
-   what is it, why does it exist, how does it work, when should I *not*
-   use it, what goes wrong in production, and how would I debug it?
-2. **No copying.** Explanations are original. Official documentation is
-   linked under *Further Reading* at the end of each chapter, never
-   reproduced.
+## What makes this handbook different
 
-## Learning paths
+- **Depth before breadth.** A topic is not covered until it answers: what is
+  it, why does it exist, how does it work, when should I *not* use it, what
+  goes wrong in production, and how would I debug it?
+- **Everything compiles.** Every example package passes `go build`, `go vet`,
+  `go test -race`, and staticcheck in CI on every push. Tests skip cleanly
+  when optional infrastructure (Kafka, Postgres) is absent.
+- **No copying.** Original explanations; official documentation is linked
+  under *Further Reading* at the end of each chapter, never reproduced.
 
-Sections are numbered; paths pick a route through them.
+Go changes every six months. Version-dependent claims are stamped
+("Introduced in Go X"); the convention is explained in
+[meta/versioning.md](meta/versioning.md).
 
-<details open>
-<summary><b>Show the 7 role-based paths</b></summary>
+## Contributing
 
-### Path 1: Complete Beginner → Go Engineer
-
-1. [01 Go Fundamentals](01-go-fundamentals/): everything, especially zero values and defer
-2. [02 The Go Language](02-go-language/): slices, maps, structs, pointers
-3. [03 Data Structures](03-data-structures/): idiomatic implementations
-4. [04 Functions, Methods & Interfaces](04-functions-methods-interfaces/)
-5. [05 Error Handling](05-errors/): read twice; errors are values here
-6. [10 Testing](10-testing/): table-driven tests from day one
-7. [08 Concurrency](08-concurrency/): goroutines and channels only
-8. [28 Projects](28-projects/): Level 1 projects
-
-### Path 2: Java / Python / C++ / JavaScript Developer → Go Engineer
-
-1. [01 §8 Coming from another language](01-go-fundamentals/08-coming-from-other-languages.md)
-2. [04 Functions, Methods & Interfaces](04-functions-methods-interfaces/): unlearn class hierarchies
-3. [05 Error Handling](05-errors/): no exceptions, and that changes design
-4. [02 The Go Language](02-go-language/): value semantics vs reference semantics
-5. [07 Generics](07-generics/), and when *not* to use them
-6. [06 Packages & Modules](06-packages-modules/): no more classpath debates
-7. [08 Concurrency](08-concurrency/): CSP vs threads-and-locks
-
-### Path 3: Backend Engineer → Production Go
-
-1. [12 HTTP & Networking](12-http-networking/)
-2. [13 Databases](13-databases/)
-3. [05 Error Handling](05-errors/)
-4. [14 Backend Development](14-backend-development/)
-5. [10 Testing](10-testing/): httptest and integration tests
-6. [20 Observability](20-observability/)
-7. [22 Production Go](22-production-go/)
-8. [21 Security](21-security/)
-
-### Path 4: Go Engineer → Distributed Systems Engineer
-
-1. [08 Concurrency](08-concurrency/): the patterns chapters
-2. [15 Microservices](15-microservices/)
-3. [16 Distributed Systems](16-distributed-systems/)
-4. [17 Messaging](17-messaging/)
-5. [18 Kafka with Go](18-kafka-with-go/)
-6. [19 Performance](19-performance/)
-7. [24 System Design with Go](24-system-design/)
-
-### Path 5: Go Engineer → FinTech Engineer
-
-1. [25 FinTech with Go](25-fintech-with-go/): start with the exactly-once myths chapter
-2. [16 Distributed Systems](16-distributed-systems/): idempotency and delivery semantics
-3. [18 Kafka with Go](18-kafka-with-go/): event-driven payment flows
-4. [21 Security](21-security/): defensive engineering
-5. [28 Projects](28-projects/): Level 4, then the Level 5 capstone
-
-### Path 6: Go Engineer → Open Source Contributor
-
-1. [27 Open Source](27-open-source/): includes contributing to Go itself and to the Go/Kafka ecosystem
-2. This repository's [CONTRIBUTING.md](CONTRIBUTING.md) as a worked example
-3. [11 Tooling](11-tooling/): the tools every maintainer assumes you know
-4. [06 Packages & Modules](06-packages-modules/)
-
-### Path 7: Go Engineer → Interview Ready
-
-1. [26 Go Interview Preparation](26-go-interview-preparation/): tiered by difficulty, scenario-based
-2. [08 Concurrency](08-concurrency/): the most common deep-dive topic
-3. [19 Performance](19-performance/): profiling stories beat trivia
-4. [09 Memory & Runtime](09-memory-runtime/) and [23 Go Internals](23-go-internals/)
-5. [24 System Design with Go](24-system-design/)
-
-</details>
-
-## Quick start
-
-Install Go 1.27 or later from <https://go.dev/dl/>, then:
-
-```bash
-git clone https://github.com/TharunKumarReddyPolu/Go-Handbook-for-Software-Engineers.git
-cd Go-Handbook-for-Software-Engineers
-
-# Every labeled-runnable example compiles:
-go build ./...
-
-# Every test suite passes, with race detection:
-go test ./... -race
-
-# Run one section's examples, e.g. concurrency:
-go test ./08-concurrency/... -race -v
-```
-
-Read the Markdown in any editor; every code block marked as an example file
-has a real file you can open next to it. Chapters label anything that will
-not compile (intentionally incomplete snippets) as such.
-
-## The handbook
-
-Sections marked **[In depth]** are fully written with verified examples.
-Sections marked **[Outline]** have a complete topic map and are being
-written: see [ROADMAP.md](ROADMAP.md) for status and ordering.
-
-<details>
-<summary><b>Browse all 28 sections</b> (13 in depth, 15 outlined)</summary>
-
-### Foundations
-
-- **[01 Go Fundamentals](01-go-fundamentals/)** [In depth]: toolchain, program structure, variables and types, zero values, control flow, defer/panic/recover, coming from other languages
-- **[02 The Go Language](02-go-language/)** [In depth]: arrays, slices, maps, strings and runes, structs, pointers, methods, interfaces, embedding
-- **[03 Data Structures](03-data-structures/)** [In depth]: built-ins and idiomatic implementations, complexity, memory behavior
-- **[04 Functions, Methods & Interfaces](04-functions-methods-interfaces/)** [In depth]: method sets, small interfaces, composition over inheritance, dependency inversion
-
-### Core Go
-
-- **[05 Error Handling](05-errors/)** [In depth]: errors are values, wrapping, sentinel and domain errors, retryability, HTTP mapping, logging
-- **[06 Packages & Modules](06-packages-modules/)** [In depth]: package design, visibility, modules, workspaces, reproducible builds
-- **[07 Generics](07-generics/)** [In depth]: type parameters, constraints, when generics help and hurt (includes Go 1.27 generic methods)
-- **[08 Concurrency](08-concurrency/)** [In depth]: goroutines, channels, context, sync primitives, patterns, pitfalls, race detection; examples progress from toy to production
-- **[09 Memory & Runtime](09-memory-runtime/)** [Outline]: stack vs heap, escape analysis, GC, scheduler
-
-### Quality and tooling
-
-- **[10 Testing](10-testing/)** [In depth]: table-driven tests, doubles, httptest, benchmarks, fuzzing, race detection
-- **[11 Tooling](11-tooling/)** [Outline]: the professional workflow: gofmt, vet, pprof, delve, govulncheck, staticcheck, gopls
-
-### Backend and APIs
-
-- **[12 HTTP & Networking](12-http-networking/)** [In depth]: stdlib-first HTTP: Go 1.22 routing, middleware, JSON APIs, clients and timeouts, graceful shutdown, with a runnable API example
-- **[13 Databases](13-databases/)** [In depth]: database/sql, transactions and isolation, pooling, repositories, two-tier testing, Redis caching
-- **[14 Backend Development](14-backend-development/)** [In depth]: layered layout, configuration and secrets, explicit wiring, the authz gates, health and flags, with a complete service example
-
-### Distributed systems
-
-- **[15 Microservices](15-microservices/)** [In depth]: boundaries, REST/gRPC contracts, the resilience quartet, idempotency and sagas, and the when-NOT anti-chapter
-- **[16 Distributed Systems](16-distributed-systems/)** [In depth]: CAP and PACELC, the consistency ladder, leases with fencing tokens, quorums and sharding, delivery semantics and backpressure
-- **[17 Messaging](17-messaging/)** [In depth]: queue vs log vs pub/sub models, broker tradeoffs, the consumer loop, retries, DLQs, idempotency, and schema evolution broker-agnostically
-- **[18 Kafka with Go](18-kafka-with-go/)** [In depth]: architecture, client tradeoffs, producers, consumers, offsets, reliability, observability
-
-### Production engineering
-
-- **[19 Performance](19-performance/)** [In depth]: measure first: benchmarks, pprof, allocations, contention, PGO
-- **[20 Observability](20-observability/)** [Outline]: structured logs, metrics, tracing, OpenTelemetry, SLOs, incident debugging
-- **[21 Security](21-security/)** [Outline]: authn/authz, TLS, injection, secrets, govulncheck, fuzzing
-- **[22 Production Go](22-production-go/)** [Outline]: config, shutdown, deployment, containers, Kubernetes, rollbacks
-
-### Deep Go
-
-- **[23 Go Internals](23-go-internals/)** [Outline]: compiler pipeline, runtime, scheduler, channels and maps under the hood
-- **[24 System Design with Go](24-system-design/)** [Outline]: twelve Go-centric design exercises from URL shortener to fraud pipeline
-
-### Domain and career
-
-- **[25 FinTech with Go](25-fintech-with-go/)** [In depth]: ledgers, double-entry, idempotent payments, reconciliation, exactly-once myths, regulatory notes
-- **[26 Go Interview Preparation](26-go-interview-preparation/)** [In depth]: beginner → senior tracks, scenario questions, reasoning-first answers
-- **[27 Open Source](27-open-source/)** [Outline]: contributing to Go projects, Go itself, and the Kafka-in-Go ecosystem
-- **[28 Projects](28-projects/)** [Outline]: five levels, 20+ projects, ending in the Production-Grade Financial Transaction Platform capstone
-
-</details>
-
-## How examples are verified
-
-- One Go module at the repository root: `go build ./...` compiles every
-  runnable example in every section.
-- `go test ./... -race` runs the test suites in CI on every pull request,
-  with shuffled test order to catch hidden dependencies.
-- CI also runs `gofmt`, `go vet`, staticcheck, a weekly govulncheck, and a
-  dependency-free internal-link checker (`tools/linkcheck`).
-- Code that needs external infrastructure (a Kafka broker, a database) is
-  written so its tests skip cleanly when the service is absent. See
-  [18 §14 Testing against a broker](18-kafka-with-go/README.md) when it
-  ships.
-
-## Reading version-specific content
-
-Go changes every six months. This handbook stamps every version-dependent
-claim ("Introduced in Go X") and explains the convention in
-[meta/versioning.md](meta/versioning.md). The baseline for this handbook is
-Go 1.27 (August 2026). Watch for:
-
-- **Go 1.22**: loop variables are per-iteration (the classic closure-capture bug is fixed)
-- **Go 1.23**: range-over-function iterators; timer channels made synchronous
-- **Go 1.25**: `sync.WaitGroup.Go` helper
-- **Go 1.27**: generic methods
-
-If you are on an older toolchain, the language basics still apply exactly;
-version-stamped features will not compile.
-
-## Contributing and community
-
-Contributions are welcome and structured: see
-[CONTRIBUTING.md](CONTRIBUTING.md) for chapter templates, code standards,
-and the verification commands every PR must pass. By participating you
-agree to the [Code of Conduct](CODE_OF_CONDUCT.md). Good first
-contributions: fixing an inaccuracy (file an issue with the quote), adding
-an exercise, improving a diagram.
+Contributions are welcome: see [CONTRIBUTING.md](CONTRIBUTING.md) for the
+chapter template and the verification commands every PR must pass. By
+participating you agree to the [Code of Conduct](CODE_OF_CONDUCT.md).
 
 ---
 
