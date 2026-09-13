@@ -49,7 +49,7 @@ written; the rest have outlines tracked in [ROADMAP.md](ROADMAP.md).
 | 21 | [Security](21-security/) | ✅ In depth |
 | 22 | [Production Go](22-production-go/) | ✅ In depth |
 | 23 | [Go Internals](23-go-internals/) | ✅ In depth |
-| 24 | [System Design with Go](24-system-design/) | 📝 Outline |
+| 24 | [System Design with Go](24-system-design/) | ✅ In depth |
 | 25 | [FinTech with Go](25-fintech-with-go/) | ✅ In depth |
 | 26 | [Go Interview Preparation](26-go-interview-preparation/) | ✅ In depth |
 | 27 | [Open Source](27-open-source/) | 📝 Outline |
