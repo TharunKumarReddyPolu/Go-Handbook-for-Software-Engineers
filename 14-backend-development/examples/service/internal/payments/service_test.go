@@ -102,7 +102,7 @@ func TestByCustomer_BoundedAndNewestFirst(t *testing.T) {
 func routes(t *testing.T) http.Handler {
 	t.Helper()
 	svc, _, _ := testService(t)
-	return NewHandler(svc).Routes(slog.New(slog.DiscardHandler))
+	return NewHandler(svc).Routes(slog.New(slog.DiscardHandler), nil)
 }
 
 func authedReq(method, target, token, body string) *http.Request {
@@ -199,7 +199,7 @@ func TestChain_CancelOwnershipOverHTTP(t *testing.T) {
 
 		rec := httptest.NewRecorder()
 		req := authedReq(http.MethodPost, "/payments/"+p.ID+"/cancel", "user:cus_1", "")
-		NewHandler(svc).Routes(slog.New(slog.DiscardHandler)).ServeHTTP(rec, req)
+		NewHandler(svc).Routes(slog.New(slog.DiscardHandler), nil).ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusNotFound {
 			t.Fatalf("status = %d, want 404 (existence must not be disclosed)", rec.Code)
@@ -215,7 +215,7 @@ func TestChain_CancelOwnershipOverHTTP(t *testing.T) {
 
 		rec := httptest.NewRecorder()
 		req := authedReq(http.MethodPost, "/payments/"+p.ID+"/cancel", "user:cus_1", "")
-		NewHandler(svc).Routes(slog.New(slog.DiscardHandler)).ServeHTTP(rec, req)
+		NewHandler(svc).Routes(slog.New(slog.DiscardHandler), nil).ServeHTTP(rec, req)
 
 		if rec.Code != http.StatusNoContent {
 			t.Fatalf("status = %d, want 204 (body: %s)", rec.Code, rec.Body)

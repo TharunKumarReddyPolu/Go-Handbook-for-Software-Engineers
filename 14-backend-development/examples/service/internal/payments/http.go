@@ -9,6 +9,7 @@ import (
 
 	"github.com/TharunKumarReddyPolu/Go-Handbook-for-Software-Engineers/14-backend-development/examples/service/internal/platform/httpjson"
 	"github.com/TharunKumarReddyPolu/Go-Handbook-for-Software-Engineers/14-backend-development/examples/service/internal/platform/httpmw"
+	"github.com/TharunKumarReddyPolu/Go-Handbook-for-Software-Engineers/14-backend-development/examples/service/internal/platform/obshttp"
 )
 
 // Identity is the transport's authn product (chapter 4): attached by
@@ -85,9 +86,11 @@ type Handler struct {
 func NewHandler(svc *Service) Handler { return Handler{svc: svc} }
 
 // Routes wires paths and policies over the domain middleware chain.
-// Order (12 §2): Recover innermost of the global wrappers, ScopedLogger
-// outermost so every layer can log with the request ID.
-func (h Handler) Routes(logger *slog.Logger) http.Handler {
+// Order (12 §2, refined by section 20): metrics+tracing OUTERMOST
+// (they count every request received, including rejected ones), then
+// ScopedLogger (gets trace IDs from the span), then Recover innermost
+// of the global wrappers so panics become 5xx that metrics count.
+func (h Handler) Routes(logger *slog.Logger, red *obshttp.Metrics) http.Handler {
 	mux := http.NewServeMux()
 
 	// Health endpoints (chapter 5): unauthenticated, leak nothing.
@@ -110,10 +113,14 @@ func (h Handler) Routes(logger *slog.Logger) http.Handler {
 	// authn for simplicity and asserts that in tests.
 	authed := authenticate(mux)
 
-	return httpmw.Chain(authed,
+	chain := httpmw.Chain(authed,
 		func(next http.Handler) http.Handler { return httpmw.Recover(next) },
 		func(next http.Handler) http.Handler { return httpmw.ScopedLogger(logger)(next) },
 	)
+	if red == nil {
+		return chain // observability-free wiring is legal (tests)
+	}
+	return red.Instrument(chain)
 }
 
 // --- wire types (12 §3): transport-only shapes ---

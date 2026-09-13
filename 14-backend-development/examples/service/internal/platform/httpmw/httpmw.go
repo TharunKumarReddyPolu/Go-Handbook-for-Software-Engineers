@@ -1,7 +1,9 @@
 // Package httpmw is the platform middleware from 12 §2: the chain
 // constructor plus the three every service needs. The scoped-logger
 // middleware (chapter 5) attaches a request-scoped slog to the
-// context; handlers pull it via log.FromContext.
+// context; handlers pull it via log.FromContext. Section 20 adds
+// trace correlation: the logger carries trace/span IDs when a span
+// is active.
 package httpmw
 
 import (
@@ -10,6 +12,8 @@ import (
 	"log/slog"
 	"net/http"
 	"time"
+
+	"go.opentelemetry.io/otel/trace"
 )
 
 type middleware func(http.Handler) http.Handler
@@ -39,12 +43,19 @@ func FromContext(ctx context.Context) *slog.Logger {
 }
 
 // ScopedLogger attaches a logger carrying the request ID to the
-// context and echoes the ID in the response header.
+// context and echoes the ID in the response header. When a trace
+// context exists (section 20's Instrument runs outside this, so a
+// span is usually present), the trace and span IDs join the log
+// line: the correlation that turns "find the logs for this trace"
+// into one grep.
 func ScopedLogger(base *slog.Logger) middleware {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			id := fmt.Sprintf("req_%d", time.Now().UnixNano())
 			logger := base.With("request_id", id)
+			if sc := trace.SpanContextFromContext(r.Context()); sc.IsValid() {
+				logger = logger.With("trace_id", sc.TraceID().String(), "span_id", sc.SpanID().String())
+			}
 			w.Header().Set("X-Request-ID", id)
 			next.ServeHTTP(w, r.WithContext(
 				context.WithValue(r.Context(), loggerKey, logger)))

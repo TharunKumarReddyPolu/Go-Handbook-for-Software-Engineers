@@ -1,30 +1,52 @@
 # 20 · Observability
 
-**Status: outline: chapters are planned work (see
-[ROADMAP.md](../ROADMAP.md)).** Metric designs already exist in
-[18 §4](../18-kafka-with-go/04-observability-tuning.md) (Kafka
-services) and
-[25 §3](../25-fintech-with-go/03-integrity-and-exactly-once.md)
-(reconciliation alerts).
+**Status: in depth.** Five chapters, each tied to the working code in
+[14-backend-development/examples/service](../14-backend-development/examples/service/),
+which carries the section's instrumentation: RED metrics, tracing
+middleware, `/metrics`, and OTel wiring with correct shutdown
+ordering. Kafka-specific metric designs live in
+[18 §4](../18-kafka-with-go/04-observability-tuning.md); pprof
+mechanics live in [19 §1](../19-performance/01-measure-first.md).
 
-## Planned chapters
+## Chapters
 
-1. **Structured logging**: slog in production: levels, fields,
-   sampling, log-once discipline from
-   [05 §2](../05-errors/02-error-design.md)
-2. **Metrics**: the four Go metric shapes (counter, gauge, histogram,
-   summary); RED metrics for services,
-   USE for resources
-3. **Tracing**: OpenTelemetry in Go: spans through context
-   ([08 §3](../08-concurrency/03-context.md)), correlation IDs,
-   exemplar links between traces and metrics
-4. **SLOs, SLIs, SLAs**: the SRE stack: choosing indicators,
-   error budgets, burn-rate alerting
-5. **Alerting that works**: symptom-based alerts, runbooks as code,
-   the dashboard-questions framing from
-   [26 §4](../26-go-interview-preparation/04-senior-scenarios.md)
-6. **Debugging production incidents**: the Go-specific flow: pprof
-   endpoints, goroutine dumps, execution traces under load
-   ([19 §1](../19-performance/01-measure-first.md) pairs)
-7. **Worked example**: one service instrumented end to end: logs,
-   metrics, traces, SLOs, and the dashboard that answers its runbook
+1. **[Structured logging](01-structured-logging.md)**: slog in
+   production: events not sentences, request scoping, redaction in
+   the type, the levels budget
+2. **[Metrics](02-metrics.md)**: counter/gauge/histogram, RED for
+   services, business metrics for the domain, and the cardinality
+   discipline that keeps both affordable
+3. **[Tracing & OpenTelemetry](03-tracing-and-otel.md)**: spans
+   through context, propagation, sampling, and init-first/flush-last
+   wiring
+4. **[SLOs, burn rates & alerting](04-slos-and-alerting.md)**: the
+   error budget, symptom-based pages, two burn-rate tiers
+5. **[Debugging production incidents](05-incident-debugging.md)**:
+   the signal-to-question table, the evidence commands, rollback vs
+   debug ordering
+
+## The wired example
+
+The section's code ships inside the Section 14 service so one example
+serves both: `obshttp` (RED + spans middleware), `otelwiring`
+(process-global provider with a no-op default), and `payments`
+metrics (business signals). Run it and scrape it:
+
+```bash
+go run ./14-backend-development/examples/service &
+curl -s localhost:8080/metrics | head        # RED + business metrics
+LOG_LEVEL=debug go run ./14-backend-development/examples/service   # JSON logs
+```
+
+With `OTEL_EXPORTER_OTLP_ENDPOINT` set, spans export to any OTLP
+collector; unset, the tracer is a no-op and nothing else changes.
+
+## The one-page contract
+
+| Question | Signal | Chapter |
+|---|---|---|
+| What happened to this request? | Correlated JSON logs | 1 |
+| How is the system behaving? | RED + business metrics | 2 |
+| Where did the request go across services? | Traces | 3 |
+| Are users suffering? | SLIs vs SLOs, burn rates | 4 |
+| What do I do right now? | Runbook + evidence commands | 5 |

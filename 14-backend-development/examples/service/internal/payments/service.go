@@ -10,6 +10,8 @@ import (
 	"log/slog"
 	"strings"
 	"time"
+
+	"go.opentelemetry.io/otel/codes"
 )
 
 // Domain errors: sentinels the transport maps (05 §2's pipeline).
@@ -73,15 +75,24 @@ type PaymentStore interface {
 	ByCustomer(ctx context.Context, customerID string, limit int) ([]Payment, error)
 }
 
-// Service makes decisions; the store persists.
+// Service makes decisions; the store persists. Metrics (section 20)
+// are nil-safe: a service built without them works identically.
 type Service struct {
-	store PaymentStore
-	log   *slog.Logger
-	now   func() time.Time // injected clock (chapter 3)
+	store   PaymentStore
+	log     *slog.Logger
+	now     func() time.Time // injected clock (chapter 3)
+	metrics *PaymentMetrics
 }
 
 func NewService(store PaymentStore, log *slog.Logger) *Service {
 	return &Service{store: store, log: log, now: time.Now}
+}
+
+// WithMetrics attaches the business instrument (main's wiring; tests
+// omit it to prove observability never gates the domain).
+func (s *Service) WithMetrics(m *PaymentMetrics) *Service {
+	s.metrics = m
+	return s
 }
 
 // Now overrides the clock in tests.
@@ -89,8 +100,15 @@ func (s *Service) Now(now func() time.Time) { s.now = now }
 
 func (s *Service) Charge(ctx context.Context, in ChargeInput) (Payment, error) {
 	if err := in.Validate(); err != nil {
+		s.metrics.emitFailed(ctx, "validation")
 		return Payment{}, &validationError{joined: err}
 	}
+	// Business span: named for the operation, carrying business
+	// attributes (section 20 ch 3). Parent = the inbound request's
+	// span via ctx, so the flame graph includes the charge.
+	ctx, span := s.metrics.chargeSpan(ctx, in)
+	defer span.End()
+
 	p, err := s.store.Charge(ctx, Payment{
 		CustomerID:  in.CustomerID,
 		AmountMinor: in.AmountMinor,
@@ -99,8 +117,12 @@ func (s *Service) Charge(ctx context.Context, in ChargeInput) (Payment, error) {
 		CreatedAt:   s.now(),
 	})
 	if err != nil {
+		span.SetStatus(codes.Error, "charge failed")
+		span.RecordError(err)
+		s.metrics.emitFailed(ctx, "store")
 		return Payment{}, err // classification happened at the store
 	}
+	s.metrics.emitCharged(ctx, p.Currency, p.AmountMinor)
 	s.log.InfoContext(ctx, "payment charged", "payment_id", p.ID, "customer_id", p.CustomerID)
 	return p, nil
 }
@@ -111,6 +133,7 @@ func (s *Service) Charge(ctx context.Context, in ChargeInput) (Payment, error) {
 func (s *Service) Cancel(ctx context.Context, actor Customer, paymentID string) error {
 	p, err := s.store.ByID(ctx, paymentID)
 	if err != nil {
+		s.metrics.emitFailed(ctx, "not_found")
 		return err // 404 path: unknown or hidden
 	}
 	if p.CustomerID != actor.ID {
