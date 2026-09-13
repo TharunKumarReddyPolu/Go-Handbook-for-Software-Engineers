@@ -46,7 +46,7 @@ written; the rest have outlines tracked in [ROADMAP.md](ROADMAP.md).
 | 18 | [Kafka with Go](18-kafka-with-go/) | ✅ In depth |
 | 19 | [Performance](19-performance/) | ✅ In depth |
 | 20 | [Observability](20-observability/) | ✅ In depth |
-| 21 | [Security](21-security/) | 📝 Outline |
+| 21 | [Security](21-security/) | ✅ In depth |
 | 22 | [Production Go](22-production-go/) | 📝 Outline |
 | 23 | [Go Internals](23-go-internals/) | 📝 Outline |
 | 24 | [System Design with Go](24-system-design/) | 📝 Outline |

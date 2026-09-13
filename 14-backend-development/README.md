@@ -65,5 +65,5 @@ tests, and wiring it is the capstone's exercise
 - [x] Feature flags as the config/behavior boundary
 - [x] Complete runnable example with two-tier tests
 - [ ] Metrics and tracing wiring (20-observability)
-- [ ] Token verification mechanics (21-security)
+- [x] Token verification mechanics (21-security: [ch 2](../21-security/02-authentication-and-authorization.md))
 - [ ] Container/CI/CD packaging (22-production-go)

@@ -47,7 +47,7 @@ Last updated: 2026-09-12
 
 ## Phase 8: Security
 
-- [ ] 21-security: outline ready
+- [x] 21-security: complete (5 chapters: threat modeling & validation, authn/authz mechanics, TLS & certificates, limits & hardening, secrets & supply chain + secure example with deterministic tests)
 - [x] 20-observability: complete (5 chapters: logging, metrics, tracing/OTel, SLOs & alerting, incident debugging; instrumented inside the 14 service example)
 
 ## Phase 9: Production
