@@ -37,7 +37,7 @@ Last updated: 2026-09-12
 ## Phase 6: Distributed Systems
 
 - [x] 15-microservices: complete (5 chapters: progression, contracts, resilience quartet, idempotency/sagas/outbox, when-NOT + storm-tested resilience example)
-- [ ] 16-distributed-systems: outline ready
+- [x] 16-distributed-systems: complete (5 chapters: failure model/CAP, replication & consistency, leases & fencing, quorums & sharding, delivery & backpressure + zombie-leader lease example)
 - [ ] 17-messaging: outline ready
 - [x] 18-kafka-with-go: complete (3 chapters + client comparison + examples with skip-if-no-broker tests)
 
