@@ -1,35 +1,57 @@
 # 23 · Go Internals
 
-**Status: outline: chapters are planned work (see
-[ROADMAP.md](../ROADMAP.md)).** The goal: engineers who understand *why
-Go behaves the way it does*: not compiler engineers. The runtime
-material already drafted across [09](../09-memory-runtime/) (memory,
-GC, scheduler) and [19 §4](../19-performance/04-compiler-and-pgo.md)
-(compiler) lands here in full depth.
+**Status: in depth.** Seven chapters explaining why Go behaves the
+way it does: the compiler's decisions, the runtime's architecture,
+and the data-structure internals behind daily surprises. The goal
+is not compiler engineers: it is engineers who can read a
+diagnostic flag, explain a panic, and predict what the machine
+will do with clear code.
 
-## Planned chapters
+## Chapters
 
-1. **The compiler pipeline**: source → lexer → parser → AST → SSA →
-   machine code, with go/ast as the tooling-grade introduction;
-   where each optimization lives
-2. **SSA & optimizations**: inlining, bounds-check elimination,
-   escape analysis as passes with observable flags (extends
-   [19 §4](../19-performance/04-compiler-and-pgo.md))
-3. **Runtime architecture**: the runtime as a program: memory
-   allocator, GC, scheduler, netpoller; G/M/P and preemption at
-   internals depth (the engineering view lives in
-   [09](../09-memory-runtime/), the concurrency view in
-   [08 §6](../08-concurrency/06-concurrency-vs-parallelism.md))
-4. **Channels & maps under the hood**: hchan (lock, buffer,
-   sendq/recvq, direct handoff) and map internals (buckets,
-   overflow, growth, randomized order)
-5. **Interfaces, slices & strings under the hood**: itab and dynamic
-   dispatch (the nil traps, mechanically), header layouts, growth
-   strategy, string immutability
-6. **The memory model**: happens-before, the sync primitives'
-   guarantees ([08 §8](../08-concurrency/08-faq-notes.md) pairs)
-7. **Reflection & assembly**: reflect.Type/Value mechanics, costs,
-   when to refuse it; reading GOASM output for hot functions
+1. **[The compiler pipeline](01-compiler-pipeline.md)**: source →
+   AST → SSA → machine code, and where each optimization lives
+2. **[SSA & optimizations](02-ssa-and-optimizations.md)**: escape
+   analysis, inlining, and bounds-check elimination with real
+   diagnostic transcripts from the example package
+3. **[Runtime architecture](03-runtime-architecture.md)**: the
+   runtime as a program: G/M/P, the netpoller, allocator, GC,
+   growable stacks
+4. **[Channels & maps under the hood](04-channels-and-maps.md)**:
+   hchan fast paths and direct handoff; bucket layout, incremental
+   growth, randomized iteration
+5. **[Interfaces, slices & strings](05-interfaces-slices-strings.md)**:
+   the two-word interface (typed nil, mechanically), the slice
+   header (aliasing by construction), string immutability
+6. **[The memory model](06-memory-model.md)**: happens-before
+   edges, the complete practical table, and what -race really
+   checks
+7. **[Reflection & assembly](07-reflection-and-assembly.md)**: the
+   cost ladder, the cached-plan pattern, and reading the compiler's
+   output
 
-(Consolidated from 12 planned topics: data-structure internals
-grouped into two chapters, reflection and assembly paired.)
+## The example
+
+[examples/internals](examples/internals/) makes internals
+testable:
+
+- escape decisions pinned with `testing.AllocsPerRun`
+  (`Escaped` allocates; `StackLocal` does not)
+- the typed-nil trap and its `Normalize` fix, unit-tested
+- `SortedKeys` pinning the map-order discipline over 100 runs
+
+The compiler-flag transcripts quoted in chapters 1, 2, and 7 were
+captured against this package: rerun the commands yourself, they
+will match.
+
+## Where this sits
+
+- The *engineering* view of memory and GC lives in
+  [09](../09-memory-runtime/); this section provides the
+  architecture beneath it.
+- The *applied* optimization workflow lives in
+  [19](../19-performance/); chapters 1-2 here explain the
+  mechanism those benchmarks measure.
+- The *behavioral* concurrency rules live in
+  [08](../08-concurrency/); chapters 3-4-6 here explain why those
+  rules hold.

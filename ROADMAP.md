@@ -73,7 +73,7 @@ written; they are revisited opportunistically, not rewritten wholesale.
 ## Phase 9: Production
 
 - [x] 22-production-go: complete (6 chapters: config & secrets, server lifecycle, resource limits, dependency degradation, containers/Kubernetes, releases & rollbacks)
-- [ ] 23-go-internals: outline ready (7 chapters planned)
+- [x] 23-go-internals: complete (7 chapters: compiler pipeline, SSA & optimizations with real flag transcripts, runtime architecture, channels & maps, interfaces/slices/strings, memory model, reflection & assembly + AllocsPerRun-tested example)
 - [ ] 24-system-design: outline ready (7 paired design walkthroughs)
 
 ## Phase 10: FinTech
@@ -89,12 +89,11 @@ written; they are revisited opportunistically, not rewritten wholesale.
 
 ## Planned order for remaining sections
 
-1. 23-go-internals (7 chapters: the compiler/runtime picture)
-2. 09-memory-runtime (5 chapters: pairs with 19 §2 and 23 §3)
-3. 24-system-design (7 paired walkthroughs using the handbook's own tested examples)
-4. 11-tooling (4 chapters: the professional workflow)
-5. 27-open-source (4 chapters + the Go/Kafka/infrastructure special sections)
-6. 28-projects (5 level guides, written last)
+1. 09-memory-runtime (5 chapters: pairs with 19 §2 and 23 §3)
+2. 24-system-design (7 paired walkthroughs using the handbook's own tested examples)
+3. 11-tooling (4 chapters: the professional workflow)
+4. 27-open-source (4 chapters + the Go/Kafka/infrastructure special sections)
+5. 28-projects (5 level guides, written last)
 
 ## Standing work
 
