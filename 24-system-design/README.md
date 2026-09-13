@@ -9,25 +9,34 @@ handbook's patterns slot in where).
 
 ## Planned designs
 
-1. **URL shortener**: hashing/ID generation, read-heavy caching
-2. **Rate limiter**: token bucket at scale; extends
-   [08 §5](../08-concurrency/05-patterns.md)
-3. **API gateway**: routing, auth, backpressure at the edge
-4. **Payment service**: the idempotency/ledger stack from
-   [25 §1-3](../25-fintech-with-go/01-money-and-payments.md)
-5. **Notification system**: fan-out, per-channel rate limits,
+Each design is a worked walkthrough of the template, not a new
+system to build: the Go implementation considerations cite the
+handbook's own tested examples and explain how they compose at
+design scale.
+
+1. **URL shortener**: hashing/ID generation, read-heavy caching:
+   the warm-up design
+2. **Rate limiter & API gateway**: edge concerns in one design:
+   token buckets at scale, auth, backpressure at the door (extends
+   [21 §4](../21-security/04-limits-and-hardening.md))
+3. **Payment service & transaction ledger**: the
+   idempotency/ledger/outbox stack from
+   [25 §1-3](../25-fintech-with-go/01-money-and-payments.md) as one
+   coherent system
+4. **Notification system**: fan-out, per-channel rate limits,
    delivery guarantees
-6. **Job scheduler**: the stage-5 processor
+5. **Job scheduler & distributed cache**: the stage-5 processor
    ([08-concurrency](../08-concurrency/examples/05-jobprocessor/))
-   grown to a distributed fleet
-7. **Distributed cache**: sharding, singleflight, invalidation
+   grown to a fleet, plus sharding, singleflight, invalidation
    ([19 §3](../19-performance/03-concurrency-performance.md) pairs)
-8. **Event processing system**: the Kafka stack from
-   [18](../18-kafka-with-go/01-kafka-concepts.md) end to end
-9. **Transaction ledger**: the ledger from
-   [25 §2](../25-fintech-with-go/02-double-entry-ledger.md) at scale
-10. **Fraud detection pipeline**: the risk stack from
-    [25 §4](../25-fintech-with-go/04-risk-and-compliance.md)
-11. **Order processing system**: sagas + outbox
-    ([25 §3](../25-fintech-with-go/03-integrity-and-exactly-once.md))
-12. **Real-time analytics system**: windowed aggregation on streams
+6. **Event processing & real-time analytics**: the Kafka stack from
+   [18](../18-kafka-with-go/01-kafka-concepts.md) end to end, with
+   windowed aggregation on streams
+7. **Fraud detection & order processing**: the risk stack from
+   [25 §4](../25-fintech-with-go/04-risk-and-compliance.md) and the
+   saga-driven order flow from
+   [25 §3](../25-fintech-with-go/03-integrity-and-exactly-once.md)
+
+(Consolidated from 12 planned designs into 7: related systems are
+designed together because their tradeoffs only make sense side by
+side; the URL shortener stays solo as the teachable warm-up.)

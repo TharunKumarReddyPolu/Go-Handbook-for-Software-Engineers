@@ -5,8 +5,11 @@ are written last so they can reference finished sections (see
 [ROADMAP.md](../ROADMAP.md)).**
 
 Levels build on each other: each project uses the patterns from the
-sections it lists. Every project ships with tests, CI-appropriate
-checks, and a README: the handbook's own
+sections it lists. Guides are written one per level, not one per
+project: each guide walks its projects' common build order, gates,
+and verification, with the individual projects as milestones inside
+it. Every project ships with tests, CI-appropriate checks, and a
+README: the handbook's own
 [CONTRIBUTING standards](../CONTRIBUTING.md#code-standards) apply.
 
 ## Level 1: Foundations
