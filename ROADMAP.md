@@ -4,7 +4,27 @@ The handbook grows in phases. This file tracks what is done, what is next,
 and in what order remaining sections will be written. Progress checklists
 also live inside each section's README; this file is the top-level view.
 
-Last updated: 2026-09-12
+Last updated: 2026-09-13
+
+## How sections are written
+
+Sections are planned lean and written leaner: **few, deep chapters**, not
+a chapter per topic. The working rules, applied since section 13 and now
+stated in every outline:
+
+1. Related topics fold into one chapter (transactions into pooling,
+   channels with maps, rate limiter with the gateway) when they only make
+   sense side by side.
+2. A topic another section already owns is a cross-reference, never a
+   duplicate (outbox mechanics live in 25 §3; pprof in 19 §1; delivery
+   semantics in 18 §1).
+3. One worked example per section, not per chapter, with tests that pin
+   the chapter's claims.
+4. Chapter counts stay in the 4-7 range; an outline that plans more gets
+   consolidated before writing starts.
+
+Sections written before this rule was made explicit (01-12) stand as
+written; they are revisited opportunistically, not rewritten wholesale.
 
 ## Phase 1: Fundamentals
 
@@ -26,7 +46,7 @@ Last updated: 2026-09-12
 ## Phase 4: Testing & Tooling
 
 - [x] 10-testing: complete (4 chapters, compiled test suites)
-- [ ] 11-tooling: outline ready
+- [ ] 11-tooling: outline ready (4 chapters planned)
 
 ## Phase 5: Backend
 
@@ -53,8 +73,8 @@ Last updated: 2026-09-12
 ## Phase 9: Production
 
 - [x] 22-production-go: complete (6 chapters: config & secrets, server lifecycle, resource limits, dependency degradation, containers/Kubernetes, releases & rollbacks)
-- [ ] 23-go-internals: outline ready
-- [ ] 24-system-design: outline ready
+- [ ] 23-go-internals: outline ready (7 chapters planned)
+- [ ] 24-system-design: outline ready (7 paired design walkthroughs)
 
 ## Phase 10: FinTech
 
@@ -63,20 +83,18 @@ Last updated: 2026-09-12
 ## Phase 11: Interview, Open Source, Capstone
 
 - [x] 26-go-interview-preparation: complete (tiered tracks + scenarios)
-- [ ] 27-open-source: outline ready
-- [ ] 28-projects: outline with five levels; project guides come last so they can reference finished sections
-- [ ] 09-memory-runtime: outline ready (fits best after 23-go-internals drafting starts)
+- [ ] 27-open-source: outline ready (4 chapters + 3 special sections)
+- [ ] 28-projects: outline ready (five levels; one guide per level, so project guides can reference finished sections)
+- [ ] 09-memory-runtime: outline ready (5 chapters planned; fits best after 23-go-internals drafting starts)
 
 ## Planned order for remaining sections
 
-1. 02-go-language (done), 03-data-structures (done), 04-functions-methods-interfaces (done: Phase 1 finished)
-2. 06-packages-modules (done), 07-generics (done)
-3. 12-http-networking, 13-databases, 14-backend-development
-4. 09-memory-runtime (pairs with 19-performance)
-5. 15-microservices (done), 16-distributed-systems (done), 17-messaging (done: Phase 6 finished)
-6. 20-observability, 21-security, 22-production-go
-7. 11-tooling, 23-go-internals, 24-system-design
-8. 27-open-source, 28-projects (project guides reference finished sections)
+1. 23-go-internals (7 chapters: the compiler/runtime picture)
+2. 09-memory-runtime (5 chapters: pairs with 19 §2 and 23 §3)
+3. 24-system-design (7 paired walkthroughs using the handbook's own tested examples)
+4. 11-tooling (4 chapters: the professional workflow)
+5. 27-open-source (4 chapters + the Go/Kafka/infrastructure special sections)
+6. 28-projects (5 level guides, written last)
 
 ## Standing work
 

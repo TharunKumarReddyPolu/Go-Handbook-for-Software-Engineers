@@ -76,6 +76,10 @@ Pick the row that matches you, read the sections in order:
 - **Depth before breadth.** A topic is not covered until it answers: what is
   it, why does it exist, how does it work, when should I *not* use it, what
   goes wrong in production, and how would I debug it?
+- **Few, deep chapters.** Sections ship 4-7 chapters, not a chapter per
+  topic: related topics fold into one chapter, and a topic another section
+  already owns is a cross-reference, never a duplicate. One worked example
+  per section, with tests that pin its claims.
 - **Everything compiles.** Every example package passes `go build`, `go vet`,
   `go test -race`, and staticcheck in CI on every push. Tests skip cleanly
   when optional infrastructure (Kafka, Postgres) is absent.
