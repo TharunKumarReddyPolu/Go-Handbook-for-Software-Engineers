@@ -52,7 +52,7 @@ jobs:
       - name: No em dashes
         run: |
           pat=$(printf '\xe2\x80\x94')
-          unflagged=$(grep -rl --exclude-dir=.git "$pat" --include='*.md' --include='*.go' .)
+          unflagged=$(grep -rl --exclude-dir=.git "$pat" --include='*.md' --include='*.go' . || true)
           if [ -n "$unflagged" ]; then
             echo "Em dashes (U+2014) found in: $unflagged"
             echo "Rewrite the sentence; the handbook bans em dashes (see CONTRIBUTING.md)."
