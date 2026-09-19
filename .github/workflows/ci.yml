@@ -47,4 +47,14 @@ jobs:
           install-go: false
 
       - name: Check internal Markdown links
-        run: go run ./tools/linkcheck ./01-go-fundamentals ./05-errors ./08-concurrency ./10-testing ./18-kafka-with-go ./19-performance ./25-fintech-with-go ./26-go-interview-preparation ./meta
+        run: go run ./tools/linkcheck
+
+      - name: No em dashes
+        run: |
+          pat=$(printf '\xe2\x80\x94')
+          unflagged=$(grep -rl --exclude-dir=.git "$pat" --include='*.md' --include='*.go' .)
+          if [ -n "$unflagged" ]; then
+            echo "Em dashes (U+2014) found in: $unflagged"
+            echo "Rewrite the sentence; the handbook bans em dashes (see CONTRIBUTING.md)."
+            exit 1
+          fi
