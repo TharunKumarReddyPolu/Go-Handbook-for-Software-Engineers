@@ -77,16 +77,22 @@ func main() {
 	}
 }
 
+// inlineCode matches a Markdown inline code span (`...`), used to
+// remove code before link extraction: code spans can contain ](...)
+// shapes that are not links.
+var inlineCode = regexp.MustCompile("`[^`]*`")
+
 // linksIn reads a Markdown file and returns every relative link target.
-// Lines inside fenced code blocks (``` or ~~~) are skipped: Go code
-// legitimately contains [i](h) shapes (indexing followed by a call)
-// that the inline-link regex would otherwise misread.
+// Lines inside fenced code blocks (``` or ~~~) are skipped, and inline
+// code spans are stripped first: Go code legitimately contains [i](h)
+// shapes (indexing followed by a call) that the inline-link regex
+// would otherwise misread.
 func linksIn(path string) ([]string, error) {
 	data, err := os.ReadFile(path)
 	if err != nil {
 		return nil, err
 	}
-	var targets []string
+	var active []string
 	inFence := false
 	var fenceMarker string
 	for _, line := range strings.Split(string(data), "\n") {
@@ -104,6 +110,15 @@ func linksIn(path string) ([]string, error) {
 		if inFence {
 			continue
 		}
+		active = append(active, line)
+	}
+	// Strip inline code spans before link extraction: `f(x)(y)` or
+	// generics prose like `TopK[T any](...)` contain ](...)-shaped text
+	// that is code, not a link. Spans may span lines. (Windows made
+	// violations invisible for years: os.Stat on a trailing-dot path
+	// resolves to the parent directory.)
+	targets := []string{}
+	for _, line := range stripInlineCode(active) {
 		for _, match := range linkPattern.FindAllStringSubmatch(line, -1) {
 			raw := match[1]
 			// Strip anchors and resolve URL escapes such as %20.
@@ -127,11 +142,69 @@ func linksIn(path string) ([]string, error) {
 	return targets, nil
 }
 
+// stripInlineCode removes inline code spans (`...`) from the given
+// lines, correctly handling spans that open on one line and close on a
+// later one (“ ` “ runs are matched by length, as CommonMark does).
+// It returns fresh lines so the input slice is not modified.
+func stripInlineCode(lines []string) []string {
+	out := make([]string, len(lines))
+	copy(out, lines)
+	open := 0 // backtick count of a span awaiting its closer; 0 = none
+	for i, line := range out {
+		var b strings.Builder
+		j := 0
+		for j < len(line) {
+			if line[j] == '`' {
+				n := j
+				for n < len(line) && line[n] == '`' {
+					n++
+				}
+				run := n - j
+				switch {
+				case open == 0:
+					open = run
+					b.Reset()
+					b.WriteString(out[i][:j])
+				case run == open:
+					open = 0
+				}
+				j = n
+				continue
+			}
+			if open == 0 {
+				b.WriteByte(line[j])
+			}
+			j++
+		}
+		// Assign even when a span is still open: b holds the stripped
+		// prefix (or nothing, when the whole line is inside a span).
+		out[i] = b.String()
+	}
+	return out
+}
+
 // linkResolves reports whether target, interpreted relative to the
-// directory of source, points at an existing file.
+// directory of source, points at an existing file. Existence is checked
+// case-EXACTLY: os.Stat is case-insensitive on Windows and default macOS,
+// which would let links like [x](Ring.go) pass locally and fail on the
+// case-sensitive CI filesystem. The final path component is verified
+// against the parent directory's real entries by exact name.
 func linkResolves(source, target string) bool {
 	dir := filepath.Dir(source)
 	resolved := filepath.Clean(filepath.Join(dir, target))
-	_, err := os.Stat(resolved)
-	return err == nil
+	parent := filepath.Dir(resolved) // never empty; "." for bare names
+	base := filepath.Base(resolved)
+	entries, err := os.ReadDir(parent)
+	if err != nil {
+		// On case-sensitive systems this also catches a case-mismatched
+		// ancestor directory; on case-insensitive systems the ancestor
+		// opens and the final component is still checked exactly.
+		return false
+	}
+	for _, e := range entries {
+		if e.Name() == base {
+			return true
+		}
+	}
+	return false
 }
