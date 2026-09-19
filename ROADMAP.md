@@ -4,7 +4,49 @@ The handbook grows in phases. This file tracks what is done, what is next,
 and in what order remaining sections will be written; this file is the
 top-level view.
 
-Last updated: 2026-09-13
+Last updated: 2026-09-19
+
+## Repository at a glance
+
+All 28 sections are fully written; this table is the single-glance
+index. Chapter counts are Markdown chapters (the section README not
+counted); example packages are the compiled, CI-tested Go packages
+that back each section.
+
+| # | Section | Chapters | Example packages |
+|---|---|---|---|
+| 01 | [Go Fundamentals](01-go-fundamentals/) | 8 | `examples/hello`, `examples/zero` |
+| 02 | [The Go Language](02-go-language/) | 8 | `examples/seqops` |
+| 03 | [Data Structures](03-data-structures/) | 9 | `examples/dsbench`, `examples/heap`, `examples/lru`, `examples/ring` |
+| 04 | [Functions, Methods & Interfaces](04-functions-methods-interfaces/) | 7 | `examples/di` |
+| 05 | [Error Handling](05-errors/) | 2 | `examples/errorslib`, `examples/service` |
+| 06 | [Packages & Modules](06-packages-modules/) | 6 | - |
+| 07 | [Generics](07-generics/) | 6 | `examples/genlib` |
+| 08 | [Concurrency](08-concurrency/) | 8 | `examples/01-toy` through `examples/05-jobprocessor` (5-stage progression) |
+| 09 | [Memory & Runtime](09-memory-runtime/) | 5 | `examples/memwatch` |
+| 10 | [Testing](10-testing/) | 4 | `examples/calculator` |
+| 11 | [Tooling](11-tooling/) | 4 | - |
+| 12 | [HTTP & Networking](12-http-networking/) | 5 | `examples/api` |
+| 13 | [Databases](13-databases/) | 5 | `examples/bank` |
+| 14 | [Backend Development](14-backend-development/) | 5 | `examples/service` (7 internal packages, incl. observability wiring) |
+| 15 | [Microservices](15-microservices/) | 5 | `examples/resilience` |
+| 16 | [Distributed Systems](16-distributed-systems/) | 5 | `examples/lease` |
+| 17 | [Messaging](17-messaging/) | 4 | `examples/messaging` |
+| 18 | [Kafka with Go](18-kafka-with-go/) | 4 | `examples` (franz-go service; skips cleanly without a broker) |
+| 19 | [Performance](19-performance/) | 4 | `examples/channels-vs-mutex`, `examples/join`, `examples/profiling` |
+| 20 | [Observability](20-observability/) | 5 | lives inside `14/examples/service` (`obshttp`, `otelwiring`) |
+| 21 | [Security](21-security/) | 5 | `examples/secure` |
+| 22 | [Production Go](22-production-go/) | 6 | - |
+| 23 | [Go Internals](23-go-internals/) | 7 | `examples/internals` |
+| 24 | [System Design with Go](24-system-design/) | 7 | - (design walkthroughs; cites other sections' examples) |
+| 25 | [FinTech with Go](25-fintech-with-go/) | 4 | `examples/ledger` |
+| 26 | [Go Interview Preparation](26-go-interview-preparation/) | 4 | - |
+| 27 | [Open Source](27-open-source/) | 7 | - (4 chapters + 3 special sections) |
+| 28 | [Projects](28-projects/) | 5 | - (5 level guides; the capstone assembles the examples above) |
+
+Totals: **154 chapters across 28 sections, 20 with tested example
+packages of their own**, one root Go module: `go build ./...` and
+`go test ./... -race` cover every example in every section.
 
 ## How sections are written
 
