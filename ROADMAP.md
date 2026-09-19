@@ -85,11 +85,10 @@ written; they are revisited opportunistically, not rewritten wholesale.
 
 - [x] 26-go-interview-preparation: complete (tiered tracks + scenarios)
 - [x] 27-open-source: complete (4 chapters: repo & first-issue selection, codebase reading, the contribution loop, maintainer communication + 3 special sections: contributing to Go (Gerrit/CLA/proposals), the Kafka-in-Go ecosystem (KIPs, tooling layers), Go-based infrastructure (Kubernetes/etcd/Prometheus))
-- [ ] 28-projects: outline ready (five levels; one guide per level, so project guides can reference finished sections)
+- [x] 28-projects: complete (5 level guides, 18 projects as milestones: foundations, backend patterns, distributed systems, fintech integrity + the Level 5 capstone: production-grade financial transaction platform with six milestones and outside-verifiable acceptance criteria)
 
-## Planned order for remaining sections
-
-1. 28-projects (5 level guides, written last)
+**The roadmap is complete: all 28 sections are written.** Remaining work is
+standing maintenance (below) and opportunistic improvement.
 
 ## Standing work
 

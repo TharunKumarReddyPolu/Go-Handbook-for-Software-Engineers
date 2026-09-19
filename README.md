@@ -53,7 +53,7 @@ written; the rest have outlines tracked in [ROADMAP.md](ROADMAP.md).
 | 25 | [FinTech with Go](25-fintech-with-go/) | ✅ In depth |
 | 26 | [Go Interview Preparation](26-go-interview-preparation/) | ✅ In depth |
 | 27 | [Open Source](27-open-source/) | ✅ In depth |
-| 28 | [Projects](28-projects/) | 📝 Outline |
+| 28 | [Projects](28-projects/) | ✅ In depth |
 
 Progress and the writing order live in [ROADMAP.md](ROADMAP.md).
 

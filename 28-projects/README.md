@@ -1,70 +1,43 @@
 # 28 · Projects
 
-**Status: outline with the full project ladder defined: project guides
-are written last so they can reference finished sections (see
-[ROADMAP.md](../ROADMAP.md)).**
+**Status: in depth.** Five level guides, 18 projects, one capstone.
+Guides are written one per level: each walks its projects' common
+rules, build order, and gates, with the individual projects as
+milestones inside the guide. Every project exercises named handbook
+sections: the patterns are already explained and tested there; the
+guides organize them into builds.
 
-Levels build on each other: each project uses the patterns from the
-sections it lists. Guides are written one per level, not one per
-project: each guide walks its projects' common build order, gates,
-and verification, with the individual projects as milestones inside
-it. Every project ships with tests, CI-appropriate checks, and a
-README: the handbook's own
-[CONTRIBUTING standards](../CONTRIBUTING.md#code-standards) apply.
+## The levels
 
-## Level 1: Foundations
+| Level | Guide | Projects | The skill it builds |
+|---|---|---|---|
+| 1 | [Foundations](01-level-1-foundations.md) | CLI tool, URL shortener, REST API, file processor | fundamentals under real constraints: stdlib only |
+| 2 | [Backend patterns](02-level-2-backend-patterns.md) | task queue, crawler, rate limiter, Redis-backed API, auth service | bounded resources, degradation, identity |
+| 3 | [Distributed systems](03-level-3-distributed-systems.md) | event-driven orders, Kafka pipeline, job scheduler, notifications, metrics platform | delivery semantics, leases, honest 202s |
+| 4 | [FinTech-grade integrity](04-level-4-fintech-integrity.md) | payment processing, financial ledger, fraud pipeline, distributed transactions | money never moves twice |
+| 5 | [Capstone](05-capstone-financial-platform.md) | production-grade financial transaction platform | everything, assembled under real tensions |
 
-| Project | Sections it exercises |
-|---|---|
-| CLI tool (flags, io, testing) | [01](../01-go-fundamentals/README.md), [10](../10-testing/README.md) |
-| URL shortener (stdlib HTTP) | [01](../01-go-fundamentals/README.md), [05](../05-errors/README.md), [12](../12-http-networking/) |
-| REST API (stdlib, in-memory store) | [05](../05-errors/README.md), [10](../10-testing/README.md) |
-| File processor (streaming, worker pool) | [08](../08-concurrency/README.md) stages 2-3 |
+## The two rules that hold across all levels
 
-## Level 2: Backend patterns
+1. **Gates before glory.** Every level's guide defines shared gates
+   (`gofmt`, `go vet`, `-race` tests, property tests where money is
+   involved) that outrank feature completeness. A project that
+   "works" without its gates is not done.
+2. **Honesty is a deliverable.** Every README states what is lost on
+   crash, what degrades when dependencies die, and what is *not*
+   handled. Hidden gaps fail review here and in production alike.
 
-| Project | Sections it exercises |
-|---|---|
-| Task queue (bounded, retries, DLQ shape) | [08](../08-concurrency/README.md) stage 5 |
-| URL crawler (politeness, rate limits) | [08 §5](../08-concurrency/05-patterns.md) |
-| Rate limiter service | [08 §5](../08-concurrency/05-patterns.md), [19 §3](../19-performance/03-concurrency-performance.md) |
-| Redis-backed API (cache-aside, singleflight) | [13](../13-databases/), [19 §3](../19-performance/03-concurrency-performance.md) |
-| Authentication service (sessions, hashing) | [12](../12-http-networking/), [21](../21-security/) |
+Levels build on each other; each guide's "when this level is done"
+section is the exit test. The capstone's acceptance criteria are
+designed to be verifiable by an outside engineer: that is the
+standard the whole ladder aims at.
 
-## Level 3: Distributed systems
+## Where to start
 
-| Project | Sections it exercises |
-|---|---|
-| Event-driven order service | [18](../18-kafka-with-go/README.md), [25 §3](../25-fintech-with-go/03-integrity-and-exactly-once.md) |
-| Kafka-based processing system | [18](../18-kafka-with-go/README.md) end to end |
-| Distributed job scheduler | [16](../16-distributed-systems/), leases + the stage-5 pattern |
-| Notification platform | [17](../17-messaging/), fan-out at scale |
-| Metrics platform | [20](../20-observability/), [19](../19-performance/README.md) |
-
-## Level 4: FinTech-grade integrity
-
-| Project | Sections it exercises |
-|---|---|
-| Payment processing system | [25 §1](../25-fintech-with-go/01-money-and-payments.md), [18](../18-kafka-with-go/README.md) |
-| Financial ledger | [25 §2](../25-fintech-with-go/02-double-entry-ledger.md) (the example, productionized) |
-| Fraud detection pipeline | [25 §4](../25-fintech-with-go/04-risk-and-compliance.md) |
-| Distributed transaction processor | [25 §3](../25-fintech-with-go/03-integrity-and-exactly-once.md), [16](../16-distributed-systems/) |
-
-## Level 5: Capstone
-
-**Production-Grade Financial Transaction Platform**
-
-Everything the handbook teaches in one system:
-
-- **Go**: service layout per [14](../14-backend-development/)
-- **PostgreSQL**: the ledger per [25 §2](../25-fintech-with-go/02-double-entry-ledger.md)
-- **Kafka**: event backbone per [18](../18-kafka-with-go/README.md)
-- **Redis**: caching per [13](../13-databases/)
-- **REST/gRPC**: transport per [12](../12-http-networking/)
-- **OpenTelemetry**: per [20](../20-observability/)
-- **Docker + Kubernetes**: per [22](../22-production-go/)
-- **CI/CD**: per [22](../22-production-go/)
-
-Success criteria (the real ones): idempotent end to end, reconciled
-nightly, SLOs defined, chaos-tested consumer, blameless-postmortem
-ready. The capstone guide walks the build order and gates.
+- New to Go: begin at [Level 1](01-level-1-foundations.md) after
+  sections [01](../01-go-fundamentals/README.md)-[05](../05-errors/README.md).
+- Backend engineer new to Go: [Level 2](02-level-2-backend-patterns.md)
+  after [12](../12-http-networking/README.md)-[14](../14-backend-development/README.md).
+- Practiced Go engineer: skim Levels 1-2, start
+  [Level 3](03-level-3-distributed-systems.md), and treat Levels 4-5
+  as the main event.
