@@ -44,20 +44,4 @@ jobs) at increasing production-readiness:
 
 Each stage compiles and has tests: `go test ./08-concurrency/... -race`
 
-## Progress checklist
 
-- [x] Goroutines
-- [x] Channels (buffered/unbuffered)
-- [x] Channel ownership
-- [x] Directional channels
-- [x] select
-- [x] Context
-- [x] sync.Mutex / RWMutex / Once / WaitGroup
-- [x] atomic operations
-- [x] sync.Map
-- [x] Worker pools, fan-out, fan-in, pipelines
-- [x] Cancellation, timeouts
-- [x] Backpressure, rate limiting, semaphores
-- [x] Deadlocks, starvation, race conditions, data races
-- [x] Goroutine leaks
-- [x] Concurrency vs parallelism

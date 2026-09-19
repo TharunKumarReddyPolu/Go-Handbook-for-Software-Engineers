@@ -45,18 +45,4 @@ By the end of this section you can:
 go test ./25-fintech-with-go/... -race
 ```
 
-## Progress checklist
 
-- [x] Payment processing and retries
-- [x] Idempotency (payment-shaped, durable pattern)
-- [x] Money representation in Go
-- [x] Transaction processing and integrity
-- [x] Double-entry bookkeeping with tested invariants
-- [x] Distributed transactions and the outbox pattern
-- [x] Exactly-once misconceptions
-- [x] Reconciliation and audit logs
-- [x] Fraud detection and risk engines
-- [x] Market data and event-driven finance
-- [x] Regulatory considerations
-- [x] Data security
-- [x] High-throughput and low-latency notes

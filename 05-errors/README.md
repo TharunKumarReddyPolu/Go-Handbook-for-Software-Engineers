@@ -31,19 +31,4 @@ By the end of this section you can:
 - `examples/service/`: a fake "payment" service mapping domain errors to
   HTTP responses, with tests
 
-## Progress checklist
 
-- [x] error interface
-- [x] errors.New
-- [x] fmt.Errorf
-- [x] %w wrapping
-- [x] errors.Is
-- [x] errors.As
-- [x] sentinel errors
-- [x] custom errors
-- [x] error chains
-- [x] validation errors
-- [x] domain errors
-- [x] HTTP error mapping
-- [x] logging errors
-- [x] retryable vs non-retryable

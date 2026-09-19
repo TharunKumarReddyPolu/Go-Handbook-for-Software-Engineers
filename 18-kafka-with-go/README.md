@@ -43,17 +43,4 @@ go test ./18-kafka-with-go/...                      # unit tier, always green
 KAFKA_BROKERS=localhost:9092 go test ./18-kafka-with-go/... -tags=broker
 ```
 
-## Progress checklist
 
-- [x] Kafka architecture and concepts
-- [x] Topics, partitions, offsets, consumer groups
-- [x] Delivery semantics (at-least-once / at-most-once / exactly-once myths)
-- [x] Go client comparison with tradeoffs
-- [x] Producer implementation (batching, idempotence)
-- [x] Consumer implementation (groups, offset management)
-- [x] Partitioning and ordering
-- [x] Serialization and schema evolution
-- [x] Retries and dead-letter handling
-- [x] Idempotent consumers
-- [x] Observability
-- [x] Performance tuning

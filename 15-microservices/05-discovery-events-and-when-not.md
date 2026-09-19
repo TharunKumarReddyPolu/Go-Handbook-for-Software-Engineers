@@ -145,6 +145,24 @@ If a team can name these four and point at code, they can split
 *safely* whenever org pain arrives. If they cannot, microservices
 would be a distributed monolith on day one.
 
+## Service mesh: what it adds, what it costs
+
+A service mesh (Istio, Linkerd, Cilium mesh) moves some [§3](03-resilience-patterns.md) concerns out of your process: mTLS between services, retries and outlier detection, traffic splitting for canaries, uniform telemetry. The Go-specific question is what it removes, and the honest ledger has both columns.
+
+What a mesh genuinely gives you:
+
+- Uniform mTLS and workload identity without touching application code, which matters most when not every service is Go.
+- Fleet-wide traffic policy: canary weights, regional failover, outlier ejection, enforced at the platform layer instead of per team.
+- Consistent traces and golden metrics across a polyglot fleet.
+
+What it costs, in Go-specific terms:
+
+- Retry budgets must count mesh hops. Your [12 §4](../12-http-networking/04-clients-and-timeouts.md) client retrying 3x on top of a mesh retrying 3x is a 9x amplification; the budget math from [§3](03-resilience-patterns.md) breaks unless the mesh's attempts are inside it.
+- Per-hop latency and resource overhead (sidecar or eBPF) lands on your p99 and your [22 §3](../22-production-go/03-resource-limits.md) budget.
+- A second failure domain to debug at 3 a.m., with its own upgrade cadence and failure modes.
+
+The handbook's position: for a mostly-Go fleet, the resilience quartet in-process plus mTLS at ingress (see [21 §3](../21-security/03-tls-certificates.md)) covers most needs without a mesh. Adopt one when the fleet is genuinely polyglot or when traffic policy must become a platform decision rather than a per-team one. It is a boundary move with ongoing rent, not a feature.
+
 ## Common Mistakes
 
 - **VIP-balanced gRPC and the one-hot-pod mystery**: p99 fine, one

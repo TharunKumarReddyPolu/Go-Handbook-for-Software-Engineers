@@ -40,15 +40,4 @@ Run the benchmarks:
 go test ./19-performance/... -bench=. -benchmem
 ```
 
-## Progress checklist
 
-- [x] Benchmarking methodology
-- [x] CPU / memory / allocation profiling with pprof
-- [x] Execution tracing
-- [x] Escape analysis with real examples
-- [x] GC behavior and tuning (GOGC, GOMEMLIMIT)
-- [x] Concurrency performance: lock contention, channel costs
-- [x] Batching and pooling
-- [x] Zero-copy techniques
-- [x] PGO
-- [x] When optimization is premature

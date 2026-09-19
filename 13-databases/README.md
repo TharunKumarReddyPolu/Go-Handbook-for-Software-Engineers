@@ -50,17 +50,4 @@ Deliberately out of scope here: injection and secret handling
 ([20-observability](../20-observability/)), the service-layer wiring
 ([14-backend-development](../14-backend-development/)).
 
-## Progress checklist
 
-- [x] database/sql: pool model, context discipline, scanning, drivers
-- [x] Transactions: the transaction function, isolation levels, retries
-- [x] Optimistic vs pessimistic concurrency
-- [x] Pool sizing math, saturation symptoms, fleet budgets
-- [x] pgx vs database/sql, PgBouncer protocol caveats
-- [x] Migrations without frameworks, expand/contract deploy rules
-- [x] Repository pattern: consumer-side interfaces, domain shapes
-- [x] ORM tradeoffs and sqlc, decided honestly
-- [x] Two-tier testing with a parity harness
-- [x] Cache-aside with Redis, invalidation, singleflight stampede control
-- [ ] Redis cluster topology and distributed locks (16-distributed-systems)
-- [ ] Full EXPLAIN walkthrough (19-performance follow-up)

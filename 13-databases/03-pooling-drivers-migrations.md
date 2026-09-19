@@ -218,6 +218,16 @@ same expand/contract discipline at test scale.
   keep on specific paths.
 - Pool stats (`db.Stats()`) are cheap to log periodically and are the
   first place saturation shows ([19 §1](../19-performance/01-measure-first.md)).
+- The EXPLAIN walkthrough, once per suspicious query:
+  `EXPLAIN (ANALYZE, BUFFERS) SELECT ...` and read the plan top-down.
+  A `Seq Scan` on a large table where you have an index means the
+  planner rejected it (type mismatch, function-wrapped column, low
+  selectivity estimate). Estimated `rows` diverging wildly from actual
+  rows means stale statistics: run `ANALYZE`. A nested loop planned
+  for an estimated 3 rows that actually iterated 30000 is the classic
+  latency explosion. Fix the data side (index, statistics, query
+  shape) before reaching for planner hints, which Postgres does not
+  support anyway.
 
 ## Concurrency Considerations
 

@@ -53,17 +53,4 @@ tests, and wiring it is the capstone's exercise
 ([28-projects](../28-projects/)). The config switch
 (`STORE=postgres`) documents exactly where it lands.
 
-## Progress checklist
 
-- [x] Layered layout with one-way dependency direction
-- [x] Configuration: env-first, batched validation, secret redaction
-- [x] Wiring: explicit graph, constructor escalation, extracted run loop
-- [x] Validation vs authn vs authz: the three gates
-- [x] Coarse (middleware) vs fine (service) authorization
-- [x] Request-scoped logging plumbing
-- [x] Liveness vs readiness with tiered dependency probes
-- [x] Feature flags as the config/behavior boundary
-- [x] Complete runnable example with two-tier tests
-- [ ] Metrics and tracing wiring (20-observability)
-- [x] Token verification mechanics (21-security: [ch 2](../21-security/02-authentication-and-authorization.md))
-- [ ] Container/CI/CD packaging (22-production-go)

@@ -42,21 +42,4 @@ the teaching implementation; its backstop is always a storage
 constraint ([15 §4](../15-microservices/04-idempotency-sagas-outbox.md)'s
 claim table).
 
-## Progress checklist
 
-- [x] Partial failure and the unknown-response state
-- [x] CAP stated precisely, PACELC for the daily tradeoff
-- [x] The per-operation consistency matrix artifact
-- [x] The consistency ladder; read-your-writes as routing, not consensus
-- [x] Conflict resolution strategies and the LWW warning
-- [x] Raft intuition: majorities and the replicated log
-- [x] Leases with TTLs derived from measured pauses
-- [x] Fencing tokens with the zombie-leader test
-- [x] Quorum math and its caveats (sloppy quorums, conflicts)
-- [x] Shard keys as ordering promises; hot-key mitigations
-- [x] Resharding: consistent hashing vs mapping tables, dual-write
-- [x] Delivery semantics generalized; two-tier deduplication
-- [x] Backpressure: bounded queues, block-vs-shed policy
-- [x] Load shedding with priorities and Retry-After
-- [ ] Byzantine fault tolerance (out of scope by design: noted in ch. 1)
-- [ ] CRDT deep dive (ch. 2 names the shapes; formal treatment deferred)

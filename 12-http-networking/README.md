@@ -38,18 +38,4 @@ implementations, and TLS configuration live in
 wiring in [20-observability](../20-observability/); the full
 production service layout in [14-backend-development](../14-backend-development/).
 
-## Progress checklist
 
-- [x] ServeMux patterns, method matching, wildcards, PathValue
-- [x] Handler discipline and error mapping at the boundary
-- [x] Middleware: shapes, chain construction, ordering, recovery
-- [x] stdlib TimeoutHandler and MaxBytesHandler
-- [x] JSON: wire types, strict decoding, status codes
-- [x] Clients: transport cloning, the timeout knob map, pooling
-- [x] Retries with idempotency judgment
-- [x] Graceful shutdown: lifecycle, readiness, close ordering
-- [x] Runnable example with layered tests
-- [ ] TLS servers and internal mTLS (21-security)
-- [ ] Cookies, sessions, OAuth2/JWT (21-security)
-- [ ] CORS specifics (21-security)
-- [ ] Rate limiting implementation (08 §5 has the primitives)

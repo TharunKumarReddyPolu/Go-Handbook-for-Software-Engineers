@@ -40,22 +40,4 @@ quartet is for, and the test prints both.
 go test ./15-microservices/... -v   # watch the storm arithmetic
 ```
 
-## Progress checklist
 
-- [x] The progression: monolith, modular monolith, microservices
-- [x] Split-ready layout and the dependency-direction test
-- [x] Data ownership and the two rules of a real boundary
-- [x] REST vs gRPC as a decision table, not a war
-- [x] Versioning, compatibility discipline, deprecation process
-- [x] Timeout budgets propagated per hop
-- [x] Retries: classification, backoff, jitter, budget awareness
-- [x] Circuit breakers: state machine, half-open probing
-- [x] Bulkheads and the retry-storm arithmetic
-- [x] Idempotency keys: the three-promise contract
-- [x] Sagas: orchestration vs choreography, compensations
-- [x] The outbox and consumer idempotency (mechanics in 25 §3)
-- [x] Discovery and load balancing (incl. the gRPC/VIP trap)
-- [x] The call-vs-event decision rule
-- [x] The when-NOT-to anti-chapter with a refusal checklist
-- [ ] Service mesh deep dive (22-production-go)
-- [ ] Container/Kubernetes deployment mechanics (22-production-go)

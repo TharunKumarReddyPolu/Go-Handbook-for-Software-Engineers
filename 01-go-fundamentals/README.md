@@ -36,23 +36,4 @@ Runnable code lives in `examples/`:
 - `examples/hello/main.go`: smallest real program with a module
 - `examples/zero/main.go`: printing the zero value of every core type
 
-## Progress checklist
 
-- [x] Why Go exists
-- [x] Go philosophy
-- [x] Installing Go
-- [x] Go toolchain: go run / go build / go install / go env / go version
-- [x] Go workspace
-- [x] Basic program structure
-- [x] Variables
-- [x] Constants
-- [x] Basic types
-- [x] Zero values
-- [x] Type inference
-- [x] Type conversions
-- [x] Operators
-- [x] Control flow: if, switch, for, range
-- [x] defer, panic, recover
-- [x] Comments
-- [x] Naming conventions
-- [x] Coming from Java / Python / C++ / JavaScript

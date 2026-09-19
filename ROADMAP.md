@@ -1,8 +1,8 @@
 # Roadmap
 
 The handbook grows in phases. This file tracks what is done, what is next,
-and in what order remaining sections will be written. Progress checklists
-also live inside each section's README; this file is the top-level view.
+and in what order remaining sections will be written; this file is the
+top-level view.
 
 Last updated: 2026-09-13
 

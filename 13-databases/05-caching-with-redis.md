@@ -148,6 +148,22 @@ and context patterns bound the refresh fan-out; a job that refreshes
 top-K keys on a schedule converts most misses into hits, trading a
 bounded staleness for a flat database load.
 
+## Beyond a single Redis: cluster topology and distributed locks
+
+Everything above assumes one Redis. Two extensions matter when you outgrow it, and both change client behavior:
+
+**Redis Cluster** shards keys across nodes by hash slot (16384 slots; each key maps by `CRC16(key) mod 16384`, and `{user1234}:cart` style hash tags pin a key group to one slot). The consequences for the code above:
+
+- Multi-key operations (`MGET`, transactions, Lua) only touch keys in the same slot. Either design keys with hash tags or accept cross-slot work in client code.
+- `redis.ClusterClient` routes per key and follows `MOVED`/`ASK` redirects. Timeouts and pool settings apply per node, not per cluster, so capacity math changes.
+- Failover is automatic but not free: replicas promote, in-flight commands fail, and the cache-cold wave afterward is exactly the stampede this chapter controls.
+
+**Distributed locks** (`SET key value NX PX 30000`) look like a primitive and behave like a lease: the holder crashes, the lock outlives it, and someone else waits out your 30 seconds. Rules that keep them safe:
+
+- Every lock has a TTL and every holder has a fencing token (an atomic counter the storage checks); compare with the lease and fencing discipline in [16 §3](../16-distributed-systems/03-leader-election-leases-fencing.md), which applies verbatim to Redis.
+- Locks coordinate *cooperation*, never *correctness*: do not build a lock-based check-then-act around money movement; put that in a transaction ([13 §2](../13-databases/02-transactions-and-isolation.md)) or a ledger ([25 §2](../25-fintech-with-go/02-double-entry-ledger.md)).
+- Redlock-style multi-node locking trades failure modes rather than removing them; for correctness-critical work, prefer a single-node lock with fencing or consensus (etcd/ZooKeeper), not more Redis nodes.
+
 ## Common Mistakes
 
 - **Caching errors.** A failed DB lookup cached for the TTL turns a

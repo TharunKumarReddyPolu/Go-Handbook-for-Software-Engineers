@@ -44,18 +44,4 @@ go test ./10-testing/... -bench=. -benchmem
 go test ./10-testing/... -tags=integration
 ```
 
-## Progress checklist
 
-- [x] Unit testing
-- [x] Table-driven tests
-- [x] Subtests
-- [x] Test helpers and fixtures
-- [x] Test doubles: fakes, stubs, mocks
-- [x] httptest
-- [x] Integration testing
-- [x] End-to-end testing
-- [x] Benchmarking
-- [x] Coverage
-- [x] Race detection
-- [x] Fuzzing
-- [x] Property-style testing
