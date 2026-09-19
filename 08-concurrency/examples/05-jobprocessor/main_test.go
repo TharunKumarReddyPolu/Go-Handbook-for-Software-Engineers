@@ -146,7 +146,21 @@ func TestNoGoroutineLeakAfterStop(t *testing.T) {
 	p, wg, _ := newTestProcessor(t, 3, 8, RetryPolicy{MaxAttempts: 1})
 	_ = p.Submit(Job{ID: "x", Run: func(ctx context.Context, j Job) error { return nil }})
 	p.Stop(wg) // no cancel: Stop alone must end all workers
-	if after := runtime.NumGoroutine(); after > before {
-		t.Errorf("goroutines before=%d after=%d: leak", before, after)
+
+	// A single NumGoroutine sample mistakes transient runtime
+	// goroutines (GC, test framework) for leaks. A real leak HOLDS
+	// the elevated count; poll until the count returns to baseline.
+	// This is the sampling discipline goleak is built on.
+	deadline := time.Now().Add(2 * time.Second)
+	for {
+		after := runtime.NumGoroutine()
+		if after <= before {
+			break
+		}
+		if time.Now().After(deadline) {
+			t.Errorf("goroutines before=%d after=%d: leak", before, after)
+			break
+		}
+		time.Sleep(10 * time.Millisecond)
 	}
 }
