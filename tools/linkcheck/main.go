@@ -17,7 +17,6 @@ import (
 	"net/url"
 	"os"
 	"path/filepath"
-	"regexp"
 	"strings"
 )
 
@@ -76,11 +75,6 @@ func main() {
 		os.Exit(1)
 	}
 }
-
-// inlineCode matches a Markdown inline code span (`...`), used to
-// remove code before link extraction: code spans can contain ](...)
-// shapes that are not links.
-var inlineCode = regexp.MustCompile("`[^`]*`")
 
 // linksIn reads a Markdown file and returns every relative link target.
 // Lines inside fenced code blocks (``` or ~~~) are skipped, and inline
