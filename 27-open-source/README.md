@@ -1,39 +1,44 @@
 # 27 · Open Source
 
-**Status: outline: chapters are planned work (see
-[ROADMAP.md](../ROADMAP.md)).** This repository's own
-[CONTRIBUTING.md](../CONTRIBUTING.md) doubles as a worked example of
-the standards below.## Planned chapters
+**Status: in depth.** Four chapters on the contribution craft, plus
+three special sections on the destinations that matter most to Go
+engineers. This repository's own [CONTRIBUTING.md](../CONTRIBUTING.md)
+and [PR template](../.github/pull_request_template.md) are the worked
+example the chapters refer to.
 
-1. **Finding the right repository & first issue**: evaluating
-   activity, governance, and maintainer responsiveness (the criteria
-   used in [18 §2](../18-kafka-with-go/02-go-clients.md)); issue
-   quality signals, labels, asking before building
-2. **Understanding a Go codebase fast**: package layout reading,
-   `go doc`, tests as documentation, starting from failing behavior
-3. **Contributing well**: good issues, good PRs (small scope, tests
-   included, a description that explains *why*: the checklist in
-   [pull_request_template.md](../.github/pull_request_template.md)),
-   git workflow, code review as giver and receiver, CLAs and what
-   they govern
-4. **Maintainer communication**: negotiating scope, handling "no",
-   long-term contributor habits
+## Chapters
+
+1. **[Finding the right repository & first issue](01-finding-repo-and-first-issue.md)**:
+   the health-signal table, choosing the first issue, ask-before-build
+2. **[Understanding a Go codebase fast](02-understanding-codebases.md)**:
+   behavior-first reading, tests as spec, tooling-assisted blast radius
+3. **[Contributing well: the issue → PR → review loop](03-contributing-well.md)**:
+   good issues, PRs that merge, review in both directions, CLA/DCO
+4. **[Maintainer communication & long-term contribution](04-maintainer-communication.md)**:
+   negotiating scope, handling no, the reliability habits that compound
 
 ## Special sections
 
-- **Contributing to Go**: the Go project's own process: proposals,
-  Gerrit (not GitHub PRs), CLA, the compatibility promise as review
-  context; linking the official contribution guide and proposal
-  process.
-- **Contributing to Kafka with Go**: the Go-Kafka ecosystem's OSS
-  surface: franz-go/sarama/segmentio clients, ecosystem tools,
-  testcontainers modules, and how the
-  [18-kafka-with-go](../18-kafka-with-go/README.md) examples model
-  the PRs those projects actually merge (docs, features, KIP
-  tracking).
-- **Contributing to Go-based infrastructure**: Kubernetes, etcd,
-  Prometheus: their SIGs, their review cultures, and what transfers
-  from smaller projects.
+- **[Contributing to Go](special-contributing-to-go.md)**: the official
+  process: CLA, Gerrit, `git-codereview`, the commit format, proposals,
+  and the compatibility promise as review context
+- **[Contributing to the Kafka-in-Go ecosystem](special-kafka-ecosystem.md)**:
+  the three contribution layers, KIP tracking, testcontainers and
+  harness work, building on [18-kafka-with-go](../18-kafka-with-go/README.md)
+- **[Contributing to Go-based infrastructure](special-infrastructure.md)**:
+  Kubernetes SIGs and KEPs, etcd's review depth, `client_golang` as
+  the approachable high-impact target
 
-(Consolidated from 9 planned chapters into 4: the issue/PR/review/git
-mechanics are one contribution loop, taught once.)
+## The through-line
+
+Open-source skill is not generosity; it is engineering with strangers:
+same rigor, added communication. The chapters teach the loop once
+([§3](03-contributing-well.md)); the special sections show how the
+loop flexes when the destination is Gerrit, a KIP, or a SIG.
+
+| If you want to... | Read |
+|---|---|
+| Land your first merged PR anywhere | 01 → 02 → 03 |
+| Contribute to the Go project itself | 03, then the Go special section |
+| Contribute to Kafka clients or tooling | 03, then the Kafka special section |
+| Grow into a trusted, long-term contributor | 04, then the infrastructure special section |

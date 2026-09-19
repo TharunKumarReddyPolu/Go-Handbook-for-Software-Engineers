@@ -84,13 +84,12 @@ written; they are revisited opportunistically, not rewritten wholesale.
 ## Phase 11: Interview, Open Source, Capstone
 
 - [x] 26-go-interview-preparation: complete (tiered tracks + scenarios)
-- [ ] 27-open-source: outline ready (4 chapters + 3 special sections)
+- [x] 27-open-source: complete (4 chapters: repo & first-issue selection, codebase reading, the contribution loop, maintainer communication + 3 special sections: contributing to Go (Gerrit/CLA/proposals), the Kafka-in-Go ecosystem (KIPs, tooling layers), Go-based infrastructure (Kubernetes/etcd/Prometheus))
 - [ ] 28-projects: outline ready (five levels; one guide per level, so project guides can reference finished sections)
 
 ## Planned order for remaining sections
 
-1. 27-open-source (4 chapters + the Go/Kafka/infrastructure special sections)
-2. 28-projects (5 level guides, written last)
+1. 28-projects (5 level guides, written last)
 
 ## Standing work
 
