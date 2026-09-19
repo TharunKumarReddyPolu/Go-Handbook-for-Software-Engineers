@@ -19,8 +19,8 @@ cd Go-Handbook-for-Software-Engineers
 go test ./08-concurrency/... -race   # see the examples run
 ```
 
-Read the Markdown in any editor. Sections marked **[In depth]** are fully
-written; the rest have outlines tracked in [ROADMAP.md](ROADMAP.md).
+Read the Markdown in any editor. Every section is fully written, with
+chapter status and plans tracked in [ROADMAP.md](ROADMAP.md).
 
 ## The sections
 

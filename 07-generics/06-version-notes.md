@@ -56,6 +56,12 @@ The rules that remain after 1.27:
   non-generic method works. If you need interface dispatch, the
   method cannot be generic.
 
+This chapter's central claim is pinned by a compiled example, not
+prose alone: `Ring.Map` in
+[03-data-structures/examples/ring](../03-data-structures/examples/ring/ring.go)
+declares its own type parameter, and its test runs on every CI pass.
+If a future toolchain change invalidates the claim, CI breaks first.
+
 The migration order for pre-1.27 workaround code: free functions
 become methods (mechanical), wrapper "view types" dissolve, and
 interface-shaped workarounds stay (they were never wrong, just

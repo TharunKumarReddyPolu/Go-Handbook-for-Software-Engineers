@@ -54,6 +54,20 @@ func (r *Ring[T]) Pop() (T, bool) {
 	return v, true
 }
 
+// Map applies f to every element in FIFO order and returns a ring of
+// the same capacity holding the results. The method declares its own
+// type parameter U: generic methods, introduced in Go 1.27
+// (07-generics/06-version-notes.md). CI compiling and testing this
+// method is the handbook's empirical pin on that version claim.
+func (r *Ring[T]) Map[U any](f func(T) U) *Ring[U] {
+	out := NewRing[U](len(r.items))
+	for i := 0; i < r.count; i++ {
+		idx := (r.head + i) % len(r.items)
+		out.Push(f(r.items[idx]))
+	}
+	return out
+}
+
 // Peek returns the oldest element without removing it.
 func (r *Ring[T]) Peek() (T, bool) {
 	var zero T

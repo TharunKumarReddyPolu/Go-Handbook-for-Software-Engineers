@@ -72,7 +72,7 @@ so it is not nil, and calling a method on it that dereferences the
 pointer panics. `var w io.Writer = (*os.File)(nil); w == nil` is false.
 This is a consequence of representation, not a bug; check for nil at the
 value level when you construct interfaces.
-→ [08-concurrency/08-faq-notes.md](08-concurrency/08-faq-notes.md) and section 02
+→ [02-go-language/06-interfaces-and-embedding.md](02-go-language/06-interfaces-and-embedding.md)
 
 ## Why do goroutines leak?
 
@@ -110,9 +110,9 @@ reproducible benchmark showing before/after.
 Start with `go build -gcflags="-m"` to see escape analysis, then heap
 profiles from `pprof` to find who allocates, then `runtime/metrics` or
 `GODEBUG=gctrace=1` for GC pressure. Sudden growth is usually a leak:
-unbounded maps/slices, goroutines holding references, or missing
-`T.SetFinalizer`-free long-lived caches. Section 19 walks through the
-actual commands with expected output.
+unbounded maps/slices, goroutines holding references, or caches that
+grow without bound. Sections 19 and 09 walk through the actual
+commands with expected output.
 → [19-performance](19-performance/) and [09-memory-runtime](09-memory-runtime/)
 
 ## How do I contribute to Go?
@@ -129,4 +129,3 @@ walks the general workflow.
 
 Search [GLOSSARY.md](GLOSSARY.md) for terminology, or open an issue with
 the question if it belongs in this FAQ.
-FAQ.

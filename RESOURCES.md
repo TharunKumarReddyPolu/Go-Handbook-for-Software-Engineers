@@ -87,7 +87,7 @@ to pad the count. Official sources come first in each category.
 ## FinTech engineering
 
 - [Stripe's API idempotency documentation](https://docs.stripe.com/api/idempotent_requests): the industry reference design
-- [Martín Kleppmann on exactly-once delivery](https://www.confluent.io/blog/exactly-once-semantics-are-possible-heres-how-apache-kafka-does-it/): precise about what "exactly-once" can and cannot mean
+- [Exactly-once semantics are possible: here's how Kafka does it](https://www.confluent.io/blog/exactly-once-semantics-are-possible-heres-how-apache-kafka-does-it/): Jay Kreps' precise framing of what "exactly-once" can and cannot mean
 - [The canonical paper on event sourcing and CQRS](https://martinfowler.com/eaaDev/EventSourcing.html): Fowler's write-up is the stable reference
 - [PCI DSS overview](https://www.pcisecuritystandards.org/): regulatory context, not engineering advice
 

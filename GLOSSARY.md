@@ -83,8 +83,9 @@ heap; superseded in practice by GOMEMLIMIT.
 **GOMEMLIMIT**: A soft memory limit for the runtime; makes Go safe to run
 in containers with fixed memory.
 
-**GOMAXPROCS**: Maximum OS threads executing Go code simultaneously.
-Defaults to CPU count; in containers set it to the CPU quota.
+**GOMAXPROCS**: Maximum OS threads simultaneously executing Go code.
+Defaults to the CPU count and, since Go 1.25, is cgroup-aware in
+containers. Set it explicitly when the runtime cannot infer the quota.
 
 **Scheduler**: The runtime component distributing goroutines over OS
 threads using an M:N model with work stealing.
@@ -145,8 +146,8 @@ together without replace directives.
 **Race detector**: The `-race` build mode instrumenting memory accesses
 to find data races at runtime.
 
-**pgrof / pprof**: Profiling formats and the tool to read them: CPU,
-heap, goroutine, mutex, and block profiles.
+**pprof**: The profiling formats and the tool that reads them: CPU, heap,
+goroutine, mutex, and block profiles.
 
 **PGO (profile-guided optimization)**: Feeding a CPU profile into the
 build so the compiler optimizes hot paths.

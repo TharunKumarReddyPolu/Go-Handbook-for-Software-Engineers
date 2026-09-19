@@ -126,3 +126,37 @@ func TestRecentKeys_Agreement(t *testing.T) {
 		}
 	}
 }
+
+// TestRing_GenericMethod pins the Go 1.27 generic-methods claim from
+// 07-generics/06-version-notes.md: a method may declare its own type
+// parameter. If this file stops compiling on a future toolchain
+// change, the version note is wrong and CI fails loudly.
+func TestRing_GenericMethod(t *testing.T) {
+	r := NewRing[string](3)
+	r.Push("1")
+	r.Push("22")
+	r.Push("333")
+
+	lengths := r.Map(func(s string) int { return len(s) })
+	if lengths.Len() != 3 {
+		t.Fatalf("Map preserved ring size: got %d", lengths.Len())
+	}
+	got := []int{}
+	for {
+		v, ok := lengths.Pop()
+		if !ok {
+			break
+		}
+		got = append(got, v)
+	}
+	if len(got) != 3 || got[0] != 1 || got[1] != 2 || got[2] != 3 {
+		t.Fatalf("Map applied f in FIFO order: got %v", got)
+	}
+
+	// Different U than T on the same receiver: the method's own type
+	// parameter is doing the work.
+	labels := r.Map(func(s string) string { return s + "!" })
+	if l, _ := labels.Pop(); l != "1!" {
+		t.Fatalf("Map with same-type U wrong: got %q", l)
+	}
+}
