@@ -137,6 +137,45 @@ go install honnef.co/go/tools/cmd/staticcheck@latest
 staticcheck ./...
 ```
 
+## Content audit checks
+
+Three checks go beyond compilation. They are the same ones the
+repository-wide audit uses; run them before opening a PR.
+
+**1. Internal links.** Already in the block above, but it is the audit's
+first gate, so it bears repeating:
+
+```bash
+go run ./tools/linkcheck   # every internal link must resolve
+```
+
+**2. Em-dash scan.** The handbook uses no em dashes (U+2014), anywhere:
+prose, code comments, examples. Rewrite the sentence instead; a colon,
+semicolon, or parentheses almost always reads better.
+
+```bash
+pat=$(printf '\xe2\x80\94')
+grep -rn --exclude-dir=.git "$pat" --include="*.md" --include="*.go" .   # must print nothing
+```
+
+**3. Version-stamp sweep.** If your change touches version-dependent
+behavior, list the stamps in the files you edited and re-verify each one
+against the release notes for that version:
+
+```bash
+grep -n "Introduced in Go\|since Go 1." 14-backend-development/   # your files here
+```
+
+Then confirm each claim at [go.dev/doc/devel/release](https://go.dev/doc/devel/release),
+and check the feature you used is at or below the `go` directive in
+`go.mod`. Stamp conventions live in [meta/versioning.md](meta/versioning.md).
+If your claim is the newest kind ("Introduced in Go X"), consider whether
+a compiled example can pin it empirically, the way `Ring.Map` pins the
+generic-methods claim in
+[03-data-structures/examples/ring](03-data-structures/examples/ring/ring.go):
+a toolchain change that invalidates the claim then fails CI instead of
+silently rotting the prose.
+
 ## Git workflow
 
 1. Fork, then create a branch: `git checkout -b fix/concurrency-leak-example`.

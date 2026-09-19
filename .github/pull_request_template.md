@@ -43,6 +43,8 @@
 - [ ] Go code is gofmt-formatted and `go vet`-clean
 - [ ] Every new chapter ends with a Further Reading section
 - [ ] Internal links resolve (run `go run ./tools/linkcheck`)
+- [ ] No em dashes anywhere; prose, comments, examples (the scan in CONTRIBUTING.md prints nothing)
+- [ ] Version-dependent claims are stamped and verified against the release notes ([meta/versioning.md](meta/versioning.md))
 - [ ] Explanations are original; no copied documentation or tutorials
 - [ ] Progress checklists in section READMEs and ROADMAP.md updated
 - [ ] No sensitive information in examples (real keys, tokens, internal URLs)
