@@ -77,7 +77,7 @@ value level when you construct interfaces.
 ## Why do goroutines leak?
 
 A goroutine leaks when it blocks forever on a channel send/receive, a lock,
-or a context that is never cancelled: typically because the other side
+or a context that is never canceled: typically because the other side
 went away without closing the channel or because nobody calls cancel.
 Leaks accumulate until they exhaust memory or file descriptors. Prevent by
 design: whoever creates a goroutine owns its exit; every blocking operation

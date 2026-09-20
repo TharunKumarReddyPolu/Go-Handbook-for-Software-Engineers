@@ -52,7 +52,7 @@ func TestPayment_PolicyCapIs400Not500(t *testing.T) {
 	}
 }
 
-func TestPayment_CancelledContextIs503(t *testing.T) {
+func TestPayment_CanceledContextIs503(t *testing.T) {
 	h := testHandler()
 	req := httptest.NewRequest(http.MethodPost, "/payments",
 		bytes.NewBufferString(`{"idempotency_key":"k3","amount_minor":500,"currency":"USD"}`))

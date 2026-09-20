@@ -115,7 +115,7 @@ transport-free pattern.
 
 ## Common Mistakes
 
-- **Pub/sub as the default "event" choice**: subscribers down at
+- **Pub/Sub as the default "event" choice**: subscribers down at
   publish time never see the event; durability is a subscription
   property, not a message property. Ephemeral subscribers only.
 - **A queue for multi-team fan-out**: consumption is competitive;

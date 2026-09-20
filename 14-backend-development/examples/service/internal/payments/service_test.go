@@ -52,7 +52,7 @@ func TestCancel_OwnershipMatrix(t *testing.T) {
 		wantErr error
 	}{
 		{"own, charged, cancels", "cus_1", "cus_1", StatusCharged, nil},
-		{"own, already cancelled", "cus_1", "cus_1", StatusCancelled, ErrNotCancellable},
+		{"own, already canceled", "cus_1", "cus_1", StatusCanceled, ErrNotCancelable},
 		// The service returns ErrForbidden; the TRANSPORT maps it to 404
 		// (existence not disclosed). Each tier asserts its own contract.
 		{"theirs: forbidden at service tier", "cus_1", "cus_2", StatusCharged, ErrForbidden},

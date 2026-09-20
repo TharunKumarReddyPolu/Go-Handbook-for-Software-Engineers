@@ -140,7 +140,7 @@ reason; size for three years of growth on day one.
 | Scope | Achievable? | Mechanism |
 |---|---|---|
 | Per key/aggregate | yes | single shard, sequence numbers |
-| Per producer | yes | producer sequence + dedup (Kafka idempotence) |
+| Per producer | yes | producer sequence + dedup (Kafka idempotency) |
 | Global | yes, at one writer | single leader: the bottleneck |
 | Global, multi-writer | no (without expensive consensus per op) | do not design for it |
 

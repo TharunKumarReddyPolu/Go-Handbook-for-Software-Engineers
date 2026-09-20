@@ -188,8 +188,8 @@ func mapError(err error) (string, int, bool) {
 		return "payment not found", http.StatusNotFound, true
 	case errors.Is(err, ErrInsufficientFunds):
 		return "insufficient funds", http.StatusUnprocessableEntity, true
-	case errors.Is(err, ErrNotCancellable):
-		return "payment not cancellable", http.StatusConflict, true
+	case errors.Is(err, ErrNotCancelable):
+		return "payment not cancelable", http.StatusConflict, true
 	case isValidation(err):
 		return err.Error(), http.StatusUnprocessableEntity, true
 	default:

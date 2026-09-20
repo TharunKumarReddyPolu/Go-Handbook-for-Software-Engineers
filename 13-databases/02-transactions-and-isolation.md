@@ -39,7 +39,7 @@ stronger = fewer anomalies, more blocking or retries.
 | Phantom read | same query re-run, new rows appeared | yes |
 | Serialization anomaly | individually-valid txs, impossible as a group | yes |
 
-What each level buys (PostgreSQL semantics; MySQL/InnoDB differs in
+What each level buys (Postgres semantics; MySQL/InnoDB differs in
 the details, which is the point of knowing this is per-engine):
 
 | Level | Anomalies still possible | Cost |

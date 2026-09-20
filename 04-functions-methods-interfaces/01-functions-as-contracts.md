@@ -131,7 +131,7 @@ struct with a method is more honest; closures are for glue.
 - **Context not first, or absent**: `Fetch(id string, ctx
   context.Context)` breaks the convention every reader (and every
   linter) expects; a function that does I/O without a context cannot
-  be cancelled or given a deadline.
+  be canceled or given a deadline.
 - **Returning a concrete type, accepting a concrete type**: the
   "accept interfaces, return structs" rule exists so producers stay
   free and consumers stay specific. Accepting `*os.File` when you read

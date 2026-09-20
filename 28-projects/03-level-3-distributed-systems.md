@@ -60,7 +60,7 @@ DLQ. This is [18]'s full stack as a standalone project.
 
 | Milestone | Done when |
 |---|---|
-| M1: producer | acks=all, idempotence on, compression chosen with a reason ([18 Section 3](../18-kafka-with-go/03-producer-consumer.md)) |
+| M1: producer | acks=all, idempotency on, compression chosen with a reason ([18 Section 3](../18-kafka-with-go/03-producer-consumer.md)) |
 | M2: consumer group | partition-assigned processing, offsets committed after side effects, rebalance survival |
 | M3: failure routing | retriable failures retried with backoff; poison messages dead-lettered with triage metadata ([17 Section 3](../17-messaging/03-portable-patterns.md)) |
 | M4: ordering | per-key ordering guaranteed and *tested* under rebalance |

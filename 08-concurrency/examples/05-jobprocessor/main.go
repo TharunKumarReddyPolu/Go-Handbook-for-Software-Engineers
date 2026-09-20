@@ -73,7 +73,7 @@ func (m *Metrics) Snapshot() Metrics {
 	}
 }
 
-// Processor is a bounded, cancellable, retrying job processor.
+// Processor is a bounded, cancelable, retrying job processor.
 type Processor struct {
 	queue   chan Job
 	workers int
@@ -91,7 +91,7 @@ func NewProcessor(workers, queueDepth int, policy RetryPolicy, log func(string, 
 	}
 }
 
-// Start runs workers until ctx is cancelled or Stop is called.
+// Start runs workers until ctx is canceled or Stop is called.
 func (p *Processor) Start(ctx context.Context) *sync.WaitGroup {
 	var wg sync.WaitGroup
 	for i := 0; i < p.workers; i++ {

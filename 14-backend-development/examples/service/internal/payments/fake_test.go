@@ -51,7 +51,7 @@ func (f *fakeStore) Cancel(_ context.Context, id string) error {
 	if !ok {
 		return ErrNotFound
 	}
-	p.Status = StatusCancelled
+	p.Status = StatusCanceled
 	f.payments[id] = p
 	return nil
 }

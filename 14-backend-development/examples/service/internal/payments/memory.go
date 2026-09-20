@@ -52,7 +52,7 @@ func (m *MemoryStore) Cancel(_ context.Context, id string) error {
 	if !ok {
 		return ErrNotFound
 	}
-	p.Status = StatusCancelled
+	p.Status = StatusCanceled
 	m.payments[id] = p
 	return nil
 }

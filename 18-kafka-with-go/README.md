@@ -12,7 +12,7 @@ By the end of this section you can:
 - Explain partitions, offsets, and consumer groups, and what ordering
   guarantees actually exist
 - Choose a Go client with stated, defensible reasons
-- Write producers with batching, idempotence, and backpressure handling
+- Write producers with batching, idempotency, and backpressure handling
 - Write consumer-group consumers with offset management that survives
   crashes
 - Design retry + DLQ flows and idempotent consumers

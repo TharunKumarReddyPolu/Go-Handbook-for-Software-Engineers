@@ -45,7 +45,7 @@ component blocked, others fine) hang instead; find them with the
 goroutine profile. See [07-pitfalls](07-pitfalls.md).
 
 **Why `defer cancel()` on contexts I never cancel explicitly?**
-The context holds a timer and a parent link until cancelled; on hot
+The context holds a timer and a parent link until canceled; on hot
 paths that's a real leak. See [03-context](03-context.md).
 
 **When is it safe to close a channel?**

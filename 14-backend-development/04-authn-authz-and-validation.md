@@ -124,9 +124,9 @@ func (s *Service) Cancel(ctx context.Context, actor Identity, paymentID string) 
 		return ErrForbidden // maps to 404 or 403, by product decision
 	}
 	if p.Status != StatusCharged {
-		return fmt.Errorf("%w: status %q", ErrNotCancellable, p.Status)
+		return fmt.Errorf("%w: status %q", ErrNotCancelable, p.Status)
 	}
-	return s.store.Transition(ctx, paymentID, StatusCancelled)
+	return s.store.Transition(ctx, paymentID, StatusCanceled)
 }
 ```
 
@@ -224,7 +224,7 @@ listed, someone else's payment → 404, valid flow → 201.
   missing-identity misuse loud instead of silently zero.
 - Policies as small combinators (`RequireKind`, `RequireScope`)
   wrapping handlers: composable, testable, table-readable.
-- Sentinel domain errors (`ErrForbidden`, `ErrNotCancellable`) mapped
+- Sentinel domain errors (`ErrForbidden`, `ErrNotCancelable`) mapped
   once in transport ([05 Section 2](../05-errors/02-error-design.md)).
 
 ## Performance Considerations
@@ -284,7 +284,7 @@ listed, someone else's payment → 404, valid flow → 201.
 1. Add `RequireScope("payments:write")` and test it against identities
    with and without the scope, at the middleware tier.
 2. Implement the ownership matrix test for `Cancel` (mine/theirs/admin
-   over charged/pending/cancelled states).
+   over charged/pending/canceled states).
 3. Write the chain contract test (identity × route × owner → status)
    and then deliberately break the gate order; watch which assertions
    catch it.

@@ -23,9 +23,9 @@ flowchart TD
 
 - A context carries: cancellation signal, deadline, and (rarely)
   request-scoped values.
-- Children derive from parents; cancelling a parent cancels all
+- Children derive from parents; canceling a parent cancels all
   descendants. There is no way to *un*-cancel.
-- `Done() <-chan struct{}` closes when cancelled: it's a broadcast all
+- `Done() <-chan struct{}` closes when canceled: it's a broadcast all
   descendants can await.
 - `Err()` says why: `Canceled` or `DeadlineExceeded`.
 
@@ -168,7 +168,7 @@ collisions.
   ambiguous; pass it explicitly.
 - **Forgetting `defer cancel()`**: timer + parent-link leak.
 - **Deriving request-scoped contexts in background goroutines** after
-  the request ended: the context is already cancelled; the goroutine
+  the request ended: the context is already canceled; the goroutine
   dies instantly. For work that outlives the request, detach
   deliberately: `context.WithoutCancel(ctx)` (Go 1.21+) keeps values,
   drops cancellation, and document why that's safe.
@@ -213,8 +213,8 @@ case r := <-s.results:
   many watchers.
 - `Done()` closing is a broadcast: N goroutines can all select on the
   same channel and all wake.
-- A cancelled parent never un-cancels; if you need a "cancellable
-  region" inside a cancelled tree, you need a detached context
+- A canceled parent never un-cancels; if you need a "cancelable
+  region" inside a canceled tree, you need a detached context
   (`WithoutCancel`) and a very good comment.
 
 ## Security Considerations
@@ -255,7 +255,7 @@ case r := <-s.results:
 
 1. Add context propagation to a codebase function that doesn't accept
    it (scan/loop + select around the blocking op). Assert with a test
-   that cancelling the context returns before completion.
+   that canceling the context returns before completion.
 2. Build a middleware that injects a request ID and a logger into the
    context; extract both in a handler. Use unexported key types.
 3. Write a test proving `defer cancel()` matters: run 10k

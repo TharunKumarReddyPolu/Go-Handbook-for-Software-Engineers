@@ -14,7 +14,7 @@ boring). None require a framework; all three punish defaults.
 flowchart LR
     A["requests<br/>(many goroutines)"] --> B["pool (N conns)<br/>the semaphore"]
     B --> C["driver<br/>(protocol + pooling of its own)"]
-    C --> D["PostgreSQL<br/>(its own connection limit)"]
+    C --> D["Postgres<br/>(its own connection limit)"]
     M["migrations<br/>(versioned, ordered)"] -.->|schema| D
 ```
 
@@ -52,7 +52,7 @@ Symptom-to-cause table:
 | DB `max_connections` exhausted after scaling out | per-instance caps too high: instance count × cap |
 | throughput ceiling well below DB capability | cap too low, or a long-tx holder (ch. 2) |
 
-PostgreSQL's `max_connections` is a global budget shared by every
+Postgres's `max_connections` is a global budget shared by every
 instance of every service: pool sizing is a *fleet* conversation, not
 a per-service one. PgBouncer exists for fleets; adding a pooler adds a
 mode (transaction pooling breaks session state like prepared
@@ -78,7 +78,7 @@ count means requests are queuing for connections, which is the
 
 ## Drivers: pgx vs database/sql, honestly
 
-For PostgreSQL the real choice is between two ways of using one
+For Postgres the real choice is between two ways of using one
 driver:
 
 | | `database/sql` + pgx stdlib | pgx native API |
@@ -253,7 +253,7 @@ same expand/contract discipline at test scale.
 - Unit tier (no database): pool stats faked, repo logic behind
   interfaces (chapter 4).
 - Integration tier (build tag, real Postgres): the migration function
-  itself is tested by running it twice and asserting idempotence;
+  itself is tested by running it twice and asserting idempotency;
   throwaway schema per test run.
 - The two mistakes CI catches that review does not: a migration that
   only works against a fresh database (missing `IF NOT EXISTS`

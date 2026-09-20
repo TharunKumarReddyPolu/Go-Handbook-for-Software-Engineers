@@ -21,15 +21,15 @@ var (
 	ErrNotFound          = errors.New("payment not found")
 	ErrInsufficientFunds = errors.New("insufficient funds")
 	ErrForbidden         = errors.New("forbidden")
-	ErrNotCancellable    = errors.New("payment not cancellable")
+	ErrNotCancelable     = errors.New("payment not cancelable")
 )
 
 // Status is a payment's lifecycle state.
 type Status string
 
 const (
-	StatusCharged   Status = "charged"
-	StatusCancelled Status = "cancelled"
+	StatusCharged  Status = "charged"
+	StatusCanceled Status = "canceled"
 )
 
 // Payment is the domain record.
@@ -140,12 +140,12 @@ func (s *Service) Cancel(ctx context.Context, actor Customer, paymentID string) 
 		return fmt.Errorf("cancel %s: %w", paymentID, ErrForbidden)
 	}
 	if p.Status != StatusCharged {
-		return fmt.Errorf("%w: status %q", ErrNotCancellable, p.Status)
+		return fmt.Errorf("%w: status %q", ErrNotCancelable, p.Status)
 	}
 	if err := s.store.Cancel(ctx, paymentID); err != nil {
 		return err
 	}
-	s.log.InfoContext(ctx, "payment cancelled", "payment_id", paymentID, "actor", actor.ID)
+	s.log.InfoContext(ctx, "payment canceled", "payment_id", paymentID, "actor", actor.ID)
 	return nil
 }
 

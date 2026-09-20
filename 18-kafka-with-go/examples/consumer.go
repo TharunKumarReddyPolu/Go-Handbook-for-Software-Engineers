@@ -45,7 +45,7 @@ func NewConsumer(brokers []string, group, topic string, h Handler, logger *slog.
 	}
 }
 
-// Run consumes until ctx is cancelled or the client closes. The loop
+// Run consumes until ctx is canceled or the client closes. The loop
 // shape: bounded fetch, per-partition processing (preserves ordering
 // within a partition), commit after the batch completes.
 func (c *Consumer) Run(ctx context.Context) error {

@@ -170,12 +170,12 @@ func TestRetry_StopsWhenBackoffExhausted(t *testing.T) {
 
 func TestRetry_ContextCancelHonored(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
-	cancel() // pre-cancelled
+	cancel() // pre-canceled
 	next := func(int) time.Duration { return time.Hour }
 	_, err := Retry(ctx, func(context.Context) (bool, error) {
 		return false, errors.New("down")
 	}, next)
 	if !errors.Is(err, context.Canceled) {
-		t.Fatalf("pre-cancelled ctx: %v", err)
+		t.Fatalf("pre-canceled ctx: %v", err)
 	}
 }

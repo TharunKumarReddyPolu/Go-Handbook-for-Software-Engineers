@@ -55,7 +55,7 @@ adapts `franz-go` records to `Message` and commits per its policies.
 The seam costs two adapter functions and buys client swap-ability
 (ch. 02's conclusion).
 
-## Producer: batching, idempotence, backpressure
+## Producer: batching, idempotency, backpressure
 
 ```go
 // examples/producer.go (adapter excerpt)
@@ -115,7 +115,7 @@ func NewConsumer(brokers, group, topic string, h Handler, logger *slog.Logger) *
 	}
 }
 
-// Run consumes until ctx is cancelled, then drains cleanly. The
+// Run consumes until ctx is canceled, then drains cleanly. The
 // PollRecords loop is franz-go's; the discipline is the chapter's.
 func (c *Consumer) Run(ctx context.Context) error {
 	for {

@@ -1,6 +1,6 @@
-// Command cancellable-pool is stage 3 of the concurrency progression:
+// Command cancelable-pool is stage 3 of the concurrency progression:
 // the worker pool from stage 2, made leak-free under cancellation. Every
-// blocking operation selects on ctx.Done(), so cancelling the context
+// blocking operation selects on ctx.Done(), so canceling the context
 // stops intake, workers, and output collection promptly. See
 // 08-concurrency/03-context.md and 05-patterns.md.
 package main
@@ -24,7 +24,7 @@ type Result struct {
 }
 
 // Run processes jobs with n workers until the input closes or ctx is
-// cancelled. The returned channel is always closed exactly once.
+// canceled. The returned channel is always closed exactly once.
 func Run(ctx context.Context, jobs <-chan Job, n int) <-chan Result {
 	out := make(chan Result)
 	go func() {
@@ -45,7 +45,7 @@ func Run(ctx context.Context, jobs <-chan Job, n int) <-chan Result {
 		case <-workerDone:
 			// all workers exited: no more sends on out
 		case <-ctx.Done():
-			// ctx cancelled: workers exit on their own via their selects.
+			// ctx canceled: workers exit on their own via their selects.
 			// We still wait for them so no send races our close.
 			<-workerDone
 		}

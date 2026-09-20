@@ -28,7 +28,7 @@ ownership rule made explicit.
 ## How It Works
 
 **Shape 1: goroutine leaks.** A goroutine parked on a channel that
-will never fire: the producer gave up, the context was cancelled
+will never fire: the producer gave up, the context was canceled
 but nobody reads the channel, the `for` loop has no exit. Each
 leaked G holds a stack and whatever its closure captured. The
 owner rule: every goroutine is started with a stop path, and the

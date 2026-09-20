@@ -22,7 +22,7 @@ A payment platform with four services and one shared backbone:
 flowchart LR
     Client[Client] --> GW[API gateway]
     GW --> Pay[Payment service]
-    Pay -->|ledger + outbox tx| PG[(PostgreSQL: ledger)]
+    Pay -->|ledger + outbox tx| PG[(Postgres: ledger)]
     Pay -->|events| K[Kafka]
     K --> Fraud[Fraud scorer]
     K --> Notif[Notifications]

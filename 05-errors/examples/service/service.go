@@ -53,7 +53,7 @@ type PaymentService struct {
 func (s *PaymentService) Process(ctx context.Context, req PaymentRequest) error {
 	if err := ctx.Err(); err != nil {
 		return errorslib.Wrap("authorize", errorslib.CodeUnavailable,
-			"request cancelled", err)
+			"request canceled", err)
 	}
 	if req.AmountMinor > 100_000_00 { // policy: per-payment cap
 		return errorslib.Wrap("authorize", errorslib.CodeInvalid,
