@@ -58,22 +58,22 @@ point; if not, JetStream or another broker.
 
 ## Syntax / API: the same flow on each broker
 
-The transport-free handler from [18 §3](../18-kafka-with-go/03-producer-consumer.md)
+The transport-free handler from [18 Section 3](../18-kafka-with-go/03-producer-consumer.md)
 (`Process(ctx, Message) error` + terminal/retryable classification)
 is the constant; only the adapter changes:
 
-| Aspect | Kafka (18 §3's wiring) | RabbitMQ | NATS JetStream |
+| Aspect | Kafka (18 Section 3's wiring) | RabbitMQ | NATS JetStream |
 |---|---|---|---|
 | Receive | poll per partition, commit offsets | push via channel, ack/nack per message | fetch batch, Ack()/Nak() per message |
 | Redelivery | rebalance/commit position | unacked messages requeued | Nak or ack-wait expiry |
 | Retry count | consumer-side loop | TTL + dead-letter exchange | `Deliver` header count + max-deliver |
-| DLQ | retry topic → DLQ topic (18 §3) | dead-letter exchange (config) | advisory/advisory subject or DLQ stream |
+| DLQ | retry topic → DLQ topic (18 Section 3) | dead-letter exchange (config) | advisory/advisory subject or DLQ stream |
 | Ordering promise | per key→partition | per queue, until retry | per JetStream stream/partition |
 
 The RabbitMQ DLQ is worth seeing because it is *configured*, not
 coded: a queue policy that, on rejection or TTL expiry, routes the
 message to a dead-letter exchange. The semantics match
-[18 §3](../18-kafka-with-go/03-producer-consumer.md)'s DLQ contract
+[18 Section 3](../18-kafka-with-go/03-producer-consumer.md)'s DLQ contract
 (terminal errors only, with failure metadata); the mechanism is
 declarative.
 
@@ -112,11 +112,11 @@ This is a hiring-and-operations decision as much as a technical one
 
 ## Production Example: migration paths between brokers
 
-The handler seam makes the adapter the only rewrite ([18 §2](../18-kafka-with-go/02-go-clients.md)'s
+The handler seam makes the adapter the only rewrite ([18 Section 2](../18-kafka-with-go/02-go-clients.md)'s
 "wrap the same handler" exercise generalized):
 
 1. Run the new broker's adapter behind the same `Handler`, shadowed
-   ([15 §1](../15-microservices/01-monolith-to-microservices.md)'s
+   ([15 Section 1](../15-microservices/01-monolith-to-microservices.md)'s
    dual-run discipline): consume from old and new, compare outputs.
 2. Cut over producers first (dual-publish), then consumers, then
    retire the old transport.
@@ -138,16 +138,16 @@ The handler seam makes the adapter the only rewrite ([18 §2](../18-kafka-with-g
   latency, partition balancing. Budget the row or choose managed.
 - **FIFO opt-ins assumed universal**: SQS FIFO caps throughput and
   requires dedup keys; RabbitMQ ordering breaks under requeue. The
-  ordering promise is per-model ([16 §4](../16-distributed-systems/04-quorums-sharding.md)),
+  ordering promise is per-model ([16 Section 4](../16-distributed-systems/04-quorums-sharding.md)),
   rarely per-broker-marketing.
 
 ## Idiomatic Go
 
 - One adapter package per broker, each translating to the shared
-  `Message`/`Handler` contract ([18 §3](../18-kafka-with-go/03-producer-consumer.md));
+  `Message`/`Handler` contract ([18 Section 3](../18-kafka-with-go/03-producer-consumer.md));
   domain code imports none of them.
 - Connection lifecycle in the adapter's constructor, closed in
-  shutdown order ([12 §5](../12-http-networking/05-graceful-shutdown.md)):
+  shutdown order ([12 Section 5](../12-http-networking/05-graceful-shutdown.md)):
   brokers are dependencies with the same drain discipline as the
   database.
 
@@ -156,7 +156,7 @@ The handler seam makes the adapter the only rewrite ([18 §2](../18-kafka-with-g
 - The throughput ladder is batch-driven: Kafka and JetStream win
   large-batch throughput; core NATS wins single-message latency;
   RabbitMQ wins routing, not speed. Benchmark your shapes
-  ([19 §1](../19-performance/01-measure-first.md)) before believing
+  ([19 Section 1](../19-performance/01-measure-first.md)) before believing
   any table, including this one.
 - Managed queue pricing is a performance constraint: chatty
   request/reply over SQS is a bill, not just a latency.
@@ -164,17 +164,17 @@ The handler seam makes the adapter the only rewrite ([18 §2](../18-kafka-with-g
 ## Concurrency Considerations
 
 - Prefetch/ack windows are the concurrency knob everywhere: unbounded
-  prefetch re-introduces unbounded buffering ([16 §5](../16-distributed-systems/05-delivery-backpressure-shedding.md)'s
+  prefetch re-introduces unbounded buffering ([16 Section 5](../16-distributed-systems/05-delivery-backpressure-shedding.md)'s
   queue rules) inside the client library.
 - Consumer concurrency vs ordering: per-queue/ordering-key workers
-  ([18 §1](../18-kafka-with-go/01-kafka-concepts.md)'s one-worker-per-partition
+  ([18 Section 1](../18-kafka-with-go/01-kafka-concepts.md)'s one-worker-per-partition
   rule generalizes).
 
 ## Security Considerations
 
 - Every broker here speaks TLS and some authn (SASL/OAuth/mTLS,
   IAM, NKeys): plaintext-internal is the audit finding, whichever
-  broker ([18 §1](../18-kafka-with-go/01-kafka-concepts.md)'s rule).
+  broker ([18 Section 1](../18-kafka-with-go/01-kafka-concepts.md)'s rule).
 - Wildcard subscriptions (`payments.>`) are convenient and broad:
   scope credentials to the narrowest subject set that works
   ([21-security](../21-security/) when it ships).
@@ -184,7 +184,7 @@ The handler seam makes the adapter the only rewrite ([18 §2](../18-kafka-with-g
 - The in-memory broker (this section's example) pins the *model*:
   handler tests run against it in CI.
 - Broker adapters get integration-tier tests (build-tagged, the
-  18 §13 pattern) asserting the model's semantics survive the
+  18 Section 13 pattern) asserting the model's semantics survive the
   adapter: redelivery happens, DLQ receives terminal failures,
   ordering holds per key.
 

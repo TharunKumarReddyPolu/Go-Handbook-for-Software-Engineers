@@ -91,10 +91,10 @@ func mustDuration(get func(string) string, key string, def time.Duration, errs *
 
 The `environ func(string) string` parameter is the testability seam:
 tests pass a map instead of mutating process state, and every rule
-becomes table-testable ([10 §1](../10-testing/01-fundamentals.md)).
+becomes table-testable ([10 Section 1](../10-testing/01-fundamentals.md)).
 
 Validation errors **batch** (`errors.Join`, the pattern from
-[05 §2](../05-errors/02-error-design.md)): the operator fixes all
+[05 Section 2](../05-errors/02-error-design.md)): the operator fixes all
 five typos in one deploy, not five.
 
 ## Basic Example: boot-time wiring
@@ -166,7 +166,7 @@ a `fmt.Printf("%v", cfg)` anywhere in the codebase.
 - **Defaults that look valid but are wrong for production** (listening
   on `:0`, timeouts of zero meaning "infinite"). Zero must either be a
   real choice or a boot error; "zero means default" hides in the
-  struct's zero value ([01 §5](../01-go-fundamentals/05-zero-values.md)).
+  struct's zero value ([01 Section 5](../01-go-fundamentals/05-zero-values.md)).
 - **Reading env vars at point of use.** `os.Getenv` sprinkled through
   handlers makes behavior untestable and precedence undefined. One
   package loads; everything else is injected.
@@ -177,7 +177,7 @@ a `fmt.Printf("%v", cfg)` anywhere in the codebase.
   field, that is the leak. Log the *non-secret summary* the config
   package explicitly builds.
 - **Mutating config at runtime** (hot timeouts, swapped URLs): this
-  races every reader ([08 §4](../08-concurrency/04-sync-primitives.md)).
+  races every reader ([08 Section 4](../08-concurrency/04-sync-primitives.md)).
   Dynamic behavior belongs to flags/feature flags (chapter 5), built
   for concurrent reads.
 - **Boolean env parsing** (`ENABLE_X=true` vs `1` vs `yes` accepted

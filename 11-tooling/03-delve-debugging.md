@@ -37,12 +37,12 @@ inspection**: `goroutines` lists every G with its state and
 stack; `goroutine N` switches to it; `frame` moves up the stack.
 This is the concurrency superpower: seeing what all 50,000
 goroutines are waiting on, live ([20
-§5](../20-observability/05-incident-debugging.md)'s goroutine
+Section 5](../20-observability/05-incident-debugging.md)'s goroutine
 dump, but interactive).
 
 **Core dumps**: Delve reads core files from crashed processes
 (`GOTRACEBACK=crash` in prod produces them on panic, [22
-§2](../22-production-go/02-server-lifecycle.md)): the crash state
+Section 2](../22-production-go/02-server-lifecycle.md)): the crash state
 becomes inspectable offline, with full variable values, weeks
 later.
 
@@ -90,14 +90,14 @@ the wrong helper. Print statements would show both goroutines
 ## Real-World Example
 
 Debugging inside containers and Kubernetes: the binary is
-distroless ([22 §5](../22-production-go/05-deploying-kubernetes.md)):
+distroless ([22 Section 5](../22-production-go/05-deploying-kubernetes.md)):
 no shell, no debugger. Options, in order of preference:
 
 1. **Reproduce locally** with the same inputs (the test-first
    path; most bugs die here).
 2. **Debug sidecar**: a debug build (with Delve) deployed as a
    debug overlay, never the production image ([22
-   §6](../22-production-go/06-releases-and-rollbacks.md)'s blast
+   Section 6](../22-production-go/06-releases-and-rollbacks.md)'s blast
    radius: the debug image is a different artifact).
 3. **Core dump offline**: `GOTRACEBACK=crash` + a node-level core
    capture; analyze on your machine with the same binary and
@@ -111,7 +111,7 @@ way to inspect a crash that happens once a month at 4 a.m.
 **The compiler flags that matter for debugging**: `-gcflags="all=
 -N -l"` disables optimizations and inlining for a debug build:
 variables stay in memory (not registers), lines stay mapped. This
-is a *debug* artifact: never ship it ([19 §4](../19-performance/04-compiler-and-pgo.md)'s
+is a *debug* artifact: never ship it ([19 Section 4](../19-performance/04-compiler-and-pgo.md)'s
 optimizations are disabled; performance is fiction). Production
 binaries keep optimization; their DWARF info (not stripped for
 services you may need to debug) is what makes core dumps legible:
@@ -139,7 +139,7 @@ prefer sidecars, staging replicas, and core dumps.
   is the reproducible world.
 - Conditional breakpoints over print loops: the expression is the
   condition you would have printed for.
-- `GOTRACEBACK=crash` in prod ([22 §2](../22-production-go/02-server-lifecycle.md))
+- `GOTRACEBACK=crash` in prod ([22 Section 2](../22-production-go/02-server-lifecycle.md))
   pairs with core capture: crashes become debuggable artifacts.
 
 ## Performance Considerations
@@ -148,17 +148,17 @@ Delve's own overhead matters only while stopped; breakpoints add
 trap costs on hit paths: fine for debugging, not for load runs
 (profiles are the load tool, chapter 2). Debug builds are for
 understanding, never for benchmarking ([19
-§1](../19-performance/01-measure-first.md)'s measure-the-real-
+Section 1](../19-performance/01-measure-first.md)'s measure-the-real-
 thing rule).
 
 ## Concurrency Considerations
 
 Delve stops the whole process on breakpoints (all goroutines):
 what you inspect is a consistent snapshot of that instant: race
-bugs become visible as impossible states ([23 §6](../23-go-internals/06-memory-model.md)'s
+bugs become visible as impossible states ([23 Section 6](../23-go-internals/06-memory-model.md)'s
 model explains which states are legal). `goroutines` + per-G
 frames is also the best teacher of the scheduler's model ([09
-§4](../09-memory-runtime/04-scheduler-internals.md)): watch Gs
+Section 4](../09-memory-runtime/04-scheduler-internals.md)): watch Gs
 park, queue, and run.
 
 ## Security Considerations
@@ -166,20 +166,20 @@ park, queue, and run.
 A debugger is code execution on the target: Delve endpoints
 (`dlv --headless --accept-multiclient`) are remote shells by
 another name: never expose them; keep debug images out of prod
-registries ([21 §1](../21-security/01-threat-model-and-validation.md)'s
+registries ([21 Section 1](../21-security/01-threat-model-and-validation.md)'s
 boundary rules). Core dumps contain memory: secrets included:
 capture them to restricted storage and delete after triage ([09
-§3](../09-memory-runtime/03-garbage-collector.md)'s secrets-in-heap
+Section 3](../09-memory-runtime/03-garbage-collector.md)'s secrets-in-heap
 note).
 
 ## Testing Strategy
 
 - The failing test is the debugging harness: once Delve explains
   the state, *fix the test first* (reproduce the bug), then fix
-  the code: the test proves the fix ([10 §1](../10-testing/01-fundamentals.md)).
+  the code: the test proves the fix ([10 Section 1](../10-testing/01-fundamentals.md)).
 - Keep a debug overlay (values file or build tag) that adds the
   Delve binary + `-N -l` flags without touching the production
-  path ([22 §5](../22-production-go/05-deploying-kubernetes.md)'s
+  path ([22 Section 5](../22-production-go/05-deploying-kubernetes.md)'s
   manifest discipline).
 - Practice core-dump triage once in peacetime: force a panic with
   `GOTRACEBACK=crash`, capture, open with `dlv core`, and walk the
@@ -199,7 +199,7 @@ note).
 1. Debug the Section 14 service's validation path with a
    deliberately planted bug: find it with a conditional
    breakpoint, not prints.
-2. Use `goroutines` on the memwatch example ([09 §5](../09-memory-runtime/05-memory-leaks.md))
+2. Use `goroutines` on the memwatch example ([09 Section 5](../09-memory-runtime/05-memory-leaks.md))
    mid-leak: find the leaked goroutines' parking spot interactively.
 3. Force a panic with `GOTRACEBACK=crash` in a container; capture
    the core; open it with `dlv core` and read the stack. Write

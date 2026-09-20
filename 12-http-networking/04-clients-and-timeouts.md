@@ -98,7 +98,7 @@ untrusted), `defer Close` (or the pool leaks the connection).
 ## Real-World Example: retries that respect idempotency
 
 Retries are a caller decision, not a client feature (the decision
-table is in [05 §2](../05-errors/02-error-design.md); the delivery
+table is in [05 Section 2](../05-errors/02-error-design.md); the delivery
 semantics are in [16-distributed-systems](../16-distributed-systems/)).
 The mechanics:
 
@@ -133,7 +133,7 @@ for attempt := 0; ; attempt++ {
 if the body can be re-read. `bytes.Reader` over a small buffer works;
 an open file or stream does not. GETs are trivially replayable; for
 POSTs the honest answer is idempotency keys
-([25 §3](../25-fintech-with-go/03-integrity-and-exactly-once.md)),
+([25 Section 3](../25-fintech-with-go/03-integrity-and-exactly-once.md)),
 not blind retries.
 
 ## Production Example: pooling judgment
@@ -152,7 +152,7 @@ The transport pool is where client performance actually lives:
 
 Measure, don't guess: the connection reuse rate is visible in
 `httptrace` and in the target's logs
-([19 §1](../19-performance/01-measure-first.md)).
+([19 Section 1](../19-performance/01-measure-first.md)).
 
 ## Common Mistakes
 
@@ -192,7 +192,7 @@ Measure, don't guess: the connection reuse rate is visible in
   body-draining discipline matter more than any JSON library swap.
 - Per-request allocations (`Request`, headers, decoder) are small but
   multiply at high RPS; benchmark before optimizing
-  ([19 §1](../19-performance/01-measure-first.md)).
+  ([19 Section 1](../19-performance/01-measure-first.md)).
 - HTTP/2 multiplexes over one connection per host and changes the
   pooling math: with `ForceAttemptHTTP2` (default when cloning the
   default transport), `MaxIdleConnsPerHost` matters less; connection
@@ -205,7 +205,7 @@ Measure, don't guess: the connection reuse rate is visible in
   concurrency limiter.
 - Unbounded fan-out to a slow dependency + small `MaxIdleConnsPerHost`
   = connection churn; a semaphore in front (see
-  [08 §5](../08-concurrency/05-patterns.md)) bounds in-flight calls
+  [08 Section 5](../08-concurrency/05-patterns.md)) bounds in-flight calls
   properly.
 
 ## Security Considerations
@@ -223,7 +223,7 @@ Measure, don't guess: the connection reuse rate is visible in
 ## Testing Strategy
 
 - Point the client at `httptest.NewServer` for success and error
-  mappings ([10 §2](../10-testing/02-doubles-and-httptest.md)).
+  mappings ([10 Section 2](../10-testing/02-doubles-and-httptest.md)).
 - A `RoundTripper` fake injects failures without any server; use it
   for timeout and retry-path tests where real timing is flaky.
 - Assert on the *request* the client sends (path, headers, body) using

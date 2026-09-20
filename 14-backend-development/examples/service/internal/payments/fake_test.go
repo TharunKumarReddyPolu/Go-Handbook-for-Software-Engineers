@@ -6,7 +6,7 @@ import (
 	"sync"
 )
 
-// fakeStore is the pure-Go PaymentStore for unit tests (13 §4's
+// fakeStore is the pure-Go PaymentStore for unit tests (13 Section 4's
 // pattern). It mirrors the behavioral contract: atomic Charge with an
 // overdraft guard, cancel transitions, bounded newest-first lists.
 // Lives in the test files so it ships with the tests that justify it.

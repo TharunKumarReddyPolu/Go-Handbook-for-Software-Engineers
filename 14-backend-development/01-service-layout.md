@@ -20,7 +20,7 @@ flowchart TD
     T["transport<br/>(HTTP handlers, wire types)"] --> S["service<br/>(domain logic, decisions)"]
     S --> D["store / repositories<br/>(SQL, cache, external clients)"]
     T -.->|"interfaces defined here,"| S
-    S -.->|"consumed via"| I["interfaces<br/>(consumer-side, 04 §3)"]
+    S -.->|"consumed via"| I["interfaces<br/>(consumer-side, 04 Section 3)"]
 ```
 
 Rules that keep the arrows one-way:
@@ -30,10 +30,10 @@ Rules that keep the arrows one-way:
    signature mentions `http.Request`, it lives in transport.
 2. **Interfaces point at consumers.** The service defines what it
    needs (`PaymentStore`); the store package implements it (the
-   pattern from [13 §4](../13-databases/04-repositories-and-testing.md)).
+   pattern from [13 Section 4](../13-databases/04-repositories-and-testing.md)).
 3. **Wire types live in transport.** Domain structs carry domain
    fields; JSON tags on a domain struct couple your schema to your
-   API docs forever ([12 §3](../12-http-networking/03-json-and-rest-apis.md)).
+   API docs forever ([12 Section 3](../12-http-networking/03-json-and-rest-apis.md)).
 
 ## Package layout: the production shape
 
@@ -51,12 +51,12 @@ service/                        # module root
 │   │   └── service_test.go     # unit tier: fakes, table-driven
 │   ├── accounts/               # sibling domain; imports payments' API
 │   ├── platform/               # small, sharp, reusable pieces
-│   │   ├── httpjson/           # writeJSON/decodeJSON from 12 §3
-│   │   ├── httpmw/             # middleware chain from 12 §2
-│   │   └── sqldb/              # OpenDB, migrations from 13 §3
+│   │   ├── httpjson/           # writeJSON/decodeJSON from 12 Section 3
+│   │   ├── httpmw/             # middleware chain from 12 Section 2
+│   │   └── sqldb/              # OpenDB, migrations from 13 Section 3
 │   └── config/
 │       └── config.go           # chapter 2's env-first loader
-├── migrations/                 # versioned SQL (13 §3)
+├── migrations/                 # versioned SQL (13 Section 3)
 ├── go.mod
 └── go.mod's tests everywhere
 ```
@@ -64,7 +64,7 @@ service/                        # module root
 Judgment calls embedded in this shape:
 
 - **`internal/` everywhere**: the compiler enforces that nothing
-  outside the module imports your packages ([06 §1](../06-packages-modules/01-package-design.md)).
+  outside the module imports your packages ([06 Section 1](../06-packages-modules/01-package-design.md)).
 - **Domains, not layers, at the top of `internal/`**: `payments`,
   `accounts`. A `models/` or `services/` folder is the layer-antipattern
   wearing Go clothing.
@@ -90,20 +90,20 @@ sequenceDiagram
     S->>St: store.Charge(ctx, Payment{...})
     St-->>S: Payment / domain error
     S-->>T: Payment / domain error
-    T->>T: map error to status (05 §2), encode
+    T->>T: map error to status (05 Section 2), encode
     T-->>C: 201 + JSON (or 4xx/5xx)
 ```
 
 Each hop has a contract: transport decodes and maps, service decides,
 store persists. Errors flow up translated one layer at a time
-([05 §2](../05-errors/02-error-design.md)'s pipeline); context flows
+([05 Section 2](../05-errors/02-error-design.md)'s pipeline); context flows
 down unchanged.
 
 ## Basic Example: the seams in code
 
 ```go
 // internal/payments/service.go: the domain core.
-type PaymentStore interface { // consumer-side (04 §3)
+type PaymentStore interface { // consumer-side (04 Section 3)
 	Charge(ctx context.Context, p Payment) (Payment, error)
 	ByCustomer(ctx context.Context, id string, limit int) ([]Payment, error)
 }
@@ -153,7 +153,7 @@ func (h Handler) create(w http.ResponseWriter, r *http.Request) {
 
 The service test needs no HTTP and no database: a fake store, a fake
 clock, table-driven cases
-([10 §1](../10-testing/01-fundamentals.md)). The transport test needs
+([10 Section 1](../10-testing/01-fundamentals.md)). The transport test needs
 no service logic: a stub service behind the same method shape. The
 seams make every tier cheap.
 
@@ -192,7 +192,7 @@ skeleton of [12](../12-http-networking/) with the store discipline of
 - **Interfaces "for later"** with exactly one implementation and no
   test consumer: speculation tax. Add the seam when the second
   implementation or the test needs it
-  ([04 §3](../04-functions-methods-interfaces/03-interfaces-philosophy.md)).
+  ([04 Section 3](../04-functions-methods-interfaces/03-interfaces-philosophy.md)).
 - **`platform/` accretion**: `strings.SortLines` does not belong next
   to `OpenDB`. Platform is for cross-domain plumbing, and its bar for
   entry is "used by two domains, knows neither."
@@ -208,7 +208,7 @@ skeleton of [12](../12-http-networking/) with the store discipline of
 
 - Package names are the domain (`payments`), identifiers drop the
   stutter (`payments.Service`, not `payments.PaymentsService`)
-  ([06 §1](../06-packages-modules/01-package-design.md)).
+  ([06 Section 1](../06-packages-modules/01-package-design.md)).
 - Files split by role inside a domain: `service.go`, `store.go`,
   `http.go`, `payment.go`. Ten small files beat one 2,000-line file.
 - `var _ PaymentStore = (*PostgresStore)(nil)` compile-time checks at
@@ -217,10 +217,10 @@ skeleton of [12](../12-http-networking/) with the store discipline of
 ## Performance Considerations
 
 - Layer indirection costs nanoseconds; the real wins and losses are
-  structural: bounded list queries (13 §4) and handler-level
-  allocation discipline (12 §3) live in specific layers, and knowing
+  structural: bounded list queries (13 Section 4) and handler-level
+  allocation discipline (12 Section 3) live in specific layers, and knowing
   which layer owns a performance problem halves diagnosis time
-  ([19 §1](../19-performance/01-measure-first.md)).
+  ([19 Section 1](../19-performance/01-measure-first.md)).
 - `http.Server` tuning (timeouts, MaxHeaderBytes) happens once, in
   `main`, next to the listener: not scattered in handlers.
 
@@ -230,7 +230,7 @@ skeleton of [12](../12-http-networking/) with the store discipline of
   (store, logger, clock), never mutable request state. Statelessness
   is what makes horizontal scaling a config change.
 - Anything a handler starts must be bounded and owned: the goroutine
-  rules from [08 §7](../08-concurrency/07-pitfalls.md) apply per
+  rules from [08 Section 7](../08-concurrency/07-pitfalls.md) apply per
   layer.
 
 ## Security Considerations
@@ -249,7 +249,7 @@ skeleton of [12](../12-http-networking/) with the store discipline of
 - Transport tier: `httptest.NewRequest`/`NewRecorder` against a stub
   service; assert status codes, headers, JSON shapes.
 - Composition tier: `main`'s wiring is proven by a build-tagged
-  integration test (13 §4's two-tier pattern) or by the runnable
+  integration test (13 Section 4's two-tier pattern) or by the runnable
   example's full-chain tests.
 
 ## Interview Questions

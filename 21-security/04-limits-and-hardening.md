@@ -38,7 +38,7 @@ sustained ceiling. This one primitive is every limit below.
 Per-identity limits need a limiter per key plus eviction (limiters
 for sources that never return leak memory). Since Go 1.25,
 `sync.Map` replacement in the stdlib makes per-key state cheap
-([08 §4](../08-concurrency/04-sync-primitives.md)); with a small
+([08 Section 4](../08-concurrency/04-sync-primitives.md)); with a small
 TTL sweep it is the whole implementation.
 
 ## Syntax / API
@@ -61,7 +61,7 @@ func (l *Limiter) Allow(id string) bool {
 }
 ```
 
-**The middleware** ([12 §2](../12-http-networking/02-middleware.md)'s
+**The middleware** ([12 Section 2](../12-http-networking/02-middleware.md)'s
 placement rules: after authn, so identity exists; before handlers):
 
 ```go
@@ -116,16 +116,16 @@ much smaller quotas: they are infrastructure-facing.
 
 **The 429 contract:** return `Retry-After`, make the body a stable
 machine-readable error, and make clients honor it with jittered
-backoff ([15 §3](../15-microservices/03-resilience-patterns.md)'s
+backoff ([15 Section 3](../15-microservices/03-resilience-patterns.md)'s
 retry discipline applies on both sides of the wire). A client that
 does not honor 429 becomes your problem twice: once as load, once
 as the incident report.
 
 **Downstream limits are limits too:** the number of in-flight
 requests to a dependency is a resource whose exhaustion is an
-outage; the bulkhead ([15 §3](../15-microservices/03-resilience-patterns.md))
+outage; the bulkhead ([15 Section 3](../15-microservices/03-resilience-patterns.md))
 is a rate limiter for concurrency. Bound goroutine fan-out with a
-semaphore ([08 §5](../08-concurrency/05-patterns.md)).
+semaphore ([08 Section 5](../08-concurrency/05-patterns.md)).
 
 ## Common Mistakes
 
@@ -153,7 +153,7 @@ semaphore ([08 §5](../08-concurrency/05-patterns.md)).
 A token-bucket check is an atomic add: nanoseconds. The costs are
 per-key state (bounded by eviction) and the map lookup (a
 `sync.Map` read is ~tens of ns). Do not shard or optimize before
-profiling ([19 §1](../19-performance/01-measure-first.md)); the
+profiling ([19 Section 1](../19-performance/01-measure-first.md)); the
 limiter is never the bottleneck unless it blocks, which is the
 mistake above.
 
@@ -189,7 +189,7 @@ attack in progress, visible before it hurts.
    anonymous traffic. (Two layers, key choice, eviction, 429
    contract.)
 2. Why is `time.Sleep` throttling dangerous in Go? (Goroutine
-   growth; [08 §7](../08-concurrency/07-pitfalls.md) leak shapes.)
+   growth; [08 Section 7](../08-concurrency/07-pitfalls.md) leak shapes.)
 3. Where do rate limits sit relative to authn in the middleware
    chain, and why does the order differ for identity vs IP keys?
 4. A customer behind a big NAT complains of 429s. What do you

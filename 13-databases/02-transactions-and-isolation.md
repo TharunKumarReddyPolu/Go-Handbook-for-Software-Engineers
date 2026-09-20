@@ -9,7 +9,7 @@ gives you manual `Begin`/`Commit`/`Rollback` bookkeeping that one
 early `return` ruins. The two patterns in this chapter (the
 transaction function, and isolation chosen per operation) prevent
 both classes of failure. The fintech ledger in
-[25 §2-3](../25-fintech-with-go/02-double-entry-ledger.md) depends on
+[25 Section 2-3](../25-fintech-with-go/02-double-entry-ledger.md) depends on
 every rule here; this chapter explains the mechanics it relies on.
 
 ## Mental Model
@@ -176,7 +176,7 @@ out; the tx becomes: read, decide, write, commit.
 ## Production Example: the ledger posting contract
 
 The fintech ledger's posting transaction
-([25 §2](../25-fintech-with-go/02-double-entry-ledger.md)) is the
+([25 Section 2](../25-fintech-with-go/02-double-entry-ledger.md)) is the
 worked example of these rules in anger: entries + lines inserted in
 one tx, per-account ordering enforced by the entry sequence, and
 `SERIALIZABLE` chosen because the zero-sum invariant spans every row
@@ -218,7 +218,7 @@ it expects is exactly the `WithinTx` shape above.
 
 - Transactions are connection leases: throughput is bounded by pool
   size divided by tx duration. Halving tx time is a capacity doubling
-  ([19 §3](../19-performance/03-concurrency-performance.md) framing).
+  ([19 Section 3](../19-performance/03-concurrency-performance.md) framing).
 - Serializable adds conflict tracking; READ COMMITTED on a
   ledger-style account table with `FOR UPDATE` on hot rows
   outperforms it when the critical section is genuinely two rows.
@@ -241,7 +241,7 @@ it expects is exactly the `WithinTx` shape above.
   after writes need compensating logic.
 - Audit rows (who changed what) commit in the same tx as the change:
   an audit trail that can diverge from its change is decoration
-  ([25 §4](../25-fintech-with-go/04-risk-and-compliance.md)).
+  ([25 Section 4](../25-fintech-with-go/04-risk-and-compliance.md)).
 
 ## Testing Strategy
 

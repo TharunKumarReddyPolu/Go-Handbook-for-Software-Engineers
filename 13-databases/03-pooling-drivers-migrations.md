@@ -90,7 +90,7 @@ driver:
 
 The pragmatic default for a handbook and most services: **`database/sql`
 with the pgx stdlib driver**, upgrading specific hot paths to native
-pgx when profiling justifies it ([19 §1](../19-performance/01-measure-first.md)).
+pgx when profiling justifies it ([19 Section 1](../19-performance/01-measure-first.md)).
 Choosing the native API wholesale is justified when you use
 Postgres-specific features deeply; the cost is portability and a
 second idiomatic style to keep consistent.
@@ -217,7 +217,7 @@ same expand/contract discipline at test scale.
   magnitude for bulk loads: another reason the native API earns its
   keep on specific paths.
 - Pool stats (`db.Stats()`) are cheap to log periodically and are the
-  first place saturation shows ([19 §1](../19-performance/01-measure-first.md)).
+  first place saturation shows ([19 Section 1](../19-performance/01-measure-first.md)).
 - The EXPLAIN walkthrough, once per suspicious query:
   `EXPLAIN (ANALYZE, BUFFERS) SELECT ...` and read the plan top-down.
   A `Seq Scan` on a large table where you have an index means the
@@ -233,7 +233,7 @@ same expand/contract discipline at test scale.
 
 - The pool is a semaphore: `db.Conn(ctx)` blocks on capacity, and a
   service that opens ad-hoc connections around a saturated pool makes
-  everything worse ([08 §5](../08-concurrency/05-patterns.md)).
+  everything worse ([08 Section 5](../08-concurrency/05-patterns.md)).
 - `ConnMaxLifetime` staggers reconnections naturally; a fleet that
   recycles all connections simultaneously (mass restart, config push)
   self-inflicts a connection storm.

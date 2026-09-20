@@ -38,7 +38,7 @@ func DecodeEnvelope(value []byte, supported map[int]func(json.RawMessage) error)
 	return decode(env.Payload)
 }
 
-// --- error classification: 05 §2's table, 18 §3's marker ---
+// --- error classification: 05 Section 2's table, 18 Section 3's marker ---
 
 type TerminalError struct{ Cause error }
 
@@ -59,7 +59,7 @@ func IsTerminal(err error) bool {
 // --- the broker ---
 
 // Message is the transport-neutral shape every adapter translates to
-// (18 §3's Message, generalized): the idempotency key travels with
+// (18 Section 3's Message, generalized): the idempotency key travels with
 // the message, Attempts counts deliveries.
 type Message struct {
 	ID             string
@@ -75,7 +75,7 @@ type Message struct {
 	FirstFailedAt    time.Time
 }
 
-// Handler is the transport-free contract (18 §3's pattern): domain
+// Handler is the transport-free contract (18 Section 3's pattern): domain
 // code implements this; brokers and tests call it.
 type Handler interface {
 	Process(ctx context.Context, msg Message) error

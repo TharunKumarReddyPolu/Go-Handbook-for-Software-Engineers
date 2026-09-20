@@ -153,7 +153,7 @@ never embed in the binary, never in a gitignored file checked in
 
 | Mistake | Consequence | Do instead |
 |---|---|---|
-| `InsecureSkipVerify: true` | TLS becomes expensive plaintext | Fix the CA/`ServerName` instead ([12 §4](../12-http-networking/04-clients-and-timeouts.md)) |
+| `InsecureSkipVerify: true` | TLS becomes expensive plaintext | Fix the CA/`ServerName` instead ([12 Section 4](../12-http-networking/04-clients-and-timeouts.md)) |
 | Custom cipher suite lists | Disable-list drift per release | Leave suites at defaults; set only `MinVersion` |
 | Expiry monitoring on renewal success | Renewal breaks silently | Monitor served cert expiry directly |
 | Long-lived internal certs (years) | Big leak window, painful rotation | 24h-ish internal certs, automated |
@@ -172,7 +172,7 @@ never embed in the binary, never in a gitignored file checked in
 ## Performance Considerations
 
 Handshakes are the cost; connections are not. Reuse
-`http.Transport` connection pools ([12 §4](../12-http-networking/04-clients-and-timeouts.md))
+`http.Transport` connection pools ([12 Section 4](../12-http-networking/04-clients-and-timeouts.md))
 and TLS 1.3's 1-RTT handshake makes new connections cheap. TLS
 1.3 also makes session resumption automatic. CPU cost of TLS at
 modern hardware is negligible for most services: measure before

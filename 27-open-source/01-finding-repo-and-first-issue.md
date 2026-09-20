@@ -8,7 +8,7 @@ archived, no maintainers), or picks an issue whose scope balloons into a
 PR nobody reviews. Choosing where to contribute is an engineering
 decision with criteria, and this chapter gives you the checklist. It is
 the same framework this handbook used when selecting its Kafka client
-([18 §2](../18-kafka-with-go/02-go-clients.md)): evaluate health, not
+([18 Section 2](../18-kafka-with-go/02-go-clients.md)): evaluate health, not
 popularity.
 
 ## Mental Model
@@ -69,7 +69,7 @@ chance to prove brilliance. Rank candidate issues:
    is the spec.
 
 Avoid as a first contribution: refactors, dependency bumps in large
-projects (trust surfaces, see [21 §5](../21-security/05-secrets-and-supply-chain.md)),
+projects (trust surfaces, see [21 Section 5](../21-security/05-secrets-and-supply-chain.md)),
 and anything where the issue says "discuss approach first" and you
 have not.
 

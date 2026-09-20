@@ -135,7 +135,7 @@ design are the canonical references; the example package encodes both
 sides of the discipline.
 
 What you do *not* need a distributed lock for: anything a database
-transaction already serializes ([13 §2](../13-databases/02-transactions-and-isolation.md)'s
+transaction already serializes ([13 Section 2](../13-databases/02-transactions-and-isolation.md)'s
 `FOR UPDATE`). Locks are for coordinating actors *outside* one
 database: two services, a cron fleet, a rebalancer.
 
@@ -145,7 +145,7 @@ A production leader election, reviewed:
 
 1. **TTL vs worst-case pause**: the lease TTL must exceed the
    holder's worst GC pause / disk stall / process freeze. Measure the
-   pause distribution ([19 §1](../19-performance/01-measure-first.md));
+   pause distribution ([19 Section 1](../19-performance/01-measure-first.md));
    set TTL to its p99.9 with margin.
 2. **Re-campaign on resume**: the waking holder must re-campaign, not
    resume; implement it as "lease check before every batch," not
@@ -179,7 +179,7 @@ A production leader election, reviewed:
 - `concurrency.Session`/`Election` from `clientv3` for real fleets;
   the example's `Lease` type for teaching and testing the semantics.
 - `ErrFencedOut` as a domain sentinel: the fenced worker logs, drops
-  its claim, and re-acquires ([05 §2](../05-errors/02-error-design.md)'s
+  its claim, and re-acquires ([05 Section 2](../05-errors/02-error-design.md)'s
   classification).
 - Leadership state behind a tiny interface (`IsLeader() bool` with a
   static fake for tests that do not need the real election).
@@ -194,7 +194,7 @@ A production leader election, reviewed:
 ## Concurrency Considerations
 
 - The fencing number is the distributed analog of the version column
-  ([13 §2](../13-databases/02-transactions-and-isolation.md)'s
+  ([13 Section 2](../13-databases/02-transactions-and-isolation.md)'s
   optimistic pattern): same CAS semantics, coordinator-allocated.
 - A fenced-out worker must stop immediately: continuing "to finish
   the batch" is exactly the corruption fencing prevents.
@@ -230,7 +230,7 @@ A production leader election, reviewed:
 
 1. Build the example's `Lease` with the injected clock; write the
    zombie-leader test (pause past TTL, attempt write, get fenced).
-2. Add fencing to the [25 §2](../25-fintech-with-go/02-double-entry-ledger.md)
+2. Add fencing to the [25 Section 2](../25-fintech-with-go/02-double-entry-ledger.md)
    ledger's posting path in a scratch branch; articulate which
    concurrent hazard it closes that the DB transaction alone does not.
 3. Measure your service's worst GC pause (GODEBUG=gctrace=1 under

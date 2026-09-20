@@ -35,7 +35,7 @@ The semantics DNA: **a queue deletes knowledge of delivered work; a
 log remembers; pub/sub forgets instantly.** Every downstream
 requirement (replay after a consumer bug, audit of what happened,
 guaranteed delivery to a subscriber that was down) is decided by this
-one property, which is why [18 §1](../18-kafka-with-go/01-kafka-concepts.md)
+one property, which is why [18 Section 1](../18-kafka-with-go/01-kafka-concepts.md)
 calls the log "not a queue with better marketing."
 
 ## How It Works: choosing by the questions you ask
@@ -49,7 +49,7 @@ The decision questions, in the order they matter:
 2. **Will you ever need to reprocess?** Bug in the consumer published
    last Tuesday; do you replay? Only a log can. This single question
    disqualifies queues for event-driven architectures
-   ([15 §5](../15-microservices/05-discovery-events-and-when-not.md)'s
+   ([15 Section 5](../15-microservices/05-discovery-events-and-when-not.md)'s
    outbox events are news with history requirements).
 3. **Do subscribers have independent pace and interest?** Two teams
    consuming the same events at different speeds and with different
@@ -78,7 +78,7 @@ notification.
 analytics *share* the processing (they do not: each needs every
 event). A queue distributes; it does not fan out.
 
-The outbox relay from [25 §3](../25-fintech-with-go/03-integrity-and-exactly-once.md)
+The outbox relay from [25 Section 3](../25-fintech-with-go/03-integrity-and-exactly-once.md)
 publishes to a log for exactly this reason: the downstream fan-out is
 each consumer's own position, and nothing is lost to a subscriber's
 downtime.
@@ -109,7 +109,7 @@ broker* with the queue model's exact semantics (ack, redeliver on
 nack, bounded retries, DLQ, idempotent consumption). It exists to
 make the vocabulary executable: by the end, `Handler`, `redelivery`,
 `dead-letter`, and `ack` are things you have tested, not just read.
-The same handler interface plugs into RabbitMQ, SQS, or Kafka (18 §3
+The same handler interface plugs into RabbitMQ, SQS, or Kafka (18 Section 3
 does the Kafka wiring), which is the portability payoff of the
 transport-free pattern.
 
@@ -121,12 +121,12 @@ transport-free pattern.
 - **A queue for multi-team fan-out**: consumption is competitive;
   team B's lag steals team A's messages. Logs or durable pub/sub.
 - **Kafka as a job queue**: keyless topics, message-level acks, no
-  replay designed in ([18 §1](../18-kafka-with-go/01-kafka-concepts.md)'s
+  replay designed in ([18 Section 1](../18-kafka-with-go/01-kafka-concepts.md)'s
   "#1 design error" warning). Jobs want per-item ack semantics.
 - **Assuming FIFO everywhere**: queues deliver in order *until*
   retries, redelivery, or concurrent consumers intervene; the
   ordering promise needs the per-key discipline of
-  [16 §4](../16-distributed-systems/04-quorums-sharding.md).
+  [16 Section 4](../16-distributed-systems/04-quorums-sharding.md).
 - **Model chosen by broker familiarity**: "we have Kafka, so jobs
   flow through Kafka" couples two unrelated requirements. The models
   are the design; brokers implement them.
@@ -136,33 +136,33 @@ transport-free pattern.
 - Name the model in the type or package: `jobs.Queue`,
   `events.Log`, `notifications.Fanout`; future readers inherit the
   decision, not a guess.
-- Publish behind an interface ([04 §3](../04-functions-methods-interfaces/03-interfaces-philosophy.md)):
-  the outbox relay is an implementation detail ([15 §4](../15-microservices/04-idempotency-sagas-outbox.md)).
+- Publish behind an interface ([04 Section 3](../04-functions-methods-interfaces/03-interfaces-philosophy.md)):
+  the outbox relay is an implementation detail ([15 Section 4](../15-microservices/04-idempotency-sagas-outbox.md)).
 
 ## Performance Considerations
 
 - Latency ladder: ephemeral pub/sub (µs) → queue (ms) → durable log
   (ms + fsync-configurable). Pay for durability where the data's
-  worth it ([16 §1](../16-distributed-systems/01-failure-model-cap-pacelc.md)'s
+  worth it ([16 Section 1](../16-distributed-systems/01-failure-model-cap-pacelc.md)'s
   matrix).
 - Throughput lives in batching at every layer (broker, client, your
-  consumer); [18 §4](../18-kafka-with-go/04-observability-tuning.md)'s
+  consumer); [18 Section 4](../18-kafka-with-go/04-observability-tuning.md)'s
   tuning section generalizes.
 
 ## Concurrency Considerations
 
 - Queue consumers race for messages by design: the worker-pool
-  patterns of [08 §5](../08-concurrency/05-patterns.md) are the
+  patterns of [08 Section 5](../08-concurrency/05-patterns.md) are the
   consumer shape.
 - Log consumers serialize per partition: one worker per partition
-  preserves order with bounded parallelism ([18 §1](../18-kafka-with-go/01-kafka-concepts.md)'s
+  preserves order with bounded parallelism ([18 Section 1](../18-kafka-with-go/01-kafka-concepts.md)'s
   partition ceiling).
 
 ## Security Considerations
 
 - Queues and topics carry business data: ACLs per topic/queue, PII
   out of keys and headers, TLS from day one
-  ([18 §1](../18-kafka-with-go/01-kafka-concepts.md)'s Kafka rules
+  ([18 Section 1](../18-kafka-with-go/01-kafka-concepts.md)'s Kafka rules
   generalize to every broker here).
 
 ## Testing Strategy

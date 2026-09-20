@@ -27,7 +27,7 @@ flowchart TD
   many OS threads the scheduler runs code on simultaneously. A
   2-CPU-limit pod with a host-default `GOMAXPROCS=64` oversubscribes
   the scheduler: throttling pauses at arbitrary points, p99 grows
-  ([08 §6](../08-concurrency/06-concurrency-vs-parallelism.md)).
+  ([08 Section 6](../08-concurrency/06-concurrency-vs-parallelism.md)).
 - **Memory limit** is a cgroup kill line: cross it and the kernel
   OOM-kills the process, no panic, no traceback, no shutdown hook.
   `GOMEMLIMIT` is the runtime's soft memory target: set it below
@@ -63,7 +63,7 @@ stays strictly bounded.
 ## Syntax / API
 
 **Reading what the runtime decided** (export it as metrics, [20
-§2](../20-observability/02-metrics.md)):
+Section 2](../20-observability/02-metrics.md)):
 
 ```go
 // Chart these four; each answers one incident question.
@@ -77,9 +77,9 @@ runtime/metrics: /gc/pauses:seconds     // GC stalls
 direction):
 
 ```go
-db.SetMaxOpenConns(20)   // pool ceiling [13 §3]
+db.SetMaxOpenConns(20)   // pool ceiling [13 Section 3]
 sem := make(chan struct{}, 64) // outbound concurrency cap (bulkhead)
-r.Body = http.MaxBytesReader(w, r.Body, 1<<20) // request body [21 §4]
+r.Body = http.MaxBytesReader(w, r.Body, 1<<20) // request body [21 Section 4]
 ```
 
 File descriptors are the invisible ceiling: each open connection
@@ -117,7 +117,7 @@ limit crosses at the worst moment; the kernel kills the pod; the
 remaining pods absorb the spike; they OOM too. With `GOMEMLIMIT`
 set at 90%, the same spike makes GC run more frequently instead:
 latency rises modestly, availability holds. [19
-§2](../19-performance/02-memory-and-allocations.md) covers the GC
+Section 2](../19-performance/02-memory-and-allocations.md) covers the GC
 mechanics; this is its production framing.
 
 ## Production Example
@@ -128,7 +128,7 @@ not GC pauses. Cause: `GOMAXPROCS` larger than the CPU limit, so
 the kernel slices the quota into gaps the scheduler experiences as
 stalls. Fix: match `GOMAXPROCS` to the limit (or drop the CPU
 limit). The chart pair (throttling + GC pauses) tells you which
-within a minute; [20 §5](../20-observability/05-incident-debugging.md)
+within a minute; [20 Section 5](../20-observability/05-incident-debugging.md)
 has the incident flow.
 
 ## Common Mistakes
@@ -154,11 +154,11 @@ has the incident flow.
 
 ## Performance Considerations
 
-GC tuning order for services ([19 §2](../19-performance/02-memory-and-allocations.md)):
+GC tuning order for services ([19 Section 2](../19-performance/02-memory-and-allocations.md)):
 1. set `GOMEMLIMIT`; 2. reduce allocations; 3. only then consider
 `GOGC`. Over-provisioned `GOMAXPROCS` adds scheduler overhead
 without parallelism gains: more Ps than available cores is pure
-contention ([08 §6](../08-concurrency/06-concurrency-vs-parallelism.md)).
+contention ([08 Section 6](../08-concurrency/06-concurrency-vs-parallelism.md)).
 
 ## Concurrency Considerations
 
@@ -166,11 +166,11 @@ Every unbounded concurrent structure is a resource-limit bug:
 unbounded channel fan-out, uncapped worker pools, per-request
 goroutines with no semaphore. The container limit converts each
 into an OOM kill eventually. The audit: one bulkhead per
-dependency, one semaphore per fan-out ([15 §3](../15-microservices/03-resilience-patterns.md)).
+dependency, one semaphore per fan-out ([15 Section 3](../15-microservices/03-resilience-patterns.md)).
 
 ## Security Considerations
 
-Limits are availability controls ([21 §4](../21-security/04-limits-and-hardening.md)):
+Limits are availability controls ([21 Section 4](../21-security/04-limits-and-hardening.md)):
 a tenant that can allocate unbounded memory in your process bypasses
 every other defense. FD and connection ceilings also cap
 connection-exhaustion attacks; the limiter is the front door, the

@@ -86,7 +86,7 @@ type Handler struct {
 func NewHandler(svc *Service) Handler { return Handler{svc: svc} }
 
 // Routes wires paths and policies over the domain middleware chain.
-// Order (12 §2, refined by section 20): metrics+tracing OUTERMOST
+// Order (12 Section 2, refined by section 20): metrics+tracing OUTERMOST
 // (they count every request received, including rejected ones), then
 // ScopedLogger (gets trace IDs from the span), then Recover innermost
 // of the global wrappers so panics become 5xx that metrics count.
@@ -123,7 +123,7 @@ func (h Handler) Routes(logger *slog.Logger, red *obshttp.Metrics) http.Handler 
 	return red.Instrument(chain)
 }
 
-// --- wire types (12 §3): transport-only shapes ---
+// --- wire types (12 Section 3): transport-only shapes ---
 
 type createRequest struct {
 	CustomerID  string `json:"customer_id"`
@@ -179,7 +179,7 @@ func (h Handler) cancel(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-// mapError is the single translation point (05 §2, 12 §1): domain
+// mapError is the single translation point (05 Section 2, 12 Section 1): domain
 // sentinels in, status codes out. ErrForbidden maps to 404 by design:
 // someone else's payment does not exist for you (chapter 4).
 func mapError(err error) (string, int, bool) {

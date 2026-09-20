@@ -149,7 +149,7 @@ func Identity(r *http.Request) Identity {
 Three rules make context values maintainable: unexported key type, one
 accessor function per value, and never store anything in context that
 a parameter could carry (see
-[08 §3](../08-concurrency/03-context.md) for the full context rules).
+[08 Section 3](../08-concurrency/03-context.md) for the full context rules).
 
 ## Common Mistakes
 
@@ -185,7 +185,7 @@ a parameter could carry (see
 - Each layer adds a call per request: nanoseconds. The real costs are
   what middleware *does*: a logging middleware that formats ten fields
   per request at 50k RPS is a measurable allocator; sample or trim
-  fields on hot paths ([19 §1](../19-performance/01-measure-first.md)).
+  fields on hot paths ([19 Section 1](../19-performance/01-measure-first.md)).
 - `http.TimeoutHandler` buffers nothing by itself; pairing it with a
   handler that streams large responses keeps memory bounded, while a
   handler that builds the whole body in memory does not.
@@ -195,9 +195,9 @@ a parameter could carry (see
 - Middleware runs in the request goroutine: anything it starts must be
   bounded and canceled with the request context, or it outlives the
   request (the goroutine-leak pattern from
-  [08 §7](../08-concurrency/07-pitfalls.md)).
+  [08 Section 7](../08-concurrency/07-pitfalls.md)).
 - Shared maps inside middleware (rate counters, caches) need the sync
-  discipline from [08 §4](../08-concurrency/04-sync-primitives.md).
+  discipline from [08 Section 4](../08-concurrency/04-sync-primitives.md).
 
 ## Security Considerations
 

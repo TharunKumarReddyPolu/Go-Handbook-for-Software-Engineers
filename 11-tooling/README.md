@@ -2,8 +2,8 @@
 
 **Status: in depth.** Four chapters on the professional Go
 workflow: the tools every maintainer assumes you know, wired into
-editor and CI so quality is mechanical. [01 §2](../01-go-fundamentals/02-toolchain-and-workflow.md)
-covers the daily verbs; [19 §1](../19-performance/01-measure-first.md)
+editor and CI so quality is mechanical. [01 Section 2](../01-go-fundamentals/02-toolchain-and-workflow.md)
+covers the daily verbs; [19 Section 1](../19-performance/01-measure-first.md)
 teaches the profiles' mechanics; this section is the operational
 layer above both.
 
@@ -31,7 +31,7 @@ layer above both.
 
 The design rule: every check exists at the cheapest tier that can
 carry it, and CI repeats them all as the blocking gate ([01
-§1](01-professional-workflow.md)'s feedback-tier example).
+Section 1](01-professional-workflow.md)'s feedback-tier example).
 
 ## The commands worth memorizing
 

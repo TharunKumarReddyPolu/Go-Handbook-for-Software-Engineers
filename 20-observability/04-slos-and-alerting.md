@@ -38,7 +38,7 @@ flowchart LR
 **Choose SLIs from the user's seat:** availability (did it answer
 without a 5xx) and latency (did it answer fast enough). Not CPU, not
 goroutine counts: those are causes, page on symptoms
-([19 §1](../19-performance/01-measure-first.md) measures causes;
+([19 Section 1](../19-performance/01-measure-first.md) measures causes;
 here we page on effects).
 
 **Burn-rate alerting** is the mechanism that keeps alerts few:

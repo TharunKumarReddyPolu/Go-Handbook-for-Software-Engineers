@@ -34,7 +34,7 @@ flowchart LR
 1. Type assertions / type switches: interface word compare: ns.
 2. `reflect.TypeOf`/`ValueOf`: allocates if the value is
    non-pointer-shaped (boxing into the interface, [05
-   §5](../05-interfaces-slices-strings.md)).
+   Section 5](../05-interfaces-slices-strings.md)).
 3. `Field(i)`/`MapIndex`: each access re-boxes and bounds-checks:
    ~100x a direct field access.
 4. `reflect.New`/`Set`: allocation plus kind-checking.
@@ -44,8 +44,8 @@ type builds a field plan keyed by type; subsequent operations
 walk the cached plan, not the reflection API. That is the pattern
 to copy if reflection is genuinely needed: **reflect once per
 type, cache the plan, execute the plan fast** ([13
-§4](../13-databases/04-repositories-and-testing.md)'s ORM
-discussion and [02 §4](../02-go-language/04-structs.md)'s tags
+Section 4](../13-databases/04-repositories-and-testing.md)'s ORM
+discussion and [02 Section 4](../02-go-language/04-structs.md)'s tags
 both ride this).
 
 **Reading assembly**: `go tool compile -S` or `go build -gcflags=-S`
@@ -112,7 +112,7 @@ The validation library question: tag-driven validators
 (`validate:"required,max=128"`) walk reflection per request or
 cache plans per type. The stdlib-first alternative in this
 handbook's service is explicit `Validate()` methods ([14
-§4](../14-backend-development/04-authn-authz-and-validation.md)):
+Section 4](../14-backend-development/04-authn-authz-and-validation.md)):
 no reflection, compile-time checked, table-testable. The tradeoff
 is one line of wiring per type versus magic for free; the
 handbook's rule: explicit at boundaries you own, reflection-based
@@ -139,14 +139,14 @@ func planFor(t reflect.Type) *plan {
 The hot loop then executes `plan` (direct field offsets, no
 `reflect.Value` per row): reflection costs land once per type,
 not once per row. Profile before and after ([19
-§1](../19-performance/01-measure-first.md)): the win is usually
+Section 1](../19-performance/01-measure-first.md)): the win is usually
 10-50x on the mapping step.
 
 **Assembly in production debugging**: a benchmark says function X
 got slower after a Go upgrade. `compile -S` diff shows the loop
 now calls a helper (an inlining decision changed). That is the
 whole debugging session: claim, disassemble, diff, decide (pin
-with a benchmark, [10 §4](../10-testing/04-benchmarks-coverage-fuzzing.md)).
+with a benchmark, [10 Section 4](../10-testing/04-benchmarks-coverage-fuzzing.md)).
 
 ## Common Mistakes
 
@@ -156,7 +156,7 @@ with a benchmark, [10 §4](../10-testing/04-benchmarks-coverage-fuzzing.md)).
 | `reflect.DeepEqual` for identity | Full structural walk, allocation-heavy | `==` where comparable; bytes.Equal for []byte |
 | Building generic frameworks on `reflect.Value.Set` | Type errors move to runtime, the opposite of Go's bet | Generics ([07](../07-generics/)) for closed sets; codegen for open ones |
 | Writing assembly by hand to "optimize" | The compiler beats hand asm almost everywhere | Read asm to verify; fix the source |
-| Trusting benchmarks without asm | You profiled the compiler's choice, not yours | Confirm inlining/BCE with flags ([02 §2](02-ssa-and-optimizations.md)) |
+| Trusting benchmarks without asm | You profiled the compiler's choice, not yours | Confirm inlining/BCE with flags ([02 Section 2](02-ssa-and-optimizations.md)) |
 
 ## Idiomatic Go
 
@@ -174,7 +174,7 @@ The numbers to carry: a type assertion is ~1-3ns; `Field(i)`
 service doing 10k rows per request, raw reflection per row is the
 profile; a plan is a footnote. Assembly reading costs minutes and
 settles arguments that would otherwise produce cargo-cult code
-([19 §1](../19-performance/01-measure-first.md)'s measure-first
+([19 Section 1](../19-performance/01-measure-first.md)'s measure-first
 rule, applied to beliefs).
 
 ## Concurrency Considerations
@@ -191,11 +191,11 @@ Reflection defeats compile-time visibility: vet and dead-code
 analysis cannot see what reflect does with your types, which is
 why `encoding/json`'s tag handling is documented behavior worth
 reading (unknown-field handling, [21
-§1](../21-security/01-threat-model-and-validation.md)'s boundary
+Section 1](../21-security/01-threat-model-and-validation.md)'s boundary
 decisions). Assembly review matters for constant-time claims:
 crypto code that must not branch on secrets is verified by
 reading the emitted asm, not by hoping ([21
-§5](../21-security/05-secrets-and-supply-chain.md)).
+Section 5](../21-security/05-secrets-and-supply-chain.md)).
 
 ## Testing Strategy
 
@@ -205,7 +205,7 @@ reading the emitted asm, not by hoping ([21
   and stable; a race detector run over the cache.
 - Benchmark any plan-based mapper against the naive version once;
   keep the benchmark so regressions surface
-  ([10 §4](../10-testing/04-benchmarks-coverage-fuzzing.md)).
+  ([10 Section 4](../10-testing/04-benchmarks-coverage-fuzzing.md)).
 
 ## Interview Questions
 

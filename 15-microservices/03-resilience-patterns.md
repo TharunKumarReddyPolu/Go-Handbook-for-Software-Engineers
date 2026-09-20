@@ -10,7 +10,7 @@ outage through perfectly reasonable code. The resilience quartet
 (timeouts, retries, circuit breakers, bulkheads) is the set of
 patterns that stop this propagation, and each has a Go implementation
 small enough to own. The rules for *when* to retry come from
-[05 §2](../05-errors/02-error-design.md)'s decision table; this
+[05 Section 2](../05-errors/02-error-design.md)'s decision table; this
 chapter is the machinery and its interactions.
 
 ## Mental Model
@@ -47,8 +47,8 @@ client total: 800ms
        └─ svc-B call: 300ms   ← must be < remaining, with margin
 ```
 
-The Go mechanics are [12 §4](../12-http-networking/04-clients-and-timeouts.md)'s
-knob map and [08 §3](../08-concurrency/03-context.md)'s context
+The Go mechanics are [12 Section 4](../12-http-networking/04-clients-and-timeouts.md)'s
+knob map and [08 Section 3](../08-concurrency/03-context.md)'s context
 trees; the microservice-specific rule is **propagation**:
 
 ```go
@@ -66,7 +66,7 @@ func (h Handler) create(w http.ResponseWriter, r *http.Request) {
 
 `context.DeadlineExceeded` arriving from downstream means *your*
 budget (or your caller's) is spent: log which, do not blindly retry
-(the 05 §2 table's "decide why" row).
+(the 05 Section 2 table's "decide why" row).
 
 ## Retry: backoff with teeth
 
@@ -85,7 +85,7 @@ func Retry(ctx context.Context, op func(context.Context) error) error {
 		} else {
 			lastErr = err
 		}
-		if !errorslib.Retryable(lastErr) { // 05 §2's classification
+		if !errorslib.Retryable(lastErr) { // 05 Section 2's classification
 			return lastErr // 400s do not improve with retries
 		}
 		backoff := base << attempt // 50, 100, 200, 400, 800ms
@@ -106,7 +106,7 @@ func Retry(ctx context.Context, op func(context.Context) error) error {
 The three properties that make this safe: **classification before
 retrying** (`Retryable`), **budget awareness** (never sleep past the
 caller's deadline), **jitter** (never retry in lockstep). And the
-precondition from 12 §4 stands: only idempotent operations, or
+precondition from 12 Section 4 stands: only idempotent operations, or
 idempotency keys (chapter 4), make retries honest.
 
 ## Circuit breaker: failing fast as a feature
@@ -172,7 +172,7 @@ operation.
 
 The bulkhead bounds what any one dependency can take from you:
 semaphore-per-dependency (the pattern from
-[08 §5](../08-concurrency/05-patterns.md)):
+[08 Section 5](../08-concurrency/05-patterns.md)):
 
 ```go
 type Bulkhead struct{ sem chan struct{} }
@@ -196,7 +196,7 @@ With a bulkhead, the payment service's stall consumes its 10 slots
 and nothing else; inventory keeps its own 10. Without one, the
 fleet-wide pool fills with payment waits and inventory dies too: the
 propagation the quartet exists to stop. HTTP client pools
-(`MaxIdleConnsPerHost`, 12 §4) are a bulkhead of sorts; explicit
+(`MaxIdleConnsPerHost`, 12 Section 4) are a bulkhead of sorts; explicit
 semaphores make the policy visible and testable.
 
 ## Real-World Example: the quartet composed
@@ -246,7 +246,7 @@ non-event.
 ## Common Mistakes
 
 - **Retrying 4xx**: deterministic failures double in cost per retry
-  (05 §2's table). Only transient classes retry.
+  (05 Section 2's table). Only transient classes retry.
 - **Retries without jitter**: synchronized retries arrive as a
   periodic spike; the dependency sees a denial-of-service shaped
   exactly like your traffic pattern.
@@ -260,7 +260,7 @@ non-event.
   capacity with headroom, and let the breaker handle the rest.
 - **Silent fallbacks**: catching `ErrCircuitOpen` and returning a
   default "works" for money paths is a data-integrity bug wearing a
-  resilience costume ([25 §1](../25-fintech-with-go/01-money-and-payments.md));
+  resilience costume ([25 Section 1](../25-fintech-with-go/01-money-and-payments.md));
   fallbacks fit reads, never writes.
 
 ## Idiomatic Go
@@ -269,7 +269,7 @@ non-event.
   "resilience framework"; each is testable alone, and the composition
   is one function.
 - `ErrCircuitOpen`-style sentinels per layer, mapped once in
-  transport ([05 §2](../05-errors/02-error-design.md)).
+  transport ([05 Section 2](../05-errors/02-error-design.md)).
 - The clock is injected (`now func() time.Time`): breaker cooldowns
   and backoffs become deterministic tests (chapter 3 of
   [14](../14-backend-development/03-wiring-and-dependency-injection.md)).
@@ -280,13 +280,13 @@ non-event.
   fastest response in the system by design. Alert on breaker state
   transitions, not on their absence.
 - `time.After` in retry loops allocates a timer per attempt; for
-  hot loops, reuse timers ([19 §2](../19-performance/02-memory-and-allocations.md)).
+  hot loops, reuse timers ([19 Section 2](../19-performance/02-memory-and-allocations.md)).
   At normal call volumes, the readability wins.
 
 ## Concurrency Considerations
 
 - Breaker and bulkhead state are shared across goroutines: mutexes
-  or atomics, and the race detector in CI ([08 §4](../08-concurrency/04-sync-primitives.md)).
+  or atomics, and the race detector in CI ([08 Section 4](../08-concurrency/04-sync-primitives.md)).
 - The half-open probe must admit *one* concurrent prober, or the
   cooldown ends with a thundering herd (the example pins this).
 
@@ -296,7 +296,7 @@ non-event.
   not name the failed dependency's topology to external clients.
 - Retry amplification is a DoS vector against your own dependencies:
   cap attempts *and* honor `Retry-After` from 429/503
-  ([12 §4](../12-http-networking/04-clients-and-timeouts.md)).
+  ([12 Section 4](../12-http-networking/04-clients-and-timeouts.md)).
 
 ## Testing Strategy
 

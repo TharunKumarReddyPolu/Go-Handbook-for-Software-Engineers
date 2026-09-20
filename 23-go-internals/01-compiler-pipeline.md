@@ -8,7 +8,7 @@ design. You do not need to hack on the compiler to benefit from
 knowing its shape; you need it to answer the engineer's questions:
 why is this build fast, why did the compiler reject this, what did
 it do with my code? Every optimization discussed in [19
-§4](../19-performance/04-compiler-and-pgo.md) is a *pass* in this
+Section 4](../19-performance/04-compiler-and-pgo.md) is a *pass* in this
 pipeline; this chapter is where the passes live.
 
 ## Mental Model
@@ -114,21 +114,21 @@ earliest one is the cheapest.
 Build caching makes the pipeline's cost model practical: the build
 cache keys on file content, flags, and toolchain version, so CI
 builds hit warm caches after the first run
-([06 §5](../06-packages-modules/05-reproducible-builds.md)'s
+([06 Section 5](../06-packages-modules/05-reproducible-builds.md)'s
 reproducible flags matter here: different flags = different cache
 keys). `-trimpath` and pinned toolchains make the cache portable
 across machines. When someone proposes "we should precompile" or
 "we should split packages for build speed", the answer is measured
 against this pipeline: package granularity affects parallelism;
 flags affect cache keys; both are testable
-([19 §1](../19-performance/01-measure-first.md)).
+([19 Section 1](../19-performance/01-measure-first.md)).
 
 ## Common Mistakes
 
 | Mistake | Reality | Do instead |
 |---|---|---|
 | Trusting intuition about inlining | The budget is mechanical: cost ≤ 80, and inlining enables other passes | Ask with `-gcflags=-m` |
-| Adding interfaces "for later" | Devirtualization only fires when the concrete type is provable | Keep hot paths concrete ([19 §4](../19-performance/04-compiler-and-pgo.md)) |
+| Adding interfaces "for later" | Devirtualization only fires when the concrete type is provable | Keep hot paths concrete ([19 Section 4](../19-performance/04-compiler-and-pgo.md)) |
 | Believing `unsafe` tricks beat the compiler | The SSA passes usually win | Benchmark before believing |
 | Ignoring vet | Vet is the pipeline's cheap early stage | Run it in CI (this repo does) |
 | Assuming generics slow builds | Type-check cost, not codegen bloat, and modest | Measure build times before refactoring around it |
@@ -147,7 +147,7 @@ flags affect cache keys; both are testable
 Compilers optimize hot code well and cold code adequately; your
 leverage is structure, not micro-idioms. The pass that matters
 most for services is escape analysis ([19
-§2](../19-performance/02-memory-and-allocations.md)): allocation
+Section 2](../19-performance/02-memory-and-allocations.md)): allocation
 volume drives GC work, which drives tail latency. Reading `-m`
 output on your hot path is the cheapest performance review there is.
 
@@ -167,7 +167,7 @@ checks on functions with locals, position-independent executables
 by default on most platforms, and `GOEXPERIMENT` hardening flags as
 they land. `govulncheck` covers dependencies, but the binary's own
 surface is the compiler's; rebuild with new toolchains when CVEs
-name the runtime ([21 §5](../21-security/05-secrets-and-supply-chain.md)).
+name the runtime ([21 Section 5](../21-security/05-secrets-and-supply-chain.md)).
 
 ## Testing Strategy
 

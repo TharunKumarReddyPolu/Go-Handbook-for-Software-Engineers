@@ -6,7 +6,7 @@ One request, five services: which one was slow? Logs and metrics are
 per-service; a distributed trace is the request's story across all of
 them: every hop, every wait, one shared ID. Go's standard is
 OpenTelemetry (OTel), and the stdlib's `context` is the mechanism
-traces ride on ([08 §3](../08-concurrency/03-context.md)): a span is
+traces ride on ([08 Section 3](../08-concurrency/03-context.md)): a span is
 just another value carried by the context.
 
 ## Mental Model
@@ -133,7 +133,7 @@ defer func() {
 
 Plus a bounded flush inside `otelwiring` (5s): a hung collector must
 not hang shutdown, the same grace-period discipline as the HTTP
-server ([12 §5](../12-http-networking/05-graceful-shutdown.md)).
+server ([12 Section 5](../12-http-networking/05-graceful-shutdown.md)).
 
 ## Common Mistakes
 
@@ -150,7 +150,7 @@ server ([12 §5](../12-http-networking/05-graceful-shutdown.md)).
 ## Idiomatic Go
 
 - Spans travel in `context.Context`; pass `ctx` first parameter as
-  everywhere else ([08 §3](../08-concurrency/03-context.md)).
+  everywhere else ([08 Section 3](../08-concurrency/03-context.md)).
 - `otel.Tracer("pkgname")` per package, like `log` package names.
 - No-op by default: code compiles and runs with zero OTel
   configuration; instrumentation never blocks boot.
@@ -161,7 +161,7 @@ Span creation is nanoseconds and one allocation tier; export is the
 cost, and batching moves it off the request path. Attribute values
 are the real allocation source: reuse constants, avoid
 `fmt.Sprintf` in hot attributes. When in doubt, measure
-([19 §1](../19-performance/01-measure-first.md)).
+([19 Section 1](../19-performance/01-measure-first.md)).
 
 ## Concurrency Considerations
 

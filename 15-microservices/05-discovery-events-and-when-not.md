@@ -34,14 +34,14 @@ it: one hot pod, N cold ones. The fixes, in order of preference:
 headless service + `grpc-go`'s built-in `dns:///` resolver with
 round-robin (client-side balancing, three lines of dial options), or
 a mesh sidecar that balances per-request. The handbook's client
-construction ([12 §4](../12-http-networking/04-clients-and-timeouts.md))
+construction ([12 Section 4](../12-http-networking/04-clients-and-timeouts.md))
 is where this lives: transport and balancer options belong in one
 constructor, reviewed once.
 
 Load-balancing policy itself is usually boring: round-robin for
 stateless services, least-request for skewed latencies, and
 consistency by key (hash the aggregate ID) when a request sequence
-must hit the same instance ([13 §5](../13-databases/05-caching-with-redis.md)'s
+must hit the same instance ([13 Section 5](../13-databases/05-caching-with-redis.md)'s
 session-affinity caveat applies: prefer stateless and let any
 instance serve).
 
@@ -54,7 +54,7 @@ The deepest architectural choice in a fleet is per-interaction:
 | Coupling | caller knows callee | publisher knows nothing |
 | Temporal coupling | both must be up | consumer can be down; events wait |
 | Flow comprehension | read the caller | reconstruct from consumers |
-| Error handling | synchronous, in-band | retries + DLQ ([18 §3](../18-kafka-with-go/03-producer-consumer.md)) |
+| Error handling | synchronous, in-band | retries + DLQ ([18 Section 3](../18-kafka-with-go/03-producer-consumer.md)) |
 | Backpressure | natural (the call blocks) | explicit design required (16) |
 
 The decision rule: **does the caller need the answer to proceed?**
@@ -72,7 +72,7 @@ The anti-patterns sit at the edges:
   availability multiplies (0.99⁴ ≈ 0.96), the latency sums, and the
   timeout budgeting from chapter 3 becomes architectural debt.
   Break the chain with an event at the point where "eventually" is
-  acceptable ([25 §3](../25-fintech-with-go/03-integrity-and-exactly-once.md)'s
+  acceptable ([25 Section 3](../25-fintech-with-go/03-integrity-and-exactly-once.md)'s
   outbox makes the boundary atomic).
 - **Event-driven everything**: when every interaction is an event,
   the system's behavior is emergent and no one can state it. Audit
@@ -105,7 +105,7 @@ resource profiles (report generation vs API serving) are the
 legitimate version of this reason; abstract traffic growth is not.
 
 **"The codebase is too big."** Big codebases are a package-structure
-problem ([14 §1](../14-backend-development/01-service-layout.md)).
+problem ([14 Section 1](../14-backend-development/01-service-layout.md)).
 Microservices make the codebase bigger: every contract, every client
 library, every deployment script is new code. Split when *teams*
 stop fitting in one codebase, not when files do.
@@ -122,7 +122,7 @@ the need is real (a legacy system, a specialized ML runtime) is
 usually solved by *one* boundary around the exception, not a
 polyglot fleet. Every additional runtime multiplies your operational
 playbooks, image pipeline, and CVE surface
-([06 §4](../06-packages-modules/04-dependency-hygiene.md)'s hygiene
+([06 Section 4](../06-packages-modules/04-dependency-hygiene.md)'s hygiene
 rules apply per language).
 
 **"Startups need microservices to scale later."** Startups need
@@ -147,7 +147,7 @@ would be a distributed monolith on day one.
 
 ## Service mesh: what it adds, what it costs
 
-A service mesh (Istio, Linkerd, Cilium mesh) moves some [§3](03-resilience-patterns.md) concerns out of your process: mTLS between services, retries and outlier detection, traffic splitting for canaries, uniform telemetry. The Go-specific question is what it removes, and the honest ledger has both columns.
+A service mesh (Istio, Linkerd, Cilium mesh) moves some [Section 3](03-resilience-patterns.md) concerns out of your process: mTLS between services, retries and outlier detection, traffic splitting for canaries, uniform telemetry. The Go-specific question is what it removes, and the honest ledger has both columns.
 
 What a mesh genuinely gives you:
 
@@ -157,11 +157,11 @@ What a mesh genuinely gives you:
 
 What it costs, in Go-specific terms:
 
-- Retry budgets must count mesh hops. Your [12 §4](../12-http-networking/04-clients-and-timeouts.md) client retrying 3x on top of a mesh retrying 3x is a 9x amplification; the budget math from [§3](03-resilience-patterns.md) breaks unless the mesh's attempts are inside it.
-- Per-hop latency and resource overhead (sidecar or eBPF) lands on your p99 and your [22 §3](../22-production-go/03-resource-limits.md) budget.
+- Retry budgets must count mesh hops. Your [12 Section 4](../12-http-networking/04-clients-and-timeouts.md) client retrying 3x on top of a mesh retrying 3x is a 9x amplification; the budget math from [Section 3](03-resilience-patterns.md) breaks unless the mesh's attempts are inside it.
+- Per-hop latency and resource overhead (sidecar or eBPF) lands on your p99 and your [22 Section 3](../22-production-go/03-resource-limits.md) budget.
 - A second failure domain to debug at 3 a.m., with its own upgrade cadence and failure modes.
 
-The handbook's position: for a mostly-Go fleet, the resilience quartet in-process plus mTLS at ingress (see [21 §3](../21-security/03-tls-certificates.md)) covers most needs without a mesh. Adopt one when the fleet is genuinely polyglot or when traffic policy must become a platform decision rather than a per-team one. It is a boundary move with ongoing rent, not a feature.
+The handbook's position: for a mostly-Go fleet, the resilience quartet in-process plus mTLS at ingress (see [21 Section 3](../21-security/03-tls-certificates.md)) covers most needs without a mesh. Adopt one when the fleet is genuinely polyglot or when traffic policy must become a platform decision rather than a per-team one. It is a boundary move with ongoing rent, not a feature.
 
 ## Common Mistakes
 
@@ -176,7 +176,7 @@ The handbook's position: for a mostly-Go fleet, the resilience quartet in-proces
   invariants, sagas-for-reads. Calls and events are a portfolio.
 - **Consistent hashing for statelessness**: hashing by user to "keep
   caches warm" reintroduces instance state and rebalancing pain;
-  scale the cache tier instead ([13 §5](../13-databases/05-caching-with-redis.md)).
+  scale the cache tier instead ([13 Section 5](../13-databases/05-caching-with-redis.md)).
 - **Refusing to consolidate**: three services that always deploy
   together and share a database are one service with three codebases.
   Merging is an architecture improvement, not a defeat.
@@ -184,7 +184,7 @@ The handbook's position: for a mostly-Go fleet, the resilience quartet in-proces
 ## Idiomatic Go
 
 - gRPC dial options and balancer configuration in one constructor
-  next to the transport knobs ([12 §4](../12-http-networking/04-clients-and-timeouts.md)).
+  next to the transport knobs ([12 Section 4](../12-http-networking/04-clients-and-timeouts.md)).
 - Event publishing behind the same consumer-side interface as stores:
   the outbox relay is an implementation, not an architecture.
 
@@ -193,13 +193,13 @@ The handbook's position: for a mostly-Go fleet, the resilience quartet in-proces
 - Every network hop adds latency and a failure mode; the chain-
   breaking example is a performance decision as much as an
   architectural one. Measure the composed call path
-  ([19 §1](../19-performance/01-measure-first.md)) before and after
+  ([19 Section 1](../19-performance/01-measure-first.md)) before and after
   restructuring; architecture is a latency line item.
 
 ## Concurrency Considerations
 
 - Long-lived gRPC connections change pool math (fewer connections,
-  stream multiplexing) and interact with drain (12 §5): close
+  stream multiplexing) and interact with drain (12 Section 5): close
   streams before `Shutdown` returns.
 
 ## Security Considerations
@@ -215,7 +215,7 @@ The handbook's position: for a mostly-Go fleet, the resilience quartet in-proces
   balancer's pick distribution; integration-tier with real
   Kubernetes is 28-projects territory.
 - Coupling decisions: the contract tests of ch. 2 for calls; the
-  consumer idempotency tests of ch. 4 and 18 §3 for events.
+  consumer idempotency tests of ch. 4 and 18 Section 3 for events.
 
 ## Interview Questions
 

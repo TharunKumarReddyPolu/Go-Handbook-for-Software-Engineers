@@ -73,7 +73,7 @@ func Init(ctx context.Context, serviceName, version string) (ShutdownFn, error) 
 
 	return func(ctx context.Context) error {
 		// Bounded flush: a hung collector must not hang shutdown
-		// (12 §5's grace-period discipline applies to exporters too).
+		// (12 Section 5's grace-period discipline applies to exporters too).
 		flushCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
 		defer cancel()
 		return errors.Join(tp.Shutdown(flushCtx))

@@ -84,7 +84,7 @@ Two details carry most of the value:
   result as if it were complete.
 - **`sql.ErrNoRows` is not an error you log.** It is an empty result:
   translate it to your domain's not-found (as in
-  [05 §2](../05-errors/02-error-design.md)) and move on.
+  [05 Section 2](../05-errors/02-error-design.md)) and move on.
 
 ## How It Works: drivers
 
@@ -164,7 +164,7 @@ func OpenDB(ctx context.Context, dsn string) (*sql.DB, error) {
 
 The handle lives for the process lifetime; `defer db.Close()` in
 `main` (after the HTTP server drains, per
-[12 §5](../12-http-networking/05-graceful-shutdown.md): closing the
+[12 Section 5](../12-http-networking/05-graceful-shutdown.md): closing the
 pool before in-flight requests finish converts them all into errors).
 
 ## Common Mistakes
@@ -176,7 +176,7 @@ pool before in-flight requests finish converts them all into errors).
 - **No context, or `context.Background()` in request paths.** The
   query outlives its request and burns pool slots during incidents.
 - **Ignoring `rows.Err()`.** Partial results presented as complete.
-- **`sql.ErrNoRows` treated as a 500.** It is 404-shaped (05 §2's
+- **`sql.ErrNoRows` treated as a 500.** It is 404-shaped (05 Section 2's
   classification).
 - **String-building SQL.** `fmt.Sprintf("... WHERE id = %s", id)` is
   the SQL injection chapter of
@@ -204,7 +204,7 @@ pool before in-flight requests finish converts them all into errors).
 - `rows.Scan` into pre-declared structs allocates per row; for
   million-row exports, stream with `Columns()`-aware scanners or
   batch by keyset pagination instead of one giant slice
-  ([19 §1](../19-performance/01-measure-first.md) before optimizing).
+  ([19 Section 1](../19-performance/01-measure-first.md) before optimizing).
 - Named parameters and `sql.Named` are convenient but allocate more
   than positional parameters; hot paths prefer `$1` positions.
 
@@ -215,7 +215,7 @@ pool before in-flight requests finish converts them all into errors).
   goroutines is a data race waiting for the race detector, or worse,
   not waiting for it.
 - Pool waits are a semaphore in disguise: under saturation, requests
-  queue on `db` acquisition ([08 §5](../08-concurrency/05-patterns.md)
+  queue on `db` acquisition ([08 Section 5](../08-concurrency/05-patterns.md)
   framing), which is chapter 3's sizing problem.
 
 ## Security Considerations
@@ -230,7 +230,7 @@ pool before in-flight requests finish converts them all into errors).
 
 - The repository interface is the seam: pure-Go fakes for unit tests
   (chapter 4), a real database for integration tests
-  ([10 §3](../10-testing/03-integration-and-e2e.md)).
+  ([10 Section 3](../10-testing/03-integration-and-e2e.md)).
 - `sqlmock`-style libraries exist, but asserting on SQL strings makes
   tests brittle; the runnable example uses an in-memory implementation
   of the same interface instead, and a build-tagged Postgres tier for

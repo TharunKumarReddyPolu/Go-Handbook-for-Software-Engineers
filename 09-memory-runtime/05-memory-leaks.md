@@ -6,7 +6,7 @@ Garbage collection frees unreachable objects; leaks in Go are
 therefore always *reachability* bugs: something reachable that
 should not be. The taxonomy is short and learnable, and every
 entry has a test-shaped detection ([20
-§5](../20-observability/05-incident-debugging.md) covers the
+Section 5](../20-observability/05-incident-debugging.md) covers the
 incident flow; this chapter is the species guide, with this
 section's `memwatch` example as the runnable specimen jar).
 
@@ -32,22 +32,22 @@ will never fire: the producer gave up, the context was cancelled
 but nobody reads the channel, the `for` loop has no exit. Each
 leaked G holds a stack and whatever its closure captured. The
 owner rule: every goroutine is started with a stop path, and the
-starter owns it ([08 §7](../08-concurrency/07-pitfalls.md)'s
+starter owns it ([08 Section 7](../08-concurrency/07-pitfalls.md)'s
 catalog; this section's `Tracker.Start` returning a `stop`
 function is the pattern; `StartNoOwner` is the leak).
 
 **Shape 2: pinned backing arrays.** A 16-byte slice of a 1MB
 array keeps the megabyte alive: reachability follows the backing
 array, not the view ([23
-§5](../23-go-internals/05-interfaces-slices-strings.md)'s header
+Section 5](../23-go-internals/05-interfaces-slices-strings.md)'s header
 layout). The `memwatch` example's `Big` vs `BigFix` is the
 specimen: copy at the ownership boundary.
 
 **Shape 3: unbounded collections.** Maps keyed by session IDs,
 request IDs, customer IDs: every unique key is a permanent
 entry. The fix shape: TTLs or eviction (bounded LRU, [03
-§9](../03-data-structures/README.md)'s cache chapter) plus
-cardinality metrics ([20 §2](../20-observability/02-metrics.md)):
+Section 9](../03-data-structures/README.md)'s cache chapter) plus
+cardinality metrics ([20 Section 2](../20-observability/02-metrics.md)):
 an unbounded map is a slow OOM with a j curve.
 
 **Shape 4: runtime resources without cleanup.** `time.Ticker`
@@ -55,7 +55,7 @@ never stopped (`Stop` releases the timer heap entry; the channel
 is not the cleanup), `http.Response.Body` never closed (keeps the
 connection pinned: fd + buffers), `sql.Rows` not closed. The
 owner rule again: whoever opens closes, typically `defer` at the
-same scope ([12 §4](../12-http-networking/04-clients-and-timeouts.md)'s
+same scope ([12 Section 4](../12-http-networking/04-clients-and-timeouts.md)'s
 client hygiene).
 
 ## Syntax / API
@@ -76,7 +76,7 @@ curl -s svc:6060/debug/pprof/goroutine?debug=1 | head -40
 
 The heap profile's *in-use* view is the leak lens: allocation-rate
 problems show in `alloc_space`; leaks show in `inuse_space`
-growing without traffic ([19 §1](../19-performance/01-measure-first.md)
+growing without traffic ([19 Section 1](../19-performance/01-measure-first.md)
 distinguishes them in peacetime).
 
 ## Basic Example
@@ -110,7 +110,7 @@ of thousands of timers, the timer heap makes every
 "reasonable" (timers are small). The fix is one `defer t.Stop()`;
 the lesson is that the *cost* of leaks is not always the bytes:
 timers, fds, and goroutines each have their own exhaustion
-signature ([20 §5](../20-observability/05-incident-debugging.md)'s
+signature ([20 Section 5](../20-observability/05-incident-debugging.md)'s
 signal table).
 
 ## Production Example
@@ -118,15 +118,15 @@ signal table).
 **Leak detection as a service metric**, not an incident surprise:
 
 - Export `runtime.NumGoroutine`, open fds, map cardinalities, and
-  heap in-use ([20 §2](../20-observability/02-metrics.md)).
+  heap in-use ([20 Section 2](../20-observability/02-metrics.md)).
 - Alert on *trend*, not level: goroutine count growing 1% per
   hour during steady traffic is shape 1; fds growing per deploy
   is shape 4 near the connection pool ([13
-  §3](../13-databases/03-pooling-drivers-migrations.md)).
+  Section 3](../13-databases/03-pooling-drivers-migrations.md)).
 - In the incident: heap `inuse_space` top (shapes 2-3), goroutine
   dump grouped by parking site (shape 1), fd census (shape 4):
   each maps to its owner rule ([20
-  §5](../20-observability/05-incident-debugging.md)'s evidence
+  Section 5](../20-observability/05-incident-debugging.md)'s evidence
   commands).
 
 The `memwatch` example's `LiveWorkers` metric is the pattern for
@@ -137,7 +137,7 @@ their liveness, and the alert checks the sum.
 
 | Mistake | The leak it builds | Do instead |
 |---|---|---|
-| `go func` with no stop path | Shape 1 | Return a stop function; or tie to `ctx.Done()` ([08 §3](../08-concurrency/03-context.md)) |
+| `go func` with no stop path | Shape 1 | Return a stop function; or tie to `ctx.Done()` ([08 Section 3](../08-concurrency/03-context.md)) |
 | Returning `big[:small]` views | Shape 2 | `copy` at the boundary, or full-slice `[:n:n]` to cap |
 | Cache/session maps keyed by IDs | Shape 3 | TTLs, bounded LRU, cardinality metrics |
 | Ticker without `Stop` on early return | Shape 4 (timers) | `defer ticker.Stop()` at creation scope |
@@ -153,18 +153,18 @@ their liveness, and the alert checks the sum.
   TTLed maps; "unbounded but GC'd" is not a design.
 - `context` is the leak killer for request-scoped work: park on
   `ctx.Done()` alongside every other wait ([08
-  §3](../08-concurrency/03-context.md)).
+  Section 3](../08-concurrency/03-context.md)).
 
 ## Performance Considerations
 
 Leaks are performance bugs by definition (less memory for the
 working set, more GC marking of the retained set), but the reverse
 lesson matters too: over-aggressive cleanup churns allocations
-([19 §2](../19-performance/02-memory-and-allocations.md)). The
+([19 Section 2](../19-performance/02-memory-and-allocations.md)). The
 balance: bounded and reused beats unbounded and "collected
 eventually", and pooling (`sync.Pool`) is the tool for the churn
 side. The timer-heap cost of ticker leaks is also a scheduler
-cost ([09 §4](../09-memory-runtime/04-scheduler-internals.md)):
+cost ([09 Section 4](../09-memory-runtime/04-scheduler-internals.md)):
 timers live in per-P heaps touched on every scheduling pass.
 
 ## Concurrency Considerations
@@ -179,11 +179,11 @@ launch: what does this closure capture, and who frees it?
 
 Leaks are availability vectors when input cardinality drives
 retention: an attacker minting unique session IDs or cache keys
-grow your shape-3 maps ([21 §4](../21-security/04-limits-and-hardening.md)'s
+grow your shape-3 maps ([21 Section 4](../21-security/04-limits-and-hardening.md)'s
 limits bound the *rate*; TTLs bound the *retention*; you need
 both). Retained secrets are the confidentiality sibling: leak
 shape 2 applied to a key buffer keeps it dumpable; minimize and
-scope secret copies ([14 §2](../14-backend-development/02-configuration-and-secrets.md)).
+scope secret copies ([14 Section 2](../14-backend-development/02-configuration-and-secrets.md)).
 
 ## Testing Strategy
 
@@ -191,7 +191,7 @@ scope secret copies ([14 §2](../14-backend-development/02-configuration-and-sec
   tests).
 - Lifecycle assertions for shape 1: start N, stop N, `NumGoroutine`
   returns to baseline (with a deadline; never sleep-and-pray
-  ([10 §1](../10-testing/01-fundamentals.md))).
+  ([10 Section 1](../10-testing/01-fundamentals.md))).
 - Cardinality assertions for shape 3: insert 1000, bounded map
   stays at 64 (the example's `TestMapGrowth_Bounded`).
 - Long-run soak in staging with the leak metrics charted: the

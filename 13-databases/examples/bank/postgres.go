@@ -16,12 +16,12 @@ type PostgresStore struct {
 }
 
 // NewPostgresStore wraps an opened pool. Pool construction and ping
-// are the caller's (main's) job: see 13 §1 OpenDB.
+// are the caller's (main's) job: see 13 Section 1 OpenDB.
 func NewPostgresStore(db *sql.DB) *PostgresStore {
 	return &PostgresStore{db: db}
 }
 
-// withinTx is the transaction-function pattern from 13 §2: commit on
+// withinTx is the transaction-function pattern from 13 Section 2: commit on
 // success, rollback on any failure or panic, lease always released.
 func withinTx(ctx context.Context, db *sql.DB, fn func(*sql.Tx) error) error {
 	tx, err := db.BeginTx(ctx, nil)
@@ -101,7 +101,7 @@ func (s *PostgresStore) Charge(ctx context.Context, p Payment) (Payment, error) 
 
 func (s *PostgresStore) ByCustomer(ctx context.Context, customerID string, limit int) ([]Payment, error) {
 	if limit <= 0 || limit > 100 {
-		limit = 100 // list methods always bound themselves (13 §4)
+		limit = 100 // list methods always bound themselves (13 Section 4)
 	}
 	rows, err := s.db.QueryContext(ctx,
 		`SELECT id, customer_id, amount_minor, currency, status

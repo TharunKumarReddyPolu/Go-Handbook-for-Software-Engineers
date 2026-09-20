@@ -12,7 +12,7 @@ decisions made here.
 
 | Requirement | Decision |
 |---|---|
-| Create short links (write) | authenticated API; rate-limited ([21 §4](../21-security/04-limits-and-hardening.md)) |
+| Create short links (write) | authenticated API; rate-limited ([21 Section 4](../21-security/04-limits-and-hardening.md)) |
 | Redirect (read) | unauthenticated, ~1000x write volume, p99 < 50ms |
 | Custom aliases | optional; collision-checked |
 | Analytics | click counts, eventually consistent |
@@ -57,7 +57,7 @@ CREATE TABLE clicks (
 | Hash of URL | deterministic | collisions inherent; long URLs |
 
 The Go-native answer: random IDs with a unique constraint and
-retry ([13 §2](../13-databases/02-transactions-and-isolation.md)'s
+retry ([13 Section 2](../13-databases/02-transactions-and-isolation.md)'s
 conflict handling). No coordination service at this scale is a
 win; the retry path is one `INSERT` conflict.
 
@@ -75,7 +75,7 @@ flowchart LR
 ```
 
 **Read path**: cache-aside, hot keys cached near-forever (links
-are immutable) ([13 §5](../13-databases/05-caching-with-redis.md)).
+are immutable) ([13 Section 5](../13-databases/05-caching-with-redis.md)).
 A missing cache entry is one Postgres lookup; a negative cache
 entry (short, jittered TTL) stops probing of deleted/never-existed
 IDs. **Write path**: one insert, idempotency on the custom alias
@@ -88,45 +88,45 @@ per-day by a consumer; the redirect path never waits on analytics.
 - Reads scale horizontally: stateless redirectors + cache. The
   database sees mostly misses.
 - Cache stampede on a viral link: singleflight ([19
-  §3](../19-performance/03-concurrency-performance.md)) so one
+  Section 3](../19-performance/03-concurrency-performance.md)) so one
   miss = one DB hit.
 - Postgres by itself handles this comfortably for years; sharding
   by `short_id` prefix is available but premature ([15
-  §1](../15-microservices/01-monolith-to-microservices.md)'s
+  Section 1](../15-microservices/01-monolith-to-microservices.md)'s
   split-readiness checklist).
 
 ## Failure modes
 
 | Failure | Behavior | Mitigation |
 |---|---|---|
-| Cache down | DB absorbs; latency up, service up | Client timeout + breaker ([15 §3](../15-microservices/03-resilience-patterns.md)) |
-| DB down | Reads from cache until TTL; writes fail honestly | Degrade class: redirect survives ([22 §4](../22-production-go/04-dependency-failures.md)) |
+| Cache down | DB absorbs; latency up, service up | Client timeout + breaker ([15 Section 3](../15-microservices/03-resilience-patterns.md)) |
+| DB down | Reads from cache until TTL; writes fail honestly | Degrade class: redirect survives ([22 Section 4](../22-production-go/04-dependency-failures.md)) |
 | Viral key | One hot key | Singleflight + replicated cache entries |
 
 ## Observability & security
 
 RED metrics per route with the redirect path separate ([20
-§2](../20-observability/02-metrics.md)); the SLO is on the
-redirect ([20 §4](../20-observability/04-slos-and-alerting.md)).
+Section 2](../20-observability/02-metrics.md)); the SLO is on the
+redirect ([20 Section 4](../20-observability/04-slos-and-alerting.md)).
 Security: the *URL is user input*: store it, render it only as a
 redirect target, validate scheme (`http/https` only) at creation
-([21 §1](../21-security/01-threat-model-and-validation.md)); an
+([21 Section 1](../21-security/01-threat-model-and-validation.md)); an
 open redirector must not shorten `javascript:` or internal-admin
 URLs.
 
 ## Go implementation considerations
 
 - **The redirect handler is the hot path**: stdlib `http.ServeMux`
-  with `GET /{id}` ([12 §1](../12-http-networking/01-handlers-and-routing.md)),
+  with `GET /{id}` ([12 Section 1](../12-http-networking/01-handlers-and-routing.md)),
   `RoutePattern`-style cardinality-safe metrics ([20
-  §2](../20-observability/02-metrics.md)), no allocation beyond
+  Section 2](../20-observability/02-metrics.md)), no allocation beyond
   the lookup: `AllocsPerRun`-tested ([09
-  §2](../09-memory-runtime/02-escape-analysis.md)).
+  Section 2](../09-memory-runtime/02-escape-analysis.md)).
 - **Immutability means cache freely**: the Go service can treat
   cache misses as exceptional (log + metric, not an error path).
 - **ID generation**: `crypto/rand` into base62, 7 chars, unique
   violation retry; the collision test is table-driven ([10
-  §1](../10-testing/01-fundamentals.md)).
+  Section 1](../10-testing/01-fundamentals.md)).
 - **This repo's pattern map**: [12](../12-http-networking/)'s API
   example is this service minus analytics; [13](../13-databases/)'s
   bank example shows the two-tier store testing this design's

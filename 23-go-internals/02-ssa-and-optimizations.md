@@ -9,7 +9,7 @@ about your code. This chapter walks the three passes with the
 biggest latency lever: escape analysis, inlining, and bounds-check
 elimination, using this section's example package and its real
 compiler output. The applied view (how to act on these) is [19
-§4](../19-performance/04-compiler-and-pgo.md); here is the
+Section 4](../19-performance/04-compiler-and-pgo.md); here is the
 mechanical view: what the pass sees and why it decides.
 
 ## Mental Model
@@ -50,7 +50,7 @@ budget is a cost number (~80): bodies under it inline. The real
 prize is not the removed call: an inlined body is *visible to the
 other passes*, so escape analysis and dead-code elimination get
 better inputs. This is the "inlining enables escape analysis"
-effect [19 §4](../19-performance/04-compiler-and-pgo.md) shows in
+effect [19 Section 4](../19-performance/04-compiler-and-pgo.md) shows in
 benchmarks.
 
 **Bounds-check elimination (BCE)** removes the `if i >= len(s) {
@@ -113,7 +113,7 @@ index is provably within `len(keys)` (hoisting `j-1 >= 0` into a
 variable comparison) removes checks; restructuring the loop
 conditions removes more. But BCE optimizations only matter on hot
 loops: the sort in a config loader is cold, and the readable
-version should win. Measure first ([19 §1](../19-performance/01-measure-first.md)).
+version should win. Measure first ([19 Section 1](../19-performance/01-measure-first.md)).
 
 ## Production Example
 
@@ -122,13 +122,13 @@ The two escape traps every service hits:
 1. **`fmt.Printf("%v", x)` forces x to heap** when x is address-
    taken (the variadic `...any` boxes and escapes). Debug logging
    in a hot path is an allocation story ([20
-   §1](../20-observability/01-structured-logging.md)'s lazy
+   Section 1](../20-observability/01-structured-logging.md)'s lazy
    `LogValuer` fields exist partly for this).
 2. **Method values and closures capture by reference**: `go
    func() { process(item) }()` inside a loop allocates per
    iteration (the closure escapes to the new goroutine). That is
    usually fine; in a per-packet path it is the profile's top
-   allocator ([19 §2](../19-performance/02-memory-and-allocations.md)).
+   allocator ([19 Section 2](../19-performance/02-memory-and-allocations.md)).
 
 The audit loop: `pprof` finds the allocation-heavy function; `-m`
 explains why; the fix is usually making a value not escape (pass
@@ -138,7 +138,7 @@ by value, avoid the interface in the hot path) rather than pooling.
 
 | Mistake | Reality | Do instead |
 |---|---|---|
-| "Pointers are always faster" | Heap-allocated pointer = GC pressure | Pass values; let small structs stay on the stack ([19 §2](../19-performance/02-memory-and-allocations.md)) |
+| "Pointers are always faster" | Heap-allocated pointer = GC pressure | Pass values; let small structs stay on the stack ([19 Section 2](../19-performance/02-memory-and-allocations.md)) |
 | Trusting `-m` output across versions | Decisions evolve with the toolchain | Pin behaviors with AllocsPerRun tests, like the example package |
 | Fighting the inliner with micro-splitting | Cost budget is mechanical; splitting can *disable* outer inlining | Keep functions small and single-purpose; verify with `-m` |
 | Believing BCE means "no checks ever" | New code shape can reintroduce them | Re-check hot loops after refactors (the flag is one command) |
@@ -150,7 +150,7 @@ by value, avoid the interface in the hot path) rather than pooling.
   `i < len(s)` conditions; avoid re-deriving lengths mid-loop.
 - Prefer value semantics for small structs in hot paths; reach for
   pointers when mutation or sharing is real ([02
-  §5](../02-go-language/05-pointers-and-receivers.md)).
+  Section 5](../02-go-language/05-pointers-and-receivers.md)).
 - Treat `-gcflags=-m` like `gofmt`: cheap to run, occasionally
   illuminating, part of review for hot-path PRs.
 
@@ -175,7 +175,7 @@ flow, not the synchronization.
 
 Timing side channels survive compiler optimization: the compiler
 does not constant-time-protect secret comparisons (`subtle`
-exists because of this, [21 §5](../21-security/05-secrets-and-supply-chain.md)).
+exists because of this, [21 Section 5](../21-security/05-secrets-and-supply-chain.md)).
 Conversely, dead-code elimination does not remove security checks
 "by accident": if a check is removable, it was already provably
 unused. Vet and the compiler are allies here; review still matters.
@@ -185,7 +185,7 @@ unused. Vet and the compiler are allies here; review still matters.
 - `testing.AllocsPerRun` pins escape decisions (used by the
   example package and by `sync.Pool` users everywhere).
 - Benchmarks with `-benchmem` catch allocation regressions
-  ([10 §4](../10-testing/04-benchmarks-coverage-fuzzing.md)).
+  ([10 Section 4](../10-testing/04-benchmarks-coverage-fuzzing.md)).
 - The BCE flag in CI as a *diff* (fail if new checks appear on a
   designated hot file) is a niche but powerful guard.
 
@@ -207,7 +207,7 @@ unused. Vet and the compiler are allies here; review still matters.
    `-m` and pin with `AllocsPerRun`.
 2. Remove the insertion sort's bounds checks via loop
    restructuring; benchmark before/after and report whether it
-   was worth the readability ([19 §1](../19-performance/01-measure-first.md)'s
+   was worth the readability ([19 Section 1](../19-performance/01-measure-first.md)'s
    rule).
 3. Find one `fmt.Sprintf` in a hot path in a codebase you own;
    check `-m` for the escape; replace with a typed field.

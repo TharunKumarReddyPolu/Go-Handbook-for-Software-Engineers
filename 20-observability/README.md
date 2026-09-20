@@ -5,8 +5,8 @@
 which carries the section's instrumentation: RED metrics, tracing
 middleware, `/metrics`, and OTel wiring with correct shutdown
 ordering. Kafka-specific metric designs live in
-[18 §4](../18-kafka-with-go/04-observability-tuning.md); pprof
-mechanics live in [19 §1](../19-performance/01-measure-first.md).
+[18 Section 4](../18-kafka-with-go/04-observability-tuning.md); pprof
+mechanics live in [19 Section 1](../19-performance/01-measure-first.md).
 
 ## Chapters
 

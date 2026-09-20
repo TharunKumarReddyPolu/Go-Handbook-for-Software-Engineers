@@ -4,7 +4,7 @@
 of packages, modules, and dependencies. Every chapter follows the
 standard contract (see [CONTRIBUTING](../CONTRIBUTING.md)). The
 mechanics basics live in
-[01 §3 Program structure & modules](../01-go-fundamentals/03-program-structure.md);
+[01 Section 3 Program structure & modules](../01-go-fundamentals/03-program-structure.md);
 this section is the design and production layer.
 
 ## Chapters

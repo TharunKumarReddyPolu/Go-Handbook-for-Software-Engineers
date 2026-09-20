@@ -39,7 +39,7 @@ messaging decouples teams).
 
 ## How It Works: the envelope pattern, without a registry
 
-The envelope from [18 §3](../18-kafka-with-go/03-producer-consumer.md),
+The envelope from [18 Section 3](../18-kafka-with-go/03-producer-consumer.md),
 stated as the portable rule:
 
 ```json
@@ -56,10 +56,10 @@ stated as the portable rule:
   types; the consumer dispatches on type, not on topic gymnastics.
 - **Payload evolves additively**: new fields get zero-value
   tolerances on the consumer side; renames are add-then-remove with
-  a window ([13 §3](../13-databases/03-pooling-drivers-migrations.md)'s
+  a window ([13 Section 3](../13-databases/03-pooling-drivers-migrations.md)'s
   expand/contract applied to wire formats).
 - **Units and types in field names** (`amount_minor`): the mistake
-  the compiler cannot catch ([25 §1](../25-fintech-with-go/01-money-and-payments.md)'s
+  the compiler cannot catch ([25 Section 1](../25-fintech-with-go/01-money-and-payments.md)'s
   money rules).
 
 The envelope is the manual discipline; a **schema registry**
@@ -68,7 +68,7 @@ enforced version: producers register and the broker/registry rejects
 incompatible writes, consumers fetch by ID. The decision: a fleet
 with many producers/consumers per topic earns a registry; a service
 with a handful of typed envelopes can carry the discipline in code
-and CI (the compat tests of [15 §2](../15-microservices/02-boundaries-and-contracts.md)'s
+and CI (the compat tests of [15 Section 2](../15-microservices/02-boundaries-and-contracts.md)'s
 contract checking).
 
 ## Basic Example: the evolution test
@@ -102,7 +102,7 @@ broker adapters' integration tiers (ch. 2's portability suite).
 The section's accumulated questions, as one page:
 
 1. **Model per flow** (ch. 1): work, news-with-history, ephemeral news?
-2. **Ordering scope** (ch. 3 + [16 §4](../16-distributed-systems/04-quorums-sharding.md)):
+2. **Ordering scope** (ch. 3 + [16 Section 4](../16-distributed-systems/04-quorums-sharding.md)):
    per aggregate key; hot keys sized for?
 3. **Delivery honesty** (ch. 3): at-least-once accepted, dedup
    tiered, DLQ triageable?
@@ -110,7 +110,7 @@ The section's accumulated questions, as one page:
    enforced; who owns compatibility CI?
 5. **Operations** (ch. 2): self-hosted expertise vs managed budget;
    the cluster is a product you operate.
-6. **Failure containment** ([16 §1](../16-distributed-systems/01-failure-model-cap-pacelc.md)'s
+6. **Failure containment** ([16 Section 1](../16-distributed-systems/01-failure-model-cap-pacelc.md)'s
    matrix): what happens to each flow when the broker is down? (The
    outbox answers for publishing; shedding answers for consuming.)
 
@@ -143,7 +143,7 @@ is the portability claim, demonstrated rather than asserted.
   a registry with `compatibility: NONE` is a museum.
 - **Schema governance by team folklore**: "just add fields with
   omitempty" omits the zero-value contract; the meaning of absent is
-  part of the schema ([12 §3](../12-http-networking/03-json-and-rest-apis.md)'s
+  part of the schema ([12 Section 3](../12-http-networking/03-json-and-rest-apis.md)'s
   omitempty warning, at wire-protocol stakes).
 
 ## Idiomatic Go
@@ -159,27 +159,27 @@ is the portability claim, demonstrated rather than asserted.
 - Schema registries add a fetch per decode (cached): negligible next
   to the network hop; batch fetch where offered.
 - Binary schemas (protobuf/Avro) halve payload sizes at fleet scale
-  ([15 §2](../15-microservices/02-boundaries-and-contracts.md)'s
+  ([15 Section 2](../15-microservices/02-boundaries-and-contracts.md)'s
   comparison); JSON envelopes are fine until bytes are the bill.
 
 ## Concurrency Considerations
 
 - Producers of different schema versions write concurrently during
   any transition: consumers must handle *mixed-version batches*, not
-  per-version streams ([18 §1](../18-kafka-with-go/01-kafka-concepts.md)'s
+  per-version streams ([18 Section 1](../18-kafka-with-go/01-kafka-concepts.md)'s
   partition realities).
 
 ## Security Considerations
 
 - Payloads are PII carriers with long retention: schema review is
-  privacy review ([25 §4](../25-fintech-with-go/04-risk-and-compliance.md));
+  privacy review ([25 Section 4](../25-fintech-with-go/04-risk-and-compliance.md));
   DLQ retention multiplies exposure (ch. 3's DLQ security note).
 
 ## Testing Strategy
 
 - The evolution table (v1/v2/unknown) per message type, in CI.
 - Round-trip tests: encode with the current producer, decode with
-  every supported consumer version ([10 §1](../10-testing/01-fundamentals.md)'s
+  every supported consumer version ([10 Section 1](../10-testing/01-fundamentals.md)'s
   table-driven shape).
 - The two-tier broker strategy (ch. 2): model tests against the
   in-memory broker; adapter semantics tests build-tagged against

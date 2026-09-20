@@ -54,7 +54,7 @@ The engineering translation:
   monotonic reads. Both are routing problems, solvable in application
   code at a fraction of linearizability's cost.
 - **Linearizability is for invariants across nodes**: locks, leader
-  election, sequence allocation ([25 §2](../25-fintech-with-go/02-double-entry-ledger.md)'s
+  election, sequence allocation ([25 Section 2](../25-fintech-with-go/02-double-entry-ledger.md)'s
   ledger gets it from the single-writer Postgres primary, not from
   application code).
 
@@ -105,7 +105,7 @@ console reads a lagging replica. The fix is the same pinning: the
 console's read session carries the customer's last-write position
 (from the payment service's response), and the console's read waits
 or reroutes until the replica covers it. No new database, no new
-consensus: one field threaded through a context ([08 §3](../08-concurrency/03-context.md)'s
+consensus: one field threaded through a context ([08 Section 3](../08-concurrency/03-context.md)'s
 value rules apply: a position token, not a connection).
 
 ## Real-World Example: conflict resolution when leaders multiply
@@ -121,7 +121,7 @@ must converge somehow:
 | CRDTs (counters, sets) | merges converge mathematically | limited shapes; not for invariants |
 | Application merge | your code resolves | you own the edge cases forever |
 
-The fintech rule ([25 §2](../25-fintech-with-go/02-double-entry-ledger.md)):
+The fintech rule ([25 Section 2](../25-fintech-with-go/02-double-entry-ledger.md)):
 financial accounts do not resolve conflicts; they refuse them. A
 single-writer primary per account shard makes concurrency impossible
 instead of reconcilable. Multi-leader writes to a balance are a
@@ -132,7 +132,7 @@ design bug, not a merge problem.
 | Store | Default model | The knob |
 |---|---|---|
 | Postgres primary + replicas | eventual on replicas | read routing (above); `synchronous_commit` for the write side |
-| Kafka | per-partition total order | key choice = ordering scope ([18 §1](../18-kafka-with-go/01-kafka-concepts.md)) |
+| Kafka | per-partition total order | key choice = ordering scope ([18 Section 1](../18-kafka-with-go/01-kafka-concepts.md)) |
 | Redis primary/replica | eventual | `WAIT` command for per-write sync acks |
 | etcd | linearizable (Raft) | `--consistency` for serializable reads |
 | Dynamo-style stores | eventually consistent | quorum reads (`R+W>N`) for stronger reads |
@@ -155,7 +155,7 @@ staleness behavior deliberately (the Testing Strategy below).
   single-writer designs are the financial-grade answers.
 - **Testing only the happy path.** The replica-lag bug appears at
   3 a.m. during a traffic spike, exactly when every test environment
-  is boring. Inject lag ([10 §2](../10-testing/02-doubles-and-httptest.md)'s
+  is boring. Inject lag ([10 Section 2](../10-testing/02-doubles-and-httptest.md)'s
   failing transport pattern).
 - **Confusing availability of the cluster with availability of the
   data.** Five replicas, none caught up: the cluster is up, the
@@ -164,9 +164,9 @@ staleness behavior deliberately (the Testing Strategy below).
 ## Idiomatic Go
 
 - Session/position tracking as a small struct with a mutex (the
-  pattern above), injected like any dependency ([14 §3](../14-backend-development/03-wiring-and-dependency-injection.md)).
+  pattern above), injected like any dependency ([14 Section 3](../14-backend-development/03-wiring-and-dependency-injection.md)).
 - Staleness tokens travel in contexts: a position value, not a
-  replica connection ([08 §3](../08-concurrency/03-context.md)).
+  replica connection ([08 Section 3](../08-concurrency/03-context.md)).
 
 ## Performance Considerations
 
@@ -181,7 +181,7 @@ staleness behavior deliberately (the Testing Strategy below).
 
 - A read-your-writes session is per logical user, not per request:
   the session state must be shareable across concurrent requests
-  from the same session ([08 §4](../08-concurrency/04-sync-primitives.md)),
+  from the same session ([08 Section 4](../08-concurrency/04-sync-primitives.md)),
   usually via a request-scoped copy of the last committed position.
 
 ## Security Considerations

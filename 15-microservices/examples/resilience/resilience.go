@@ -21,7 +21,7 @@ var (
 	ErrBulkheadFull = errors.New("bulkhead full")
 )
 
-// Retryable mirrors 05 §2's classification seam: the caller decides
+// Retryable mirrors 05 Section 2's classification seam: the caller decides
 // what is transient. Breakers never see 4xx-shaped results.
 type Retryable func(error) bool
 
@@ -118,7 +118,7 @@ func (b *Breaker) Record(ok bool) {
 	}
 }
 
-// Bulkhead bounds in-flight calls to one dependency (08 §5's
+// Bulkhead bounds in-flight calls to one dependency (08 Section 5's
 // semaphore). Full may either block on ctx or reject immediately;
 // this version rejects: fast-fail composes with the breaker.
 type Bulkhead struct {

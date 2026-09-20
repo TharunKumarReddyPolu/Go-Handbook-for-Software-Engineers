@@ -9,7 +9,7 @@ judgment is not. This chapter covers the cache-aside pattern with
 Redis in Go, the invalidation rules that keep the bet honest, and the
 stampede control that keeps a cold cache from becoming an outage.
 The concurrency toolkit underneath (singleflight, semaphores) comes
-from [08 §4-5](../08-concurrency/04-sync-primitives.md).
+from [08 Section 4-5](../08-concurrency/04-sync-primitives.md).
 
 ## Mental Model
 
@@ -90,7 +90,7 @@ been cached. Log, fall through, keep serving.
 |---|---|---|
 | Session/profile | minutes | changes are self-authored; staleness is visible but harmless |
 | Product/catalog | minutes to hours | changes batch; slight staleness invisible |
-| Rates/prices | seconds, or event-driven invalidation | staleness is direct money ([25 §1](../25-fintech-with-go/01-money-and-payments.md)) |
+| Rates/prices | seconds, or event-driven invalidation | staleness is direct money ([25 Section 1](../25-fintech-with-go/01-money-and-payments.md)) |
 | Authz decisions | seconds at most | staleness is a security event ([21-security](../21-security/)) |
 
 TTL exists for the moment invalidation fails or was never wired. The
@@ -104,7 +104,7 @@ damage to the staleness budget the domain already accepted.
 |---|---|
 | Single object updated | delete its key on the write path (same request, after DB commit) |
 | Derived view (list, aggregate) | delete on the underlying writes; accept list staleness ≤ TTL |
-| Cross-service object | delete on publish via event (the outbox from [25 §3](../25-fintech-with-go/03-integrity-and-exactly-once.md) delivering "invalidate key X") |
+| Cross-service object | delete on publish via event (the outbox from [25 Section 3](../25-fintech-with-go/03-integrity-and-exactly-once.md) delivering "invalidate key X") |
 | Almost never changing | longer TTL, no invalidation wiring |
 
 The one rule with no exceptions: **delete after the database commit,
@@ -160,8 +160,8 @@ Everything above assumes one Redis. Two extensions matter when you outgrow it, a
 
 **Distributed locks** (`SET key value NX PX 30000`) look like a primitive and behave like a lease: the holder crashes, the lock outlives it, and someone else waits out your 30 seconds. Rules that keep them safe:
 
-- Every lock has a TTL and every holder has a fencing token (an atomic counter the storage checks); compare with the lease and fencing discipline in [16 §3](../16-distributed-systems/03-leader-election-leases-fencing.md), which applies verbatim to Redis.
-- Locks coordinate *cooperation*, never *correctness*: do not build a lock-based check-then-act around money movement; put that in a transaction ([13 §2](../13-databases/02-transactions-and-isolation.md)) or a ledger ([25 §2](../25-fintech-with-go/02-double-entry-ledger.md)).
+- Every lock has a TTL and every holder has a fencing token (an atomic counter the storage checks); compare with the lease and fencing discipline in [16 Section 3](../16-distributed-systems/03-leader-election-leases-fencing.md), which applies verbatim to Redis.
+- Locks coordinate *cooperation*, never *correctness*: do not build a lock-based check-then-act around money movement; put that in a transaction ([13 Section 2](../13-databases/02-transactions-and-isolation.md)) or a ledger ([25 Section 2](../25-fintech-with-go/02-double-entry-ledger.md)).
 - Redlock-style multi-node locking trades failure modes rather than removing them; for correctness-critical work, prefer a single-node lock with fencing or consensus (etcd/ZooKeeper), not more Redis nodes.
 
 ## Common Mistakes
@@ -202,7 +202,7 @@ Everything above assumes one Redis. Two extensions matter when you outgrow it, a
   a pointer.
 - Measure the hit rate before and after every caching change: the
   metric is the only honest referee
-  ([19 §1](../19-performance/01-measure-first.md)), and
+  ([19 Section 1](../19-performance/01-measure-first.md)), and
   singleflight+TTL-jitter beats lock-free micro-optimizations.
 
 ## Concurrency Considerations

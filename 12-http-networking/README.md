@@ -2,9 +2,9 @@
 
 **Status: in depth: 5 chapters + a runnable stdlib-only API example.**
 Standard library first; frameworks discussed only where they earn their
-place. Error mapping builds on [05 §2](../05-errors/02-error-design.md);
-httptest mechanics live in [10 §2](../10-testing/02-doubles-and-httptest.md);
-context rules in [08 §3](../08-concurrency/03-context.md).
+place. Error mapping builds on [05 Section 2](../05-errors/02-error-design.md);
+httptest mechanics live in [10 Section 2](../10-testing/02-doubles-and-httptest.md);
+context rules in [08 Section 3](../08-concurrency/03-context.md).
 
 ## Chapters
 

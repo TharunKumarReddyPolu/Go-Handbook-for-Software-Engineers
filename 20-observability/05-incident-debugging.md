@@ -7,7 +7,7 @@ someone must answer "what is wrong, and what do I turn off?" This
 chapter is the Go-specific playbook: which signals answer which
 question, and the commands that produce evidence instead of
 guesses. It pairs with
-[19 §1](../19-performance/01-measure-first.md), which covers the
+[19 Section 1](../19-performance/01-measure-first.md), which covers the
 same tools in peacetime; here they run under fire.
 
 ## Mental Model
@@ -88,18 +88,18 @@ goroutine 8123 [chan receive, 14 minutes]:
 Eight thousand goroutines stuck in `chan receive` for 14 minutes at
 `worker.go:42`: the producer died and nobody closed the channel.
 That line is the incident's root cause, found in seconds ([08
-§7](../08-concurrency/07-pitfalls.md) catalogs this leak shape).
+Section 7](../08-concurrency/07-pitfalls.md) catalogs this leak shape).
 
 ## Real-World Example
 
 Rollback as the first debugging act. The evidence hierarchy when a
 change is suspect: deploys, config, flags, then code. The service's
-feature flags ([14 §5](../14-backend-development/05-observability-health-flags.md))
+feature flags ([14 Section 5](../14-backend-development/05-observability-health-flags.md))
 exist exactly so a bad rollout is a config flip, not a rollback of
 five services. In the incident, the order of operations is:
 
 1. Stop the bleeding: flip the flag, roll back, shed load
-   ([16 §5](../16-distributed-systems/05-delivery-backpressure-shedding.md)).
+   ([16 Section 5](../16-distributed-systems/05-delivery-backpressure-shedding.md)).
 2. Capture evidence **before** the rollback reverts the state:
    profiles and goroutine dumps are cheap; take them first.
 3. Then debug with the evidence, calmly.
@@ -109,7 +109,7 @@ five services. In the incident, the order of operations is:
 **GC pressure under load**: p99 latency creeps at peak; CPU
 profile shows 30% in `runtime.mallocgc`. Heap profile shows a hot
 path allocating response buffers per request. The fix is
-`sync.Pool` or right-sizing ([19 §2](../19-performance/02-memory-and-allocations.md)),
+`sync.Pool` or right-sizing ([19 Section 2](../19-performance/02-memory-and-allocations.md)),
 validated by the same profiles. The observability work is having
 the GC and heap signals charted *before* the incident, so "GC got
 worse" is visible in one glance rather than a new investigation.
@@ -149,7 +149,7 @@ prod; heap profiles are point-in-time and cheap; execution traces
 are the expensive one (use short windows). Continuous profiling
 (Parca, Pyroscope, or the `runtime/pprof` push models) trades a
 small overhead for always-on evidence: decide deliberately, measure
-the overhead ([19 §1](../19-performance/01-measure-first.md)).
+the overhead ([19 Section 1](../19-performance/01-measure-first.md)).
 
 ## Concurrency Considerations
 
@@ -158,7 +158,7 @@ Most Go incidents are concurrency-shaped: leaked goroutines
 everyone in `semacquire`), unbounded fan-out (goroutine count
 mirrors traffic). The dump's *state lines* (`chan receive`,
 `semacquire`, `select`, `IO wait`) are the diagnostic payload;
-[08 §7](../08-concurrency/07-pitfalls.md) maps each state to its
+[08 Section 7](../08-concurrency/07-pitfalls.md) maps each state to its
 usual cause.
 
 ## Security Considerations
@@ -171,10 +171,10 @@ of annotations, screenshots, and channel pins.
 
 ## Testing Strategy
 
-- Load-test with profiles on ([19 §1](../19-performance/01-measure-first.md)'s
+- Load-test with profiles on ([19 Section 1](../19-performance/01-measure-first.md)'s
   harness): an incident rehearsed in staging is half an incident.
 - Chaos drills: kill the dependency, confirm the breaker + shedding
-  behavior ([15 §3](../15-microservices/03-resilience-patterns.md)),
+  behavior ([15 Section 3](../15-microservices/03-resilience-patterns.md)),
   and confirm the dashboards show what you expect.
 - Test that `/debug/pprof` is NOT reachable from the public
   ingress (a security test, like the service's authz matrix tests).
@@ -187,7 +187,7 @@ of annotations, screenshots, and channel pins.
 2. What lives on `net/http/pprof`'s default mux and how do you
    expose it safely?
 3. You suspect a goroutine leak. Which signal confirms it and what
-   does the dump show? ([08 §7](../08-concurrency/07-pitfalls.md))
+   does the dump show? ([08 Section 7](../08-concurrency/07-pitfalls.md))
 4. When do you roll back versus debug in place, and why does the
    order of capture-versus-rollback matter?
 

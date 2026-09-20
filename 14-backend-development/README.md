@@ -4,8 +4,8 @@
 This section composes the API layer of [12](../12-http-networking/)
 and the store discipline of [13](../13-databases/) into the production
 layout, and completes the backend phase of the ROADMAP. Error
-boundaries come from [05 §2](../05-errors/02-error-design.md); the
-shutdown lifecycle from [12 §5](../12-http-networking/05-graceful-shutdown.md).
+boundaries come from [05 Section 2](../05-errors/02-error-design.md); the
+shutdown lifecycle from [12 Section 5](../12-http-networking/05-graceful-shutdown.md).
 
 ## Chapters
 
@@ -27,8 +27,8 @@ internal/
 ├── config/                   # ch 2: typed, validated, redacting loader
 │   └── config.go (+ tests)
 ├── platform/                 # ch 1's rule: knows no domain
-│   ├── httpjson/             # 12 §3's boundary helpers
-│   └── httpmw/               # 12 §2's chain + scoped logger (ch 5)
+│   ├── httpjson/             # 12 Section 3's boundary helpers
+│   └── httpmw/               # 12 Section 2's chain + scoped logger (ch 5)
 └── payments/                 # the domain
     ├── service.go            # decisions; owns PaymentStore interface
     ├── memory.go             # STORE=memory implementation

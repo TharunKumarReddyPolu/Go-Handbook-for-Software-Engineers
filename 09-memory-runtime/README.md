@@ -5,9 +5,9 @@ model from the engineer's seat: where values live, why the compiler
 puts them there, what the collector does about it, how the
 scheduler makes concurrency cheap, and the five ways Go programs
 leak. The runtime's *architecture* (what the pieces are) lives in
-[23 §3](../23-go-internals/03-runtime-architecture.md); the
+[23 Section 3](../23-go-internals/03-runtime-architecture.md); the
 *applied optimization* workflow lives in [19
-§2](../19-performance/02-memory-and-allocations.md); this section
+Section 2](../19-performance/02-memory-and-allocations.md); this section
 is the connective depth between them.
 
 ## Chapters

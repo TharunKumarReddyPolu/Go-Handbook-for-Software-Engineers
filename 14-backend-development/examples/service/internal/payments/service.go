@@ -14,7 +14,7 @@ import (
 	"go.opentelemetry.io/otel/codes"
 )
 
-// Domain errors: sentinels the transport maps (05 §2's pipeline).
+// Domain errors: sentinels the transport maps (05 Section 2's pipeline).
 // ErrForbidden deliberately maps to 404 at the transport: existence
 // of someone else's payment is not disclosed (chapter 4's decision).
 var (
@@ -36,7 +36,7 @@ const (
 type Payment struct {
 	ID          string
 	CustomerID  string
-	AmountMinor int64 // integer minor units (25 §1): never float money
+	AmountMinor int64 // integer minor units (25 Section 1): never float money
 	Currency    string
 	Status      Status
 	CreatedAt   time.Time
@@ -66,7 +66,7 @@ func (in ChargeInput) Validate() error {
 	return errors.Join(errs...) // batched (chapter 2's rule)
 }
 
-// PaymentStore is the consumer-side interface (04 §3, 13 §4). The
+// PaymentStore is the consumer-side interface (04 Section 3, 13 Section 4). The
 // Postgres implementation lives behind it; tests use a fake.
 type PaymentStore interface {
 	Charge(ctx context.Context, p Payment) (Payment, error)
@@ -151,7 +151,7 @@ func (s *Service) Cancel(ctx context.Context, actor Customer, paymentID string) 
 
 func (s *Service) ByCustomer(ctx context.Context, customerID string, limit int) ([]Payment, error) {
 	if limit <= 0 || limit > 100 {
-		limit = 100 // list methods bound themselves (13 §4)
+		limit = 100 // list methods bound themselves (13 Section 4)
 	}
 	return s.store.ByCustomer(ctx, customerID, limit)
 }

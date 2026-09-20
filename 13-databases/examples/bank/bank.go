@@ -25,7 +25,7 @@ var ErrNotFound = errors.New("not found")
 type Payment struct {
 	ID          string `json:"id"`
 	CustomerID  string `json:"customer_id"`
-	AmountMinor int64  `json:"amount_minor"` // integer minor units, per 25 §1
+	AmountMinor int64  `json:"amount_minor"` // integer minor units, per 25 Section 1
 	Currency    string `json:"currency"`
 	Status      string `json:"status"`
 }
@@ -37,7 +37,7 @@ type Account struct {
 	Currency     string `json:"currency"`
 }
 
-// PaymentStore is the consumer-side interface from 13 §4: domain-
+// PaymentStore is the consumer-side interface from 13 Section 4: domain-
 // shaped methods, stated in the service's language. The Postgres
 // implementation and the test fake both satisfy it.
 type PaymentStore interface {

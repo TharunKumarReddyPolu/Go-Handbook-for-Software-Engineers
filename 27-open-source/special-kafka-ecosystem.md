@@ -3,7 +3,7 @@
 ## Why Does This Matter?
 
 Kafka is infrastructure with a large Go surface: the clients you chose
-between in [18 §2](../18-kafka-with-go/02-go-clients.md) (franz-go,
+between in [18 Section 2](../18-kafka-with-go/02-go-clients.md) (franz-go,
 sarama, segmentio, confluent-kafka-go), the test tooling you rely on
 (testcontainers modules, mock brokers), and the operations tooling
 around brokers. These projects sit at the intersection of two
@@ -42,7 +42,7 @@ confidence in the project's conventions.
   real testing is small, verifiable, valuable work.
 - **Expect protocol review to demand evidence:** captured wire
   traffic, compatibility notes across broker versions, and benchmarks
-  formatted the way [18 §4](../18-kafka-with-go/04-observability-tuning.md)
+  formatted the way [18 Section 4](../18-kafka-with-go/04-observability-tuning.md)
   measures throughput.
 
 ### Client ergonomics, bugs, and docs
@@ -53,7 +53,7 @@ confidence in the project's conventions.
   behavior (with a test that pins it) beats aspirational docs.
 - Rebalance, offset-commit, and delivery-guarantee bugs are the
   high-value bug classes; reproduce with the in-memory harness from
-  [17 §4](../17-messaging/04-schemas-evolution-and-testing.md) where
+  [17 Section 4](../17-messaging/04-schemas-evolution-and-testing.md) where
   possible before filing.
 
 ### Test tooling and infrastructure
@@ -67,8 +67,8 @@ confidence in the project's conventions.
   injection) helps every downstream user.
 - **Operators and monitoring exporters** (strimzi-adjacent tooling,
   Kafka exporters) take Go and Kubernetes skills this handbook
-  teaches in [22 §5](../22-production-go/05-deploying-kubernetes.md)
-  and [20 §2](../20-observability/02-metrics.md).
+  teaches in [22 Section 5](../22-production-go/05-deploying-kubernetes.md)
+  and [20 Section 2](../20-observability/02-metrics.md).
 
 ## The contribution shape that gets merged
 
@@ -106,7 +106,7 @@ cannot: translating protocol intent into client behavior.
   hide in version skew and cluster behavior; state exactly what you
   tested (broker versions, topology, auth) in the PR.
 - **Mixing transport changes into domain-facing PRs** in ecosystem
-  tools; the seam discipline from [18 §3](../18-kafka-with-go/03-producer-consumer.md)
+  tools; the seam discipline from [18 Section 3](../18-kafka-with-go/03-producer-consumer.md)
   applies to your patch too.
 
 ## Interview Questions

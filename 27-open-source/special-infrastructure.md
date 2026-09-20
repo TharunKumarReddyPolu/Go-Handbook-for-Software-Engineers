@@ -55,7 +55,7 @@ list or Slack, never through PR pressure.
   paths.
 - Because etcd underpins Kubernetes control planes, correctness
   arguments in review are rigorous; bring the quorum/fencing reasoning
-  from [16 §3](../16-distributed-systems/03-leader-election-leases-fencing.md)
+  from [16 Section 3](../16-distributed-systems/03-leader-election-leases-fencing.md)
   when discussing leader and lease behavior.
 
 ### Prometheus
@@ -64,13 +64,13 @@ list or Slack, never through PR pressure.
   dev mailing list, community calls); components (server, exporters,
   client_golang) review at different tempos.
 - `client_golang` (the Go metrics client this handbook wires in
-  [20 §2](../20-observability/02-metrics.md)) is one of the most
+  [20 Section 2](../20-observability/02-metrics.md)) is one of the most
   approachable high-impact targets in the entire ecosystem: a
   well-tested PR there lands in every Go service's dependency tree.
 
 ## What transfers from smaller projects, what does not
 
-**Transfers:** the contribution loop from [27 §3](03-contributing-well.md),
+**Transfers:** the contribution loop from [27 Section 3](03-contributing-well.md),
 failing-test-first discipline, small diffs, why-first descriptions,
 evidence-based review replies, and DCO/CLA hygiene.
 
@@ -120,7 +120,7 @@ list for Prometheus); the PR implements an already-agreed design.
 1. Map one Kubernetes SIG's recent meeting notes for a month: list
    the enhancements discussed and where each is in the KEP pipeline.
 2. Pick one `client_golang` issue, reproduce it with the metrics
-   patterns from [20 §2](../20-observability/02-metrics.md), and
+   patterns from [20 Section 2](../20-observability/02-metrics.md), and
    draft the PR description.
 3. Read one merged KEP end to end and one rejected KEP; write down
    what each process actually decided and why.

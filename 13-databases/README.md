@@ -4,7 +4,7 @@
 library first (`database/sql` + pgx as the driver); ORMs covered as an
 honest tradeoff, not a default. The transactional contract this
 section explains is used in anger by the fintech ledger:
-[25 §2-3](../25-fintech-with-go/02-double-entry-ledger.md).
+[25 Section 2-3](../25-fintech-with-go/02-double-entry-ledger.md).
 
 ## Chapters
 

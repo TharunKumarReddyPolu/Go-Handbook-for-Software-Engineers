@@ -92,7 +92,7 @@ func main() {
 	logger.Info("bye")
 }
 
-// run is the extracted lifecycle from 12 §5: serve, signal, drain.
+// run is the extracted lifecycle from 12 Section 5: serve, signal, drain.
 // Extracted so the in-process shutdown test can exercise the exact
 // production path.
 func run(ctx context.Context, srv *http.Server, log *slog.Logger, grace time.Duration) error {
@@ -135,7 +135,7 @@ func newLogger(level string) *slog.Logger {
 
 // openStore builds the store behind the config switch (chapter 3:
 // environments differ by config, not code paths). The returned
-// close function participates in shutdown ordering (12 §5: stores
+// close function participates in shutdown ordering (12 Section 5: stores
 // close after the HTTP server drains).
 func openStore(ctx context.Context, cfg config.Config) (payments.PaymentStore, func(), error) {
 	switch cfg.Store {

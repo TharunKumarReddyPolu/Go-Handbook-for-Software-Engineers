@@ -27,7 +27,7 @@ flowchart LR
 Two design rules produce all of the value:
 
 1. **Consumer-side interfaces**
-   ([04 §3](../04-functions-methods-interfaces/03-interfaces-philosophy.md)):
+   ([04 Section 3](../04-functions-methods-interfaces/03-interfaces-philosophy.md)):
    the service declares the methods it wishes existed; the database
    package satisfies them. Mocking frameworks become unnecessary.
 2. **Domain-shaped methods, not table-shaped ones.** `Store.Charge(ctx,
@@ -110,7 +110,7 @@ under incident pressure; better to learn it now.
 
 Because the interface is consumer-defined, the test fake is ten
 lines and needs no framework
-([10 §2](../10-testing/02-doubles-and-httptest.md) mechanics):
+([10 Section 2](../10-testing/02-doubles-and-httptest.md) mechanics):
 
 ```go
 type fakeStore struct {
@@ -191,7 +191,7 @@ TEST_DATABASE_URL=postgres://... go test ./13-databases/... -tags=db
   exactly one consumer and one implementation used nowhere else is a
   bet you will need the seam; keep it only where tests (or a second
   implementation: Postgres and in-memory) actually use it
-  ([04 §3](../04-functions-methods-interfaces/03-interfaces-philosophy.md)'s
+  ([04 Section 3](../04-functions-methods-interfaces/03-interfaces-philosophy.md)'s
   rule).
 - **Domain logic drifting into repos**: a repository that decides
   whether a payment is allowed is a service wearing a repo costume.
@@ -201,7 +201,7 @@ TEST_DATABASE_URL=postgres://... go test ./13-databases/... -tags=db
 
 - Interface next to the consumer, implementation in the driver package.
 - Errors translated at the repo boundary: driver errors in, domain
-  sentinels out ([05 §2](../05-errors/02-error-design.md)).
+  sentinels out ([05 Section 2](../05-errors/02-error-design.md)).
 - `NewPostgresStore(dsn)` constructors; `var _ PaymentStore =
   (*PostgresStore)(nil)` compile-time satisfaction checks.
 
@@ -214,7 +214,7 @@ TEST_DATABASE_URL=postgres://... go test ./13-databases/... -tags=db
   `ByCustomer` called in a loop is N+1 with extra steps; batch
   variants (`ByCustomers(ctx, ids)`) earn their place the moment a
   loop appears
-  ([19 §1](../19-performance/01-measure-first.md) to confirm).
+  ([19 Section 1](../19-performance/01-measure-first.md) to confirm).
 
 ## Concurrency Considerations
 
@@ -224,7 +224,7 @@ TEST_DATABASE_URL=postgres://... go test ./13-databases/... -tags=db
   `WithinTx` on the repo, kept inside the database package).
 - Fakes must be safe if the service calls them concurrently: the
   same mutex discipline as the real store
-  ([08 §4](../08-concurrency/04-sync-primitives.md)).
+  ([08 Section 4](../08-concurrency/04-sync-primitives.md)).
 
 ## Security Considerations
 
@@ -240,7 +240,7 @@ TEST_DATABASE_URL=postgres://... go test ./13-databases/... -tags=db
 ## Testing Strategy
 
 - Unit tier: service logic against fakes; table-driven over the fake's
-  injected failures ([10 §1](../10-testing/01-fundamentals.md)).
+  injected failures ([10 Section 1](../10-testing/01-fundamentals.md)).
 - Integration tier: real database, migrations applied, one schema per
   test, cleanup via `t.Cleanup`. Assert semantics: constraint
   violations, transactional rollback, isolation behavior from ch. 2.

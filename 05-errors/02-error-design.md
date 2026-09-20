@@ -227,7 +227,7 @@ discipline*, not the wiring.)
 - **Swallowing with `err = nil`** after a failed optional step: at least
   log the swallowed error with a reason field.
 - **Panic in request paths** for user errors (see
-  [01 §7 defer/panic/recover](../01-go-fundamentals/07-defer-panic-recover.md)).
+  [01 Section 7 defer/panic/recover](../01-go-fundamentals/07-defer-panic-recover.md)).
 
 ## Idiomatic Go
 

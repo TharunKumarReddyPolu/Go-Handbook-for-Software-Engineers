@@ -126,7 +126,7 @@ shutdown" was supposed to fix.
 
 The same `signal.NotifyContext` pattern governs background loops: a
 worker selecting on `ctx.Done()` (as in
-[08 §3](../08-concurrency/03-context.md)) stops accepting new items
+[08 Section 3](../08-concurrency/03-context.md)) stops accepting new items
 and finishes the current one, which is the identical handshake at
 goroutine scale.
 

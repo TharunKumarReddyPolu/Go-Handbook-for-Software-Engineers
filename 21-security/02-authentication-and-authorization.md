@@ -45,7 +45,7 @@ the classic `alg: none` and RS-to-HS confusion bugs.
 3. Check `iss` and `aud` against your configured values.
 4. Extract the subject; that is the identity for authz.
 
-**Authorization is two gates** ([14 §4](../14-backend-development/04-authn-authz-and-validation.md)
+**Authorization is two gates** ([14 Section 4](../14-backend-development/04-authn-authz-and-validation.md)
 established them):
 
 | Gate | Question | Lives in | Example |
@@ -117,7 +117,7 @@ The ownership gate that turns identity into permission:
 func (s *Service) Cancel(ctx context.Context, caller Caller, id string) error {
     p, err := s.store.Get(ctx, id)
     if errors.Is(err, ErrNotFound) {
-        return ErrNotFound // existence never disclosed (14 §4)
+        return ErrNotFound // existence never disclosed (14 Section 4)
     }
     if err != nil {
         return err
@@ -159,8 +159,8 @@ to spend another's tokens.
 | Accepting the header's algorithm | `alg: none`, RS-to-HS confusion | Pin algorithms at verification |
 | No `exp`/`aud`/`iss` checks | Stale and cross-service token reuse | Check all, with small leeway |
 | Long-lived JWTs with no revocation path | Stolen token is forever | Short access + refresh sessions |
-| 403 on missing resources | Existence disclosure to strangers | 404 ([14 §4](../14-backend-development/04-authn-authz-and-validation.md)) |
-| Authz by path prefix (`/admin/`) | Bypass via case/encoding/double slash | Policy on matched route patterns ([12 §1](../12-http-networking/01-handlers-and-routing.md)) |
+| 403 on missing resources | Existence disclosure to strangers | 404 ([14 Section 4](../14-backend-development/04-authn-authz-and-validation.md)) |
+| Authz by path prefix (`/admin/`) | Bypass via case/encoding/double slash | Policy on matched route patterns ([12 Section 1](../12-http-networking/01-handlers-and-routing.md)) |
 | Permissions in the token only | Stale claims after role change | Token = identity; roles live server-side |
 | Rolling your own JWT signing/alg negotiation | Subtle crypto bugs | Pinned verifier or golang-jwt with `WithValidMethods` |
 
@@ -171,7 +171,7 @@ to spend another's tokens.
   service example's signature: `Cancel(ctx, caller, id)`).
 - Errors: `ErrUnauthorized` (401) versus `ErrForbidden` (403)
   versus `ErrNotFound` (404) are distinct domain sentinels
-  ([05 §2](../05-errors/02-error-design.md)); the transport maps
+  ([05 Section 2](../05-errors/02-error-design.md)); the transport maps
   them, once.
 - Small interfaces: define `Verifier` where consumed; fakes in
   tests, Ed25519 in prod.
@@ -179,7 +179,7 @@ to spend another's tokens.
 ## Performance Considerations
 
 JWT verification is two hashes: microseconds. Sessions cost a
-lookup: budget for it in the cache ([13 §5](../13-databases/05-caching-with-redis.md)).
+lookup: budget for it in the cache ([13 Section 5](../13-databases/05-caching-with-redis.md)).
 JWKS fetch and key caching belong off the request path; refresh the
 set on schedule and on unknown-`kid` (the rotation trigger).
 
@@ -205,7 +205,7 @@ shared key slice in place; rotate by publishing a new snapshot.
 - Table-driven verifier tests: expired, wrong issuer, wrong
   audience, tampered payload, signature from a different key,
   `alg`-mismatched token, garbage: all reject.
-- The authz matrix test from [14 §4](../14-backend-development/04-authn-authz-and-validation.md)
+- The authz matrix test from [14 Section 4](../14-backend-development/04-authn-authz-and-validation.md)
   is the permanent regression suite: caller kind x route x
   ownership, full status-code table.
 - Property: no unauthenticated caller reaches a handler that reads

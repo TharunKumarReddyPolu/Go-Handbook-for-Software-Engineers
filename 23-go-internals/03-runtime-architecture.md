@@ -8,8 +8,8 @@ design decisions are the reasons goroutines are cheap, GC pauses
 are short, and blocking syscalls don't stall the program. The
 engineering view of these pieces is spread across the handbook
 ([09](../09-memory-runtime/): memory; [08
-§6](../08-concurrency/06-concurrency-vs-parallelism.md):
-concurrency; [19 §2](../19-performance/02-memory-and-allocations.md):
+Section 6](../08-concurrency/06-concurrency-vs-parallelism.md):
+concurrency; [19 Section 2](../19-performance/02-memory-and-allocations.md):
 allocations); this chapter is the one-page architecture: the parts
 and how they interlock.
 
@@ -46,7 +46,7 @@ goroutines cost memory, not threads.
 
 **Scheduler**: each P has a local run queue; stealing rebalances
 when queues go uneven ([08
-§6](../08-concurrency/06-concurrency-vs-parallelism.md) covers the
+Section 6](../08-concurrency/06-concurrency-vs-parallelism.md) covers the
 behavioral rules; the internals):
 
 - **Syscall handling**: when a G makes a blocking syscall, its M
@@ -57,7 +57,7 @@ behavioral rules; the internals):
   (async): a G running a tight loop receives a signal at yield
   points and is preempted. Long-tail latency from a CPU-hogging
   goroutine is now bounded, not eliminated
-  ([08 §7](../08-concurrency/07-pitfalls.md)'s
+  ([08 Section 7](../08-concurrency/07-pitfalls.md)'s
   "one hot goroutine starves the rest" pre-dates this; the modern
   version is subtler).
 - **Netpoller**: network I/O integrates with the OS poller
@@ -76,7 +76,7 @@ semantics are the *fast* default, so the GC sees less garbage
 depth).
 
 **Garbage collector**: concurrent tri-color mark-and-sweep ([09
-§3](../09-memory-runtime/)'s chapter 3 walks it). The parts that
+Section 3](../09-memory-runtime/)'s chapter 3 walks it). The parts that
 matter architecturally:
 
 - Mark runs *concurrently* with your code: short pauses for
@@ -84,7 +84,7 @@ matter architecturally:
 - Write barriers record pointer writes during marking so the
   tri-color invariant holds while mutators run.
 - Pacing: the GC decides when to start from `GOGC`/`GOMEMLIMIT`
-  ([19 §2](../19-performance/02-memory-and-allocations.md)'s
+  ([19 Section 2](../19-performance/02-memory-and-allocations.md)'s
   tuning order).
 
 **Stacks**: contiguous, growable: start ~2KB, double on overflow,
@@ -95,7 +95,7 @@ is thus proportional to actual usage, not worst case.
 ## Syntax / API
 
 The observability surface of the runtime ([20
-§2](../20-observability/02-metrics.md) exports it):
+Section 2](../20-observability/02-metrics.md) exports it):
 
 ```go
 runtime.GOMAXPROCS(0)         // query/set Ps
@@ -106,7 +106,7 @@ runtime/debug.SetMemoryLimit(460 << 20) // programmatic GOMEMLIMIT
 
 `GOTRACEBACK=system` (env) makes panics print runtime-level
 stacks: M and P state, the scheduler's view: the incident-level
-detail ([20 §5](../20-observability/05-incident-debugging.md)).
+detail ([20 Section 5](../20-observability/05-incident-debugging.md)).
 
 ## Basic Example
 
@@ -121,7 +121,7 @@ runtime.GOMAXPROCS(0) // stays 2; no Ps are lost to blocked Ms
 Blocked Ms accumulate (they're threads: each costs an OS stack),
 which is why a service making many blocking syscalls wants a
 worker-pool bound on them ([08
-§5](../08-concurrency/05-patterns.md)'s stage-5 pattern), not a
+Section 5](../08-concurrency/05-patterns.md)'s stage-5 pattern), not a
 goroutine per operation.
 
 ## Real-World Example
@@ -133,20 +133,20 @@ block only their G. Compare thread-per-connection: 1MB+ stacks,
 kernel scheduler pressure, c10k problems. Go's c10k answer is not
 a library; it is the netpoller plus cheap Gs. The cost model
 changes again at fan-out: 100k parked goroutines is ~hundreds of
-MB ([08 §1](../08-concurrency/01-goroutines-and-channels.md)'s
+MB ([08 Section 1](../08-concurrency/01-goroutines-and-channels.md)'s
 accounting) and a semaphore still beats "unlimited".
 
 ## Production Example
 
 The runtime's knobs in a container, the full map ([22
-§3](../22-production-go/03-resource-limits.md) covers the
+Section 3](../22-production-go/03-resource-limits.md) covers the
 production framing):
 
 | Knob | Controls | Set when |
 |---|---|---|
 | `GOMAXPROCS` | Ps | mismatch with cgroup CPU (auto in Go 1.25+) |
 | `GOMEMLIMIT` | GC target | cgroup memory limit exists (auto ~90% in Go 1.25+) |
-| `GOGC` | heap growth trigger | rare, after GOMEMLIMIT ([19 §2](../19-performance/02-memory-and-allocations.md)) |
+| `GOGC` | heap growth trigger | rare, after GOMEMLIMIT ([19 Section 2](../19-performance/02-memory-and-allocations.md)) |
 | `GOTRACEBACK` | panic verbosity | always `system`/`crash` in prod containers |
 
 The one-liner: the runtime self-tunes remarkably well; the
@@ -158,11 +158,11 @@ cannot see.
 
 | Mistake | Reality | Do instead |
 |---|---|---|
-| "Goroutines are free" | 2KB+ and GC-visible; unbounded fan-out is an OOM | Bound with semaphores ([21 §4](../21-security/04-limits-and-hardening.md)) |
+| "Goroutines are free" | 2KB+ and GC-visible; unbounded fan-out is an OOM | Bound with semaphores ([21 Section 4](../21-security/04-limits-and-hardening.md)) |
 | Blocking syscalls in a hot loop | Ms pile up; each is a thread | Worker pools for syscall-heavy paths |
 | Assuming GC pauses dominate latency | Mark is concurrent; stalls are usually allocation-driven | Read `/gc/pauses` before blaming GC |
 | Tuning GOGC first | GOMEMLIMIT is the modern lever | GOMEMLIMIT, then allocations, then GOGC |
-| Expecting preemption to fix everything | Chan-locked loops and cgo calls still block at their own level | Design cancellation with context ([08 §3](../08-concurrency/03-context.md)) |
+| Expecting preemption to fix everything | Chan-locked loops and cgo calls still block at their own level | Design cancellation with context ([08 Section 3](../08-concurrency/03-context.md)) |
 
 ## Idiomatic Go
 
@@ -170,7 +170,7 @@ cannot see.
   OS's job elsewhere.
 - Let the runtime see your memory: keep pointers to large objects
   short-lived; slices of big backing arrays pinned by small
-  windows are a leak class ([09 §5](../09-memory-runtime/)'s
+  windows are a leak class ([09 Section 5](../09-memory-runtime/)'s
   chapter 5 taxonomy).
 - Prefer channel/context blocking to spin loops: parked Gs cost
   nothing; spinning Gs steal Ps.
@@ -199,7 +199,7 @@ Every sync primitive's guarantee is an entry in that model; every
 The runtime is attack surface: it parses nothing untrusted, but it
 executes your code's mistakes (stack growth on deep recursion =
 memory; goroutine leaks = resource exhaustion). Container limits
-([22 §3](../22-production-go/03-resource-limits.md)) bound what a
+([22 Section 3](../22-production-go/03-resource-limits.md)) bound what a
 compromised or buggy process can take down; `GOMEMLIMIT` bounds
 what *GC pressure* can do, not what a raw allocation loop can
 (which the cgroup OOM kill handles, harshly).
@@ -207,12 +207,12 @@ what *GC pressure* can do, not what a raw allocation loop can
 ## Testing Strategy
 
 - `-race` runs the runtime's race detector: a runtime feature, not
-  a library ([10 §1](../10-testing/01-fundamentals.md)); it
+  a library ([10 Section 1](../10-testing/01-fundamentals.md)); it
   validates happens-before edges dynamically.
 - Stress scheduling: `-cpu=1,2,4` and `GOMAXPROCS=1` runs expose
-  ordering assumptions ([10 §1](../10-testing/01-fundamentals.md)'s
+  ordering assumptions ([10 Section 1](../10-testing/01-fundamentals.md)'s
   shuffled order helps).
-- The runtime metrics you export ([20 §2](../20-observability/02-metrics.md))
+- The runtime metrics you export ([20 Section 2](../20-observability/02-metrics.md))
   are the production test: alert on goroutine count trends, GC
   pause regressions, heap growth.
 

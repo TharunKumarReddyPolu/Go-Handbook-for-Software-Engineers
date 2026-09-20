@@ -5,7 +5,7 @@
 Professional Go is recognizable at a glance: formatted the same
 way, vetted, statically analyzed, navigable by gopls. None of that
 is talent; it is tooling wired into editor and CI so it happens
-without discipline. [01 §2](../01-go-fundamentals/02-toolchain-and-workflow.md)
+without discipline. [01 Section 2](../01-go-fundamentals/02-toolchain-and-workflow.md)
 covers the daily verbs (`run`, `build`, `test`, `vet`); this
 chapter is the layer above: which tools a team standardizes on,
 what each catches, and how this repository's own CI wires them as
@@ -101,7 +101,7 @@ fmt:
 
 Contributors run `make check` (or just push, and CI runs it);
 reviewers stop discussing formatting entirely ([27
-§3](../27-open-source/03-contributing-well.md) covers the review
+Section 3](../27-open-source/03-contributing-well.md) covers the review
 loop this enables). The quiet payoff: diffs contain only meaning.
 A PR with 3 meaningful lines shows 3 changed lines, not 300
 reformatted ones.
@@ -113,7 +113,7 @@ via `actions/setup-go`) and tool versions in `go.mod` tool
 directives or install scripts. A new Go release that changes
 `gofmt` output or staticcheck findings should be a deliberate PR,
 not a surprise on Monday: the same reproducibility discipline as
-[06 §5](../06-packages-modules/05-reproducible-builds.md)'s
+[06 Section 5](../06-packages-modules/05-reproducible-builds.md)'s
 builds.
 
 **Monorepo hygiene**: `gofmt -l .` and `staticcheck ./...` scale
@@ -131,7 +131,7 @@ build cache make repeat runs nearly free.
 | Floating tool versions in CI | Random breakage on upstream releases | Pin everything; upgrade deliberately |
 | Checks only in CI | Findings arrive after context is gone | gopls live + save-format + CI block |
 | Running `gofmt` by hand per file | Drift, missed files | Format on save; CI sweeps everything |
-| Ignoring `-race` because "it's slow" | Races reach prod ([08 §7](../08-concurrency/07-pitfalls.md)) | It is the cheapest correctness check you own |
+| Ignoring `-race` because "it's slow" | Races reach prod ([08 Section 7](../08-concurrency/07-pitfalls.md)) | It is the cheapest correctness check you own |
 
 ## Idiomatic Go
 
@@ -149,23 +149,23 @@ Tooling is developer-latency engineering: gopls indexing large
 repos is the main cost; `.gitignore` vendored/generated dirs and
 `gopls` memory limits keep it responsive. CI time budget: this
 repo's full gate runs in about a minute ([06
-§5](../06-packages-modules/05-reproducible-builds.md)'s build
+Section 5](../06-packages-modules/05-reproducible-builds.md)'s build
 cache applies to CI runners too); if your gate exceeds ~10
 minutes, parallelize jobs rather than thinning checks.
 
 ## Concurrency Considerations
 
 `-race` is the concurrency tooling: not optional, run on every CI
-test pass ([10 §1](../10-testing/01-fundamentals.md)). The race
+test pass ([10 Section 1](../10-testing/01-fundamentals.md)). The race
 detector's dynamic checking means test quality gates race
 coverage; shuffled test order and `-cpu=1,2,4` variants widen the
-schedules exercised ([23 §6](../23-go-internals/06-memory-model.md)'s
+schedules exercised ([23 Section 6](../23-go-internals/06-memory-model.md)'s
 model is what the detector enforces).
 
 ## Security Considerations
 
 The workflow's security tier: `govulncheck` (chapter 4) plus the
-weekly scheduled run this repo wires ([21 §5](../21-security/05-secrets-and-supply-chain.md)'s
+weekly scheduled run this repo wires ([21 Section 5](../21-security/05-secrets-and-supply-chain.md)'s
 supply-chain chapter). Pre-commit hooks that scan for secrets
 (gitleaks) are the one addition beyond Go-specific tooling most
 teams want before their first leaked credential teaches them.
@@ -197,7 +197,7 @@ definition of "done" as the CI gate; memory is not a standard.
    packages; note which were real bugs versus style.
 3. Add `-shuffle=on -cpu=1,2,4` to one test package's runs; run
    10 times; document any flakiness found (it is signal, [10
-   §1](../10-testing/01-fundamentals.md)).
+   Section 1](../10-testing/01-fundamentals.md)).
 
 ## Further Reading
 

@@ -8,7 +8,7 @@ binaries, tiny containers, fast boots), but the platform wiring
 decides whether deploys are boring or terrifying. This chapter is
 the minimum Kubernetes setup a Go service needs to be safely
 upgradeable, cross-referenced where the handbook already built the
-pieces: [06 §5](../06-packages-modules/05-reproducible-builds.md)
+pieces: [06 Section 5](../06-packages-modules/05-reproducible-builds.md)
 built the reproducible image; [02](02-server-lifecycle.md) built
 the lifecycle it depends on.
 
@@ -37,7 +37,7 @@ incident is one of those two contracts broken.
 
 ## How It Works
 
-**The image** ([06 §5](../06-packages-modules/05-reproducible-builds.md)
+**The image** ([06 Section 5](../06-packages-modules/05-reproducible-builds.md)
 owns the full Dockerfile; the essentials):
 
 ```dockerfile
@@ -55,7 +55,7 @@ ENTRYPOINT ["/svc"]
 ```
 
 Static binary + distroless = no shell, no package manager, ~10MB,
-fast pulls, minimal attack surface ([21 §1](../21-security/01-threat-model-and-validation.md)).
+fast pulls, minimal attack surface ([21 Section 1](../21-security/01-threat-model-and-validation.md)).
 `USER nonroot` because the platform should not grant what the code
 does not need.
 
@@ -128,27 +128,27 @@ The deploy checklist that survives code review:
 
 The Section 14 service deploys with exactly this manifest: its
 `/livez` returns static ok, its `/readyz` checks the store
-([14 §5](../14-backend-development/05-observability-health-flags.md)'s
+([14 Section 5](../14-backend-development/05-observability-health-flags.md)'s
 tiered readiness), its version is stamped by the build. A deploy is
-watched by the burn-rate alert ([20 §4](../20-observability/04-slos-and-alerting.md)):
+watched by the burn-rate alert ([20 Section 4](../20-observability/04-slos-and-alerting.md)):
 a bad rollout burns the budget visibly within minutes, which is
 what makes automatic rollback safe (next chapter).
 
 ## Production Example
 
-**PGO in the pipeline** ([19 §4](../19-performance/04-compiler-and-pgo.md)):
+**PGO in the pipeline** ([19 Section 4](../19-performance/04-compiler-and-pgo.md)):
 production profiles feed the next build (`go build -pgo=auto` picks
 up `default.pgo`): the release pipeline collects CPU profiles from
 the current fleet, commits the merged profile, and the next build
 is profile-guided. The before/after benchmark gate ([19
-§1](../19-performance/01-measure-first.md)) prevents a stale
+Section 1](../19-performance/01-measure-first.md)) prevents a stale
 profile from regressing a changed workload.
 
 **HPA on the right signal**: autoscale on the service's own RED
 metrics (requests per pod, or p99 latency) via a metrics adapter,
 not CPU: Go services often saturate their dependency pools before
 CPU. Horizontal scaling must respect the pool arithmetic
-([13 §3](../13-databases/03-pooling-drivers-migrations.md)): more
+([13 Section 3](../13-databases/03-pooling-drivers-migrations.md)): more
 pods, same DB pool ceiling, means `max_connections` math done at
 fleet level, not per-pod.
 
@@ -181,22 +181,22 @@ seconds (lazy-open slow deps behind honest readiness,
 [02](02-server-lifecycle.md)). Image size is pull time, which is
 cold-start time on node scale-up: distroless keeps it near the
 binary size. PGO gives single-digit-percent wins on hot paths for
-free inside the pipeline ([19 §4](../19-performance/04-compiler-and-pgo.md)).
+free inside the pipeline ([19 Section 4](../19-performance/04-compiler-and-pgo.md)).
 
 ## Concurrency Considerations
 
 The container runs the same binary the tests ran: race-free test
-runs ([10 §1](../10-testing/01-fundamentals.md)) are the deploy
+runs ([10 Section 1](../10-testing/01-fundamentals.md)) are the deploy
 gate. PID-1 concerns are minimal for Go (the runtime handles child
 reaping for spawned processes), but `exec.Command` users should
-still bound and wait children ([21 §1](../21-security/01-threat-model-and-validation.md)).
+still bound and wait children ([21 Section 1](../21-security/01-threat-model-and-validation.md)).
 
 ## Security Considerations
 
 Nonroot, read-only rootfs, `allowPrivilegeEscalation: false`,
 dropped capabilities: the four lines that close most container
 escalation paths. Image scanning (Trivy/Grype) joins govulncheck
-([21 §5](../21-security/05-secrets-and-supply-chain.md)): the
+([21 Section 5](../21-security/05-secrets-and-supply-chain.md)): the
 dependency scan and the base-image scan are different surfaces.
 
 ## Testing Strategy

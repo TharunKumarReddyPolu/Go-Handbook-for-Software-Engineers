@@ -25,7 +25,7 @@ Three decisions, each with a formula and a failure mode:
 2. **Sharding** (data placement): the key determines placement;
    placement determines parallelism and hot spots.
 3. **Ordering** (sequence): global order does not exist cheaply;
-   per-key order does ([18 §1](../18-kafka-with-go/01-kafka-concepts.md)'s
+   per-key order does ([18 Section 1](../18-kafka-with-go/01-kafka-concepts.md)'s
    partitions are this same truth wearing Kafka).
 
 ## How It Works: quorums, honestly
@@ -67,7 +67,7 @@ Placement is `shard = hash(key) mod shards` (or a lookup table); the
 key choice therefore decides:
 
 - **Ordering scope**: all operations for one key land on one shard,
-  in order (the single-writer rule from chapter 2; [25 §2](../25-fintech-with-go/02-double-entry-ledger.md)'s
+  in order (the single-writer rule from chapter 2; [25 Section 2](../25-fintech-with-go/02-double-entry-ledger.md)'s
   per-account serialization is a shard key).
 - **Parallelism**: distinct keys proceed concurrently.
 - **Failure blast radius**: one shard down affects only its keys.
@@ -84,7 +84,7 @@ mitigations, in escalation order:
 2. **Split hot entities**: an account exceeding a shard's capacity
    becomes two accounts (a real schema change, planned per entity).
 3. **Dedicated shard/pool** for the whale: isolate it, admit it, and
-   stop pretending it is average ([18 §1](../18-kafka-with-go/01-kafka-concepts.md)'s
+   stop pretending it is average ([18 Section 1](../18-kafka-with-go/01-kafka-concepts.md)'s
    hot-partition discussion is the same problem in Kafka).
 
 ## Basic Example: key design in Go
@@ -124,7 +124,7 @@ migration disciplines:
   just a smaller one.
 - **Dual-write migration**: write to old and new placements, backfill,
   verify, cut reads, stop old writes: the expand/contract pattern
-  from [13 §3](../13-databases/03-pooling-drivers-migrations.md)
+  from [13 Section 3](../13-databases/03-pooling-drivers-migrations.md)
   applied to placement.
 - **Fixed key-to-shard mapping tables** (1000 logical shards mapped
   onto N physical nodes): resharding moves logical shards, and keys
@@ -132,7 +132,7 @@ migration disciplines:
 
 Postgres native partitioning and Kafka partition counts make the
 same tradeoff: partition counts at Kafka are "effectively forever"
-([18 §1](../18-kafka-with-go/01-kafka-concepts.md)) for exactly this
+([18 Section 1](../18-kafka-with-go/01-kafka-concepts.md)) for exactly this
 reason; size for three years of growth on day one.
 
 ## Ordering: what you can promise
@@ -147,7 +147,7 @@ reason; size for three years of growth on day one.
 The design translation: state the ordering you promise *per stream*
 and derive keys from it. "We need ordering" always means "we need
 ordering of X with respect to Y"; the answer is a key, not a
-stronger database ([25 §3](../25-fintech-with-go/03-integrity-and-exactly-once.md)'s
+stronger database ([25 Section 3](../25-fintech-with-go/03-integrity-and-exactly-once.md)'s
 one-key-namespace rule threads the ordering from HTTP to broker to
 consumer).
 
@@ -192,7 +192,7 @@ ordering promise the design actually makes.
 ## Performance Considerations
 
 - Hot shards are latency and capacity ceilings: the queueing at one
-  shard dominates fleet p99 ([19 §1](../19-performance/01-measure-first.md)'s
+  shard dominates fleet p99 ([19 Section 1](../19-performance/01-measure-first.md)'s
   universal read: measure per-shard, not per-fleet).
 - Quorum waits put the *slowest* acker in the critical path: replica
   health is a latency SLA, and one bad disk p99s every write.
@@ -203,15 +203,15 @@ ordering promise the design actually makes.
   key serializes *by design*. Keys too coarse = artificial
   serialization (the whale's whole fleet queueing behind one shard).
 - Cross-key invariants (two accounts in one transfer) break shard
-  locality: [25 §2](../25-fintech-with-go/02-double-entry-ledger.md)
+  locality: [25 Section 2](../25-fintech-with-go/02-double-entry-ledger.md)
   keeps the ledger's invariant under single-writer per account by
   construction; transfers across shards need care (ordered
-  acquisition: 13 §2's deadlock rule).
+  acquisition: 13 Section 2's deadlock rule).
 
 ## Security Considerations
 
 - Shard keys appear in metrics, logs, and admin surfaces: PII in keys
-  leaks ([18 §1](../18-kafka-with-go/01-kafka-concepts.md)'s Kafka key
+  leaks ([18 Section 1](../18-kafka-with-go/01-kafka-concepts.md)'s Kafka key
   rule; hash or use stable IDs).
 - Shard isolation is a blast-radius control: a compromised shard's
   credentials should not read its neighbors (per-shard least

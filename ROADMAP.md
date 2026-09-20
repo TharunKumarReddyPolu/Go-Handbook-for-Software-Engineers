@@ -58,8 +58,8 @@ stated in every outline:
    channels with maps, rate limiter with the gateway) when they only make
    sense side by side.
 2. A topic another section already owns is a cross-reference, never a
-   duplicate (outbox mechanics live in 25 §3; pprof in 19 §1; delivery
-   semantics in 18 §1).
+   duplicate (outbox mechanics live in 25 Section 3; pprof in 19 Section 1; delivery
+   semantics in 18 Section 1).
 3. One worked example per section, not per chapter, with tests that pin
    the chapter's claims.
 4. Chapter counts stay in the 4-7 range; an outline that plans more gets

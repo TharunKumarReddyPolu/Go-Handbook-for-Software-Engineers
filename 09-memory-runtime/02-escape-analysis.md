@@ -8,7 +8,7 @@ the frame. It is the single highest-leverage pass for service
 latency because its output scales: every value that stays on the
 stack is an allocation the GC never sees, for every request, forever.
 The mechanical pass structure lives in [23
-§2](../23-go-internals/02-ssa-and-optimizations.md); this chapter is
+Section 2](../23-go-internals/02-ssa-and-optimizations.md); this chapter is
 the engineering view: the rules that force escapes, how to read the
 diagnostics, and the boxing costs that show up in profiles as
 "interface" when the culprit is your API shape.
@@ -55,12 +55,12 @@ does not: the variadic `...any` boxes; the string API does not.
 concrete type behind an interface call, it inlines and the "unknown
 callee" pessimism disappears. Concrete hot paths win twice: direct
 calls and fewer forced escapes ([19
-§4](../19-performance/04-compiler-and-pgo.md)'s before/after).
+Section 4](../19-performance/04-compiler-and-pgo.md)'s before/after).
 
 ## Syntax / API
 
 Reading the decisions (diagnostics from [23
-§2](../23-go-internals/02-ssa-and-optimizations.md)'s transcripts):
+Section 2](../23-go-internals/02-ssa-and-optimizations.md)'s transcripts):
 
 ```bash
 go build -gcflags="-m" ./... 2>&1 | grep -E "escapes|moved"
@@ -94,7 +94,7 @@ func (s *Server) debugLog(id string, n int) { ... }
 The first shape converts every caller's value into a heap
 allocation; the second keeps small values in registers. This is why
 the handbook's logging guidance ([20
-§1](../20-observability/01-structured-logging.md)) prefers typed
+Section 1](../20-observability/01-structured-logging.md)) prefers typed
 fields and lazy `LogValuer`s: the API shape is the allocation
 policy.
 
@@ -104,7 +104,7 @@ policy.
 allocates a tree of boxes (every scalar is an interface); unmarshal
 into a typed struct allocates the struct and nothing else. Same
 wire data, different escape profile by an order of magnitude ([19
-§2](../19-performance/02-memory-and-allocations.md)'s incident
+Section 2](../19-performance/02-memory-and-allocations.md)'s incident
 story is exactly this shape). The engineering habit: when a profile
 shows `runtime.mallocgc` under a decode-heavy endpoint, ask what the
 decode target shape is before reaching for `sync.Pool`.
@@ -132,9 +132,9 @@ faster-only-when-warm.
 | Mistake | Reality | Do instead |
 |---|---|---|
 | `defer` in loops "for the cleanup" | Defers are cheap since 1.14, but the captured vars often escape | Scope the defers; check `-m` |
-| Wrapping errors with `%v` on structs | Boxes the struct; escapes | Wrap with `%w` on errors ([05 §1](../05-errors/01-errors-are-values.md)); log typed fields |
+| Wrapping errors with `%v` on structs | Boxes the struct; escapes | Wrap with `%w` on errors ([05 Section 1](../05-errors/01-errors-are-values.md)); log typed fields |
 | Pre-emptively returning pointers | Forces the heap decision on every caller | Return values; let callers opt into pointers |
-| One generic `any`-shaped API for "flexibility" | Every caller pays boxing | Generics with concrete instantiation ([07 §5](../07-generics/05-when-generics-hurt.md "when generics help and hurt")) |
+| One generic `any`-shaped API for "flexibility" | Every caller pays boxing | Generics with concrete instantiation ([07 Section 5](../07-generics/05-when-generics-hurt.md "when generics help and hurt")) |
 | Trusting that `&v` always allocates | Method receiver `&v` on a local often does not | Read the diagnostics, not folklore |
 
 ## Idiomatic Go
@@ -145,12 +145,12 @@ faster-only-when-warm.
   not inside tight loops.
 - Use generics where the type set is closed and the value is small:
   the stenciled code keeps values unboxed ([07
-  §5](../07-generics/05-when-generics-hurt.md)).
+  Section 5](../07-generics/05-when-generics-hurt.md)).
 
 ## Performance Considerations
 
 Escape analysis compounds with inlining ([23
-§2](../23-go-internals/02-ssa-and-optimizations.md)): an inlined
+Section 2](../23-go-internals/02-ssa-and-optimizations.md)): an inlined
 callee's proof flows to the caller, so keeping hot helpers small
 helps twice. The measurable chain: fewer escapes → fewer
 allocations → less GC CPU → lower p99. `AllocsPerRun` tests turn
@@ -163,7 +163,7 @@ governs ordering, not placement), but they interact in review:
 values passed across goroutines escape (the goroutine outlives the
 frame), so fan-out code allocates per work item. That is usually
 correct; per-packet paths batch instead ([08
-§5](../08-concurrency/05-patterns.md)'s worker shapes).
+Section 5](../08-concurrency/05-patterns.md)'s worker shapes).
 
 ## Security Considerations
 
@@ -173,12 +173,12 @@ The relevant note: values kept on the stack are cheaper to reason
 about for secret-handling (they die with the frame), but strings
 and slices handed to logging/serialization still escape and copy:
 minimize secret copies regardless ([23
-§5](../23-go-internals/05-interfaces-slices-strings.md)).
+Section 5](../23-go-internals/05-interfaces-slices-strings.md)).
 
 ## Testing Strategy
 
 - `AllocsPerRun` on hot helpers: the example-package pattern ([23
-  §2](../23-go-internals/02-ssa-and-optimizations.md)).
+  Section 2](../23-go-internals/02-ssa-and-optimizations.md)).
 - Benchmarks before/after any signature change on a hot path; run
   benchstat, keep the numbers in the PR.
 - `-m` output review for hot files as part of the performance
@@ -197,7 +197,7 @@ minimize secret copies regardless ([23
 ## Practice Exercises
 
 1. Take this section's `internals` example ([23
-   §2](../23-go-internals/02-ssa-and-optimizations.md)) and add a
+   Section 2](../23-go-internals/02-ssa-and-optimizations.md)) and add a
    function whose parameter `leaking param`s; fix the signature and
    show the diagnostic disappearing.
 2. Benchmark `fmt.Sprintf("%d", i)` vs `strconv.Itoa(i)` in a loop;

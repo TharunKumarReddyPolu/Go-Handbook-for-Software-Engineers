@@ -5,7 +5,7 @@
 Your service's reliability is the composition of its dependencies'
 reliabilities, and composition is where the engineering is: ten
 dependencies at 99.9% each do not give you 99.9%; without design,
-they give you 99%. ([15 §3](../15-microservices/03-resilience-patterns.md)
+they give you 99%. ([15 Section 3](../15-microservices/03-resilience-patterns.md)
 built the per-call mechanics: timeouts, retries, breakers,
 bulkheads. This chapter is the per-system layer: deciding, ahead of
 time, what each dependency's failure means for the product, and who
@@ -36,14 +36,14 @@ flowchart TD
 The classification is a product decision with an engineering
 signature: can the user complete the task? A payments API can
 degrade analytics but cannot degrade the ledger write
-([25 §3](../25-fintech-with-go/03-integrity-and-exactly-once.md)):
+([25 Section 3](../25-fintech-with-go/03-integrity-and-exactly-once.md)):
 wrong answers in a ledger are worse than no answers.
 
 ## How It Works
 
 **The fallback menu**, in order of honesty:
 
-1. **Cached result** ([13 §5](../13-databases/05-caching-with-redis.md)):
+1. **Cached result** ([13 Section 5](../13-databases/05-caching-with-redis.md)):
    stale-but-labeled beats error for read-heavy features. The label
    matters: responses carry `degraded: true` so clients (and
    support) know.
@@ -51,7 +51,7 @@ wrong answers in a ledger are worse than no answers.
    to "review" when the risk engine is down: conservative, not
    clever.
 3. **Queue-and-continue**: writes go to durable storage for later
-   processing: the outbox ([15 §4](../15-microservices/04-idempotency-sagas-outbox.md))
+   processing: the outbox ([15 Section 4](../15-microservices/04-idempotency-sagas-outbox.md))
    is this pattern for events.
 4. **Fail the request**: when no fallback is honest, a fast 5xx is
    the correct answer. Masking failure with a wrong 200 is how
@@ -60,7 +60,7 @@ wrong answers in a ledger are worse than no answers.
 **Propagation of degradation**: a degraded response from a
 dependency makes your response degraded; the flag travels (header,
 field, log attribute) so dashboards show the true blast radius, and
-SLOs ([20 §4](../20-observability/04-slos-and-alerting.md)) count
+SLOs ([20 Section 4](../20-observability/04-slos-and-alerting.md)) count
 degraded-from-correct separately from failed.
 
 ## Syntax / API
@@ -87,7 +87,7 @@ func (s *Service) Charge(ctx context.Context, in ChargeInput) (Receipt, error) {
 }
 ```
 
-The breaker type is [15 §3](../15-microservices/03-resilience-patterns.md)'s
+The breaker type is [15 Section 3](../15-microservices/03-resilience-patterns.md)'s
 tested implementation; this chapter's addition is the class tag on
 each instance, visible in code review and dashboards.
 
@@ -121,7 +121,7 @@ Payment provider outage, three services, three designs:
   support channel burns.
 - The **designed** one: breaker opens (fast 5xx), the outbox holds
   durable pending charges, the dashboard shows degraded, the
-  recovery job replays idempotently ([25 §3](../25-fintech-with-go/03-integrity-and-exactly-once.md)'s
+  recovery job replays idempotently ([25 Section 3](../25-fintech-with-go/03-integrity-and-exactly-once.md)'s
   tested relay). Customers see honest failures and automatic
   completion.
 
@@ -129,7 +129,7 @@ Payment provider outage, three services, three designs:
 
 **Degradation dashboards and ownership**: each dependency's class,
 fallback, and owner name live in one table (the runbook's first
-page, [20 §5](../20-observability/05-incident-debugging.md)). When
+page, [20 Section 5](../20-observability/05-incident-debugging.md)). When
 the risk engine browns out, the on-call reads: class critical, no
 fallback, expected user impact "charges fail," escalation
 "payments lead." The decision was made months ago; the incident
@@ -138,30 +138,30 @@ executes it.
 **Game days** prove the design: kill the risk engine in staging;
 assert charges fail fast (not slow), no retries storm, the
 dashboard flips, the pager fires. The [15
-§3](../15-microservices/03-resilience-patterns.md) storm tests are
+Section 3](../15-microservices/03-resilience-patterns.md) storm tests are
 this at unit scale; the game day is it at system scale.
 
 ## Common Mistakes
 
 | Mistake | Consequence | Do instead |
 |---|---|---|
-| One retry policy for all deps | Storms against dead deps; nothing for brownouts | Per-dep budget + breaker ([15 §3](../15-microservices/03-resilience-patterns.md)) |
+| One retry policy for all deps | Storms against dead deps; nothing for brownouts | Per-dep budget + breaker ([15 Section 3](../15-microservices/03-resilience-patterns.md)) |
 | Fallback without labeling | Clients trust stale data | `degraded` flags everywhere |
 | In-memory queues for durability | OOM, silent loss | Durable outbox |
-| Failing open on security checks | Degradation becomes a breach | Authz never fails open ([21 §2](../21-security/02-authentication-and-authorization.md)) |
+| Failing open on security checks | Degradation becomes a breach | Authz never fails open ([21 Section 2](../21-security/02-authentication-and-authorization.md)) |
 | No owner per dependency | Incident-time improvisation | The class/fallback/owner table |
 | Masking with wrong 200s | Data corruption, silent | Honest 5xx beats fake 200 |
 
 ## Idiomatic Go
 
 - Errors wrapped with the dependency name (`"risk: ..."`) so the
-  mapping ([05 §2](../05-errors/02-error-design.md)'s
+  mapping ([05 Section 2](../05-errors/02-error-design.md)'s
   HTTP table) and the dashboard attribute are automatic.
 - Fallbacks return values carrying their own staleness; the type
   system keeps honesty cheap.
 - `context.Context` cancellation is the universal
   degradation signal: a canceled context unwinds every fallback
-  path for free ([08 §3](../08-concurrency/03-context.md)).
+  path for free ([08 Section 3](../08-concurrency/03-context.md)).
 
 ## Performance Considerations
 
@@ -172,11 +172,11 @@ test the degraded mode explicitly: it has its own capacity profile.
 
 ## Concurrency Considerations
 
-The breaker's half-open probe ([15 §3](../15-microservices/03-resilience-patterns.md))
+The breaker's half-open probe ([15 Section 3](../15-microservices/03-resilience-patterns.md))
 and the bulkhead's queue bounds are the concurrency controls of
 degradation: together they cap how much capacity a failing
 dependency consumes. Unbounded retry queues are the leak shape
-that survives shutdown ([08 §7](../08-concurrency/07-pitfalls.md)).
+that survives shutdown ([08 Section 7](../08-concurrency/07-pitfalls.md)).
 
 ## Security Considerations
 
@@ -213,7 +213,7 @@ prove it.
 2. Write the game-day script that kills each dependency in staging
    and asserts the client-visible behavior.
 3. Add a `degraded` counter metric by dependency and chart it next
-   to the SLO burn ([20 §4](../20-observability/04-slos-and-alerting.md)).
+   to the SLO burn ([20 Section 4](../20-observability/04-slos-and-alerting.md)).
 
 ## Further Reading
 

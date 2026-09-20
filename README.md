@@ -64,7 +64,7 @@ Pick the row that matches you, read the sections in order:
 | You are... | Read in this order |
 |---|---|
 | New to Go | 01 → 02 → 03 → 04 → 05 → 10 → 08 |
-| Coming from Java/Python/C++/JS | [01 §8](01-go-fundamentals/08-coming-from-other-languages.md) → 04 → 05 → 02 → 07 → 08 |
+| Coming from Java/Python/C++/JS | [01 Section 8](01-go-fundamentals/08-coming-from-other-languages.md) → 04 → 05 → 02 → 07 → 08 |
 | A backend engineer | 12 → 13 → 05 → 14 → 10 → 20 → 22 → 21 |
 | Building distributed systems | 08 → 15 → 16 → 17 → 18 → 19 → 24 |
 | Building fintech systems | 25 → 16 → 18 → 21 → 28 |

@@ -5,9 +5,9 @@
 The scheduler is why a Go service can hold 100k concurrent
 operations on 8 OS threads: goroutines park for free, Ms adapt to
 blocking, Ps carry the parallelism. [08
-§6](../08-concurrency/06-concurrency-vs-parallelism.md) covers the
+Section 6](../08-concurrency/06-concurrency-vs-parallelism.md) covers the
 behavioral model (GOMAXPROCS experiments, the high-RPS-on-few-Ps
-result) and [23 §3](../23-go-internals/03-runtime-architecture.md)
+result) and [23 Section 3](../23-go-internals/03-runtime-architecture.md)
 gives the one-page architecture; this chapter is the deep dive:
 stealing, preemption, syscall mechanics, the netpoller's
 integration, and the runtime knobs an operator can still turn.
@@ -56,7 +56,7 @@ P; network blocks park in the netpoller.
  or parks itself. Blocking syscalls are therefore cheap for
  parallelism but *expensive in threads*: a service doing
  synchronous file I/O per request accumulates Ms ([08
- §5](../08-concurrency/05-patterns.md)'s bounded-pool rule exists
+ Section 5](../08-concurrency/05-patterns.md)'s bounded-pool rule exists
  for this).
 
 **Preemption**: cooperative at safe points (function prologues)
@@ -65,21 +65,21 @@ P; network blocks park in the netpoller.
  instruction boundary. Tight loops no longer starve the world;
  what still blocks "forever": cgo calls, syscalls, and
  spin-free-but-stuck states like a mutex convoy ([08
- §7](../08-concurrency/07-pitfalls.md)).
+ Section 7](../08-concurrency/07-pitfalls.md)).
 
 **Netpoller**: every network fd operation integrates with
  epoll/kqueue/IOCP. A G blocked on a socket is parked with its
  fd registered; the poller (itself running on Ms in the scheduler
  loop) wakes Gs on readiness. Goroutine-per-connection is free
  *because* of this: parked Gs cost memory only ([08
- §1](../08-concurrency/01-goroutines-and-channels.md)'s accounting,
- [23 §3](../23-go-internals/03-runtime-architecture.md)'s
+ Section 1](../08-concurrency/01-goroutines-and-channels.md)'s accounting,
+ [23 Section 3](../23-go-internals/03-runtime-architecture.md)'s
  architecture).
 
 ## Syntax / API
 
 The operator-facing surface ([22
-§3](../22-production-go/03-resource-limits.md)'s production
+Section 3](../22-production-go/03-resource-limits.md)'s production
 framing):
 
 | Knob | Meaning | Notes |
@@ -112,7 +112,7 @@ The syscall-thread math, the incident that justifies worker pools:
 // churn, fd pressure.
 ```
 
-Bounded pool ([08 §5](../08-concurrency/05-patterns.md)): 64
+Bounded pool ([08 Section 5](../08-concurrency/05-patterns.md)): 64
 workers doing the reads keeps Ms ≈ 64 + GOMAXPROCS. The thread
 count is now a design constant, not a traffic function.
 
@@ -122,11 +122,11 @@ The latency mystery the scheduler explains: p99 spikes with no CPU,
 no GC, no dependency slowness. schedtrace shows
 `idleprocs=0` and deep local queues: saturation. The causes ranked
 by frequency: too few Ps for the burst (GOMAXPROCS vs cgroup
-mismatch, [22 §3](../22-production-go/03-resource-limits.md)),
+mismatch, [22 Section 3](../22-production-go/03-resource-limits.md)),
 a blocking syscall pattern ballooning Ms and starving steal
 targets, and GC assists during marking ([09
-§3](../09-memory-runtime/03-garbage-collector.md)). The diagnostic
-flow is [20 §5](../20-observability/05-incident-debugging.md)'s:
+Section 3](../09-memory-runtime/03-garbage-collector.md)). The diagnostic
+flow is [20 Section 5](../20-observability/05-incident-debugging.md)'s:
 runtime metrics → schedtrace → goroutine dump.
 
 ## Production Example
@@ -136,7 +136,7 @@ default was host CPUs (a 64-core host running a 2-CPU pod
 scheduled 64 Ps onto 2 cores of quota: throttle storms). The
 production rule was explicit `GOMAXPROCS=limit`; Go 1.25+ makes
 the runtime cgroup-aware automatically ([22
-§3](../22-production-go/03-resource-limits.md)'s table), and the
+Section 3](../22-production-go/03-resource-limits.md)'s table), and the
 explicit knob remains for override. The remaining operator
 decisions: whether to set a CPU limit at all (throttling vs burst
 absorption) and keeping `GOMAXPROCS` aligned with whichever
@@ -144,16 +144,16 @@ choice.
 
 **Goroutine count as an SLI**: parked Gs are cheap but countable;
 `runtime.NumGoroutine` trending with traffic is healthy, trending
-without it is a leak ([20 §2](../20-observability/02-metrics.md)'s
+without it is a leak ([20 Section 2](../20-observability/02-metrics.md)'s
 export; this section's chapter 5 makes the leak types concrete and
-[23 §3](../23-go-internals/03-runtime-architecture.md) explains
+[23 Section 3](../23-go-internals/03-runtime-architecture.md) explains
 what each parked G holds).
 
 ## Common Mistakes
 
 | Mistake | Scheduler reality | Do instead |
 |---|---|---|
-| Unbounded goroutine-per-blocking-syscall | Ms accumulate; thread count follows traffic | Bound with worker pools ([08 §5](../08-concurrency/05-patterns.md)) |
+| Unbounded goroutine-per-blocking-syscall | Ms accumulate; thread count follows traffic | Bound with worker pools ([08 Section 5](../08-concurrency/05-patterns.md)) |
 | Busy-spin instead of parking | Spinning Gs consume Ps without progress | Channels/conditions/atomics; park |
 | Assuming fairness | Local-run LIFO bump and stealing favor throughput | Yield matters only in pathological loops; async preemption covers most |
 | One goroutine per tiny task at extreme rates | Scheduler overhead (allocs, queue ops) shows in profile | Batch work items; keep goroutines for coarser units |
@@ -174,39 +174,39 @@ queue push), park/unpark ~100-200ns, channel op ~100ns, context
 switch between Gs on one P ~tens of ns (no kernel). These are why
 fan-out designs in Go are cheap but not free: at 1M ops/s,
 scheduler overhead is real CPU ([19
-§3](../19-performance/03-concurrency-performance.md)'s
+Section 3](../19-performance/03-concurrency-performance.md)'s
 contention section for the shared-state side).
 
 ## Concurrency Considerations
 
 The scheduler provides the happens-before edges for goroutine
-creation and parking ([23 §6](../23-go-internals/06-memory-model.md)):
+creation and parking ([23 Section 6](../23-go-internals/06-memory-model.md)):
 `go` precedes the G's execution; channel ops order through the
 hchan lock. What it does not provide: fairness guarantees or
 priority; design deadlines and cancellation with `context` ([08
-§3](../08-concurrency/03-context.md)) instead of assuming
+Section 3](../08-concurrency/03-context.md)) instead of assuming
 timely rotation.
 
 ## Security Considerations
 
 Resource exhaustion targets the scheduler directly: a request
 that spawns unbounded goroutines is a DoS on P queues and M
-counts ([21 §4](../21-security/04-limits-and-hardening.md)'s
+counts ([21 Section 4](../21-security/04-limits-and-hardening.md)'s
 limits are the walls). `GOTRACEBACK=system` in prod ([22
-§2](../22-production-go/02-server-lifecycle.md)) makes incident
+Section 2](../22-production-go/02-server-lifecycle.md)) makes incident
 dumps show scheduler state; that dump contains goroutine stacks:
-treat like any diagnostic surface ([21 §1](../21-security/01-threat-model-and-validation.md)'s
+treat like any diagnostic surface ([21 Section 1](../21-security/01-threat-model-and-validation.md)'s
 exposure rules).
 
 ## Testing Strategy
 
 - `-cpu=1,2,4` and `GOMAXPROCS=1` test runs surface ordering
-  assumptions ([10 §1](../10-testing/01-fundamentals.md)).
+  assumptions ([10 Section 1](../10-testing/01-fundamentals.md)).
 - Under-load tests asserting goroutine counts return to baseline
   (the memwatch example's pattern in this section).
 - Latency regression benchmarks on saturated vs unsaturated
   variants to catch starvation regressions ([10
-  §4](../10-testing/04-benchmarks-coverage-fuzzing.md)).
+  Section 4](../10-testing/04-benchmarks-coverage-fuzzing.md)).
 
 ## Interview Questions
 
@@ -230,7 +230,7 @@ exposure rules).
    find a case preemption does not rescue (cgo or syscall).
 3. Export scheduler metrics (NumGoroutine, per-P queue via
    schedtrace scraping) for the Section 14 service and add the
-   dashboard row ([20 §2](../20-observability/02-metrics.md)).
+   dashboard row ([20 Section 2](../20-observability/02-metrics.md)).
 
 ## Further Reading
 

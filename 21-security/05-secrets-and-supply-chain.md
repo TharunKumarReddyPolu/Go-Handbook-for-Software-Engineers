@@ -21,7 +21,7 @@ never chose. Each has a stdlib-first fix.
 
 ## How It Works
 
-**Secrets** ([14 §2](../14-backend-development/02-configuration-and-secrets.md)
+**Secrets** ([14 Section 2](../14-backend-development/02-configuration-and-secrets.md)
 established the `Secret` type with `LogValue` redaction; the rules
 here complete it): secrets come from the environment or mounted
 secret files, never from code, never in images, never in logs.

@@ -2,14 +2,14 @@
 
 ## Why Does This Matter?
 
-[19 §1](../19-performance/01-measure-first.md) teaches the
+[19 Section 1](../19-performance/01-measure-first.md) teaches the
 profiles: what each one is, how to read a flamegraph, measure
 before optimizing. This chapter is the operational layer: mounting
 the endpoints safely, capturing under load, automating the
 capture, and continuous profiling as a production practice. The
 gap between "I can run pprof" and "I can profile the incident at
 3 a.m." is exactly this chapter ([20
-§5](../20-observability/05-incident-debugging.md) is the incident
+Section 5](../20-observability/05-incident-debugging.md) is the incident
 flow that depends on it).
 
 ## Mental Model
@@ -29,7 +29,7 @@ instead of an archaeology project.
 ## How It Works
 
 **Mounting the endpoints**: `net/http/pprof` registers on
-`DefaultServeMux` ([19 §1](../19-performance/01-measure-first.md)'s
+`DefaultServeMux` ([19 Section 1](../19-performance/01-measure-first.md)'s
 mechanics). The production shape is a dedicated internal port:
 
 ```go
@@ -39,11 +39,11 @@ func serveDebug(addr string) *http.Server {
     return &http.Server{Addr: addr, Handler: mux,
         ReadHeaderTimeout: 5 * time.Second}
 }
-// main: go serveDebug(":6060").ListenAndServe() with the lifecycle from [22 §2]
+// main: go serveDebug(":6060").ListenAndServe() with the lifecycle from [22 Section 2]
 ```
 
 The internal port is reachable from `kubectl port-forward` and
-blocked at the ingress by construction ([21 §1](../21-security/01-threat-model-and-validation.md)'s
+blocked at the ingress by construction ([21 Section 1](../21-security/01-threat-model-and-validation.md)'s
 exposure rules): profiles are code layout plus data shapes.
 
 **Capturing under load**, the repeatable one-liner set (this
@@ -59,12 +59,12 @@ curl -s localhost:6060/debug/pprof/goroutine?debug=2 > goroutines.txt
 **Comparison** is benchstat's job for benchmarks and `pprof -top
 -diff_base` for profiles: the delta view turns "here is a hot
 function" into "this function got 3x hotter than the baseline
-capture" ([19 §1](../19-performance/01-measure-first.md)'s
+capture" ([19 Section 1](../19-performance/01-measure-first.md)'s
 before/after discipline, automated).
 
 ## Syntax / API
 
-The profile matrix, operational notes beyond [19 §1](../19-performance/01-measure-first.md)'s
+The profile matrix, operational notes beyond [19 Section 1](../19-performance/01-measure-first.md)'s
 introduction:
 
 | Profile | Cost under load | Duration guidance |
@@ -73,7 +73,7 @@ introduction:
 | Heap (`heap`) | point-in-time, cheap | any time; capture pairs |
 | Goroutine (`goroutine?debug=2`) | cheap; output is large | any time; grep by block state |
 | Execution trace (`trace?seconds=N`) | expensive | 1-5s windows only |
-| Block/mutex | near-free, needs enabling | enable permanently in prod ([19 §3](../19-performance/03-concurrency-performance.md)) |
+| Block/mutex | near-free, needs enabling | enable permanently in prod ([19 Section 3](../19-performance/03-concurrency-performance.md)) |
 
 Enable block and mutex profiling at boot in every service: they
 are near-free and answer contention questions that only show up
@@ -101,7 +101,7 @@ kill $PF
 ```
 
 Capture before rollback ([20
-§5](../20-observability/05-incident-debugging.md)'s ordering
+Section 5](../20-observability/05-incident-debugging.md)'s ordering
 rule): the profiles are the postmortem's raw material.
 
 ## Real-World Example
@@ -112,31 +112,31 @@ diff across deploys. The Go ecosystem options: Parca, Pyroscope
 (Grafana), and Google Cloud Profiler all consume `pprof` format
 from a small agent. The operational pattern: 1-5% CPU overhead
 (measure it), profiles pushed per-minute, and the deploy marker
-([22 §6](../22-production-go/06-releases-and-rollbacks.md)'s
+([22 Section 6](../22-production-go/06-releases-and-rollbacks.md)'s
 version label) on each profile: the "p99 regressed in v42" query
 becomes one diff instead of a repro ([19
-§4](../19-performance/04-compiler-and-pgo.md)'s PGO pipeline
+Section 4](../19-performance/04-compiler-and-pgo.md)'s PGO pipeline
 consumes the same profiles: the infrastructure pays for itself).
 
 ## Production Example
 
 **The profiling readiness checklist** for a service ([22
-§2](../22-production-go/02-server-lifecycle.md)'s boot order
+Section 2](../22-production-go/02-server-lifecycle.md)'s boot order
 includes it):
 
 - [ ] `net/http/pprof` mounted on an internal port (not the public mux)
 - [ ] Block/mutex profiling enabled at boot
 - [ ] `profile.sh` committed; the on-call knows it exists
-- [ ] Runtime metrics exported ([20 §2](../20-observability/02-metrics.md)): NumGoroutine, GC pauses
+- [ ] Runtime metrics exported ([20 Section 2](../20-observability/02-metrics.md)): NumGoroutine, GC pauses
 - [ ] Continuous profiler (or scheduled captures) with deploy labels
-- [ ] Dashboard links in the runbook ([20 §5](../20-observability/05-incident-debugging.md)'s table)
+- [ ] Dashboard links in the runbook ([20 Section 5](../20-observability/05-incident-debugging.md)'s table)
 
 **The autoscaling wrinkle**: the pod you want to profile is
 terminating or new pods appear mid-capture. Profile a *stable*
 pod (pin by name, not service DNS), and for fleet-wide questions,
 aggregate continuous profiles rather than sampling one pod: one
 pod's hot path may be a shard-key anomaly ([16
-§4](../16-distributed-systems/04-quorums-sharding.md)'s hot-key
+Section 4](../16-distributed-systems/04-quorums-sharding.md)'s hot-key
 caution).
 
 ## Common Mistakes
@@ -158,7 +158,7 @@ caution).
 - Profiles are protobufs (`gzip`d): store, diff, and ship them as
   data, not screenshots.
 - The `runtime/pprof` programmatic API for tests: profile a load
-  test in CI ([19 §1](../19-performance/01-measure-first.md)'s
+  test in CI ([19 Section 1](../19-performance/01-measure-first.md)'s
   harness) and fail on allocation regressions.
 
 ## Performance Considerations
@@ -167,7 +167,7 @@ CPU profiling samples at 100Hz by default: negligible. Heap
 profiling samples allocations (set via `runtime.MemProfileRate`);
 the default samples enough. The expensive one is the execution
 trace: seconds only. Continuous profilers add 1-5%: budget it,
-measure it ([19 §1](../19-performance/01-measure-first.md)'s
+measure it ([19 Section 1](../19-performance/01-measure-first.md)'s
 rule applies to the measurement infrastructure itself).
 
 ## Concurrency Considerations
@@ -175,8 +175,8 @@ rule applies to the measurement infrastructure itself).
 The goroutine profile is the concurrency instrument: `debug=2`
 dumps every goroutine's stack with its blocking state
 (`chan receive`, `semacquire`, `IO wait`): the leak and deadlock
-diagnosis ([20 §5](../20-observability/05-incident-debugging.md)'s
-workhorse; [09 §5](../09-memory-runtime/05-memory-leaks.md)'s
+diagnosis ([20 Section 5](../20-observability/05-incident-debugging.md)'s
+workhorse; [09 Section 5](../09-memory-runtime/05-memory-leaks.md)'s
 shape-1 detection). Block/mutex profiles quantify what the dump
 shows qualitatively: which lock, how long, whose stack.
 
@@ -186,21 +186,21 @@ Profiles expose: code layout (function names, hot paths), data
 shapes (heap contents' types), and goroutine stacks (sometimes
 with strings). Internal-only exposure, RBAC on the debug port,
 and no profile endpoints on public ingress ([21
-§1](../21-security/01-threat-model-and-validation.md)). Postmortem
+Section 1](../21-security/01-threat-model-and-validation.md)). Postmortem
 artifacts (profiles, dumps) can contain PII in stack arguments:
 treat incident artifacts with the same care as logs ([20
-§1](../20-observability/01-structured-logging.md)'s redaction).
+Section 1](../20-observability/01-structured-logging.md)'s redaction).
 
 ## Testing Strategy
 
 - Profile-enabled load tests in CI for hot paths ([19
-  §1](../19-performance/01-measure-first.md)): assert
+  Section 1](../19-performance/01-measure-first.md)): assert
   allocs/op ceilings with `testing.AllocsPerRun` and `-benchmem`
-  regressions via benchstat ([10 §4](../10-testing/04-benchmarks-coverage-fuzzing.md)).
+  regressions via benchstat ([10 Section 4](../10-testing/04-benchmarks-coverage-fuzzing.md)).
 - A smoke test that the debug server answers `/debug/pprof/` and
   that the public router does not route it.
 - Chaos rehearsal: the game day captures profiles mid-incident
-  ([22 §4](../22-production-go/04-dependency-failures.md)'s game
+  ([22 Section 4](../22-production-go/04-dependency-failures.md)'s game
   days): the script gets tested when it matters.
 
 ## Interview Questions

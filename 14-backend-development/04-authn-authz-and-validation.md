@@ -37,7 +37,7 @@ authz is a service responsibility, by structure.
 
 The authn middleware's contract with handlers is a typed identity in
 the request context (the pattern from
-[12 §2](../12-http-networking/02-middleware.md)):
+[12 Section 2](../12-http-networking/02-middleware.md)):
 
 ```go
 type ctxKey int
@@ -75,7 +75,7 @@ func Authenticate(verify Verifier, logger *slog.Logger) func(http.Handler) http.
 }
 ```
 
-`Verifier` is a consumer-side interface ([04 §3](../04-functions-methods-interfaces/03-interfaces-philosophy.md)):
+`Verifier` is a consumer-side interface ([04 Section 3](../04-functions-methods-interfaces/03-interfaces-philosophy.md)):
 the transport defines what it needs ("give me an Identity for this
 request"), and the token-verification implementation (JWT/OAuth2/
 mTLS) lives behind it. Service tests inject a fake verifier; token
@@ -135,7 +135,7 @@ Two decisions worth naming:
 - **404 vs 403 for "exists but not yours"**: 403 confirms existence to
   an attacker; 404 hides it. Financial and multi-tenant systems
   usually choose 404, and the choice is a *product* decision the
-  service layer implements consistently ([25 §4](../25-fintech-with-go/04-risk-and-compliance.md)).
+  service layer implements consistently ([25 Section 4](../25-fintech-with-go/04-risk-and-compliance.md)).
 - **The service re-checks ownership even under a coarse gate**: the
   middleware and service can disagree after any refactor; the object-
   level check is the one that cannot silently disappear.
@@ -143,7 +143,7 @@ Two decisions worth naming:
 ## Validation at the boundary
 
 Validation is pure and lives with the wire types
-([12 §3](../12-http-networking/03-json-and-rest-apis.md)); the service
+([12 Section 3](../12-http-networking/03-json-and-rest-apis.md)); the service
 re-validates *invariants*, not shape:
 
 ```go
@@ -187,12 +187,12 @@ that depend on config, time, or state belong in the service. Duplicating
 The `examples/service/` for this section composes the full gate
 order, with each gate tested independently:
 
-1. `RequestID` and `Logging` (12 §2): outermost, non-security.
+1. `RequestID` and `Logging` (12 Section 2): outermost, non-security.
 2. `Authenticate(fake)`: identity from a test verifier.
 3. `RequireKind` route policies.
 4. Handler: `decodeJSON` + `Validate()` (batched, 422).
 5. Service: ownership and state invariants (domain errors).
-6. `WriteError` ([05 §2](../05-errors/02-error-design.md)): the single
+6. `WriteError` ([05 Section 2](../05-errors/02-error-design.md)): the single
    mapping to status codes.
 
 Its test suite asserts each gate: bad body → 400, missing identity →
@@ -225,14 +225,14 @@ listed, someone else's payment → 404, valid flow → 201.
 - Policies as small combinators (`RequireKind`, `RequireScope`)
   wrapping handlers: composable, testable, table-readable.
 - Sentinel domain errors (`ErrForbidden`, `ErrNotCancellable`) mapped
-  once in transport ([05 §2](../05-errors/02-error-design.md)).
+  once in transport ([05 Section 2](../05-errors/02-error-design.md)).
 
 ## Performance Considerations
 
 - Authn on every request is a crypto operation: cache verification
   results only with care (revocation windows are a security tradeoff,
   not a performance one). Profile before caching
-  ([19 §1](../19-performance/01-measure-first.md)).
+  ([19 Section 1](../19-performance/01-measure-first.md)).
 - Validation is cheap; the expensive failure is *late* validation:
   reject before touching stores or queues, at the boundary, always.
 
@@ -240,7 +240,7 @@ listed, someone else's payment → 404, valid flow → 201.
 
 - The Verifier may be called concurrently: implementations must be
   safe for shared use (key caches behind mutexes, per
-  [08 §4](../08-concurrency/04-sync-primitives.md)).
+  [08 Section 4](../08-concurrency/04-sync-primitives.md)).
 - Identity values are immutable after creation; handlers pass them
   by value through context.
 
@@ -253,7 +253,7 @@ listed, someone else's payment → 404, valid flow → 201.
 - Error messages from authn (`"token expired"` vs `"bad signature"`)
   are attacker reconnaissance: log the detail, return the generic 401
   ([21-security](../21-security/) when it ships).
-- Coarse gates must be mounted so no route can bypass them (12 §2's
+- Coarse gates must be mounted so no route can bypass them (12 Section 2's
   outermost-security rule); the per-route policy table is the review
   artifact that proves coverage.
 

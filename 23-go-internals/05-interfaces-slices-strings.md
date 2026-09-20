@@ -8,9 +8,9 @@ trap), the three-word slice header (aliasing), and the immutable
 string (and its mutable `[]byte` twin). Each is a small, learnable
 struct layout; once you can *draw* them, the surprises become
 predictable. The user-level semantics live in [02
-§1](../02-go-language/01-arrays-and-slices.md), [02
-§6](../02-go-language/06-interfaces-and-embedding.md), and [02
-§3](../02-go-language/03-strings-runes-bytes.md); this chapter is
+Section 1](../02-go-language/01-arrays-and-slices.md), [02
+Section 6](../02-go-language/06-interfaces-and-embedding.md), and [02
+Section 3](../02-go-language/03-strings-runes-bytes.md); this chapter is
 the layouts beneath those rules.
 
 ## Mental Model
@@ -54,12 +54,12 @@ the data (or the data inline, for pointer-shaped types).
   concrete type's method pointers, so an interface call is an
   indirect call through the table (a few ns; direct calls after
   devirtualization are cheaper, [19
-  §4](../19-performance/04-compiler-and-pgo.md)).
+  Section 4](../19-performance/04-compiler-and-pgo.md)).
 - **Boxing**: storing a non-pointer-shaped value (int, small
   struct) in an interface allocates; pointer-shaped values
   (pointers, maps, chans, funcs) store without allocation. This is
   why `fmt.Println(x)` in a hot loop can show up as allocations
-  ([02 §2's](02-ssa-and-optimizations.md) escape discussion).
+  ([02 Section 2's](02-ssa-and-optimizations.md) escape discussion).
 
 **Slices**: the header is what's copied and passed; the backing
 array is wherever `data` points.
@@ -73,15 +73,15 @@ array is wherever `data` points.
   slice), then grow ~1.25x rounded to size classes. Measured from
   this section's probe: `cap 256 -> 512 -> 848 -> 1280`: above
   256, growth is 1.25x with allocator-class rounding, not clean
-  doubling ([02 §1](../02-go-language/01-arrays-and-slices.md)'s
-  guidance and [19 §2](../19-performance/02-memory-and-allocations.md)'s
+  doubling ([02 Section 1](../02-go-language/01-arrays-and-slices.md)'s
+  guidance and [19 Section 2](../19-performance/02-memory-and-allocations.md)'s
   allocation math both follow from this).
 
 **Strings**: two words, immutable bytes. Concatenation allocates a
 new string; conversion to `[]byte` copies (the one true copy in
 the trio), back too. `unsafe` zero-copy conversions exist and are
 a documented, deliberate hazard ([02
-§3](../02-go-language/03-strings-runes-bytes.md)'s warning).
+Section 3](../02-go-language/03-strings-runes-bytes.md)'s warning).
 
 ## Syntax / API
 
@@ -129,7 +129,7 @@ copies (safe), but a hot path that converts `string` to `[]byte`
 per request to hash, then converts back, makes two copies per
 request. The stdlib's own `strings.Builder` exists because
 string concatenation in a loop is O(n^2) allocations; the builder
-amortizes to one ([02 §3](../02-go-language/03-strings-runes-bytes.md)'s
+amortizes to one ([02 Section 3](../02-go-language/03-strings-runes-bytes.md)'s
 benchmarks). At the transport boundary, `encoding/json` accepts
 `json.RawMessage` precisely to avoid the double copy.
 
@@ -139,7 +139,7 @@ benchmarks). At the transport boundary, `encoding/json` accepts
 returns a typed nil on success. The service wraps it once, at the
 SDK boundary, with `Normalize`: one function, one test, the trap
 never crosses into the domain ([05
-§1](../05-errors/01-errors-are-values.md)'s rule: inspect errors
+Section 1](../05-errors/01-errors-are-values.md)'s rule: inspect errors
 at boundaries with the pair semantics in mind).
 
 **Slice headers across the API**: a cache that stores
@@ -148,7 +148,7 @@ caller's append corrupts another's cache entry. The production
 rule: either hand out copies (`append([]byte(nil), v...)`), or
 document the no-append contract and enforce it in review. The
 cost of one copy is almost always cheaper than the incident
-([13 §5](../13-databases/05-caching-with-redis.md)'s
+([13 Section 5](../13-databases/05-caching-with-redis.md)'s
 cache-aside discipline).
 
 ## Common Mistakes
@@ -170,7 +170,7 @@ cache-aside discipline).
   document mutation), strings by header (cheap, safe), small
   structs by value.
 - `cap`-aware slices in hot paths: pre-size with `make(0, n)` so
-  growth never happens ([19 §2](../19-performance/02-memory-and-allocations.md)'s
+  growth never happens ([19 Section 2](../19-performance/02-memory-and-allocations.md)'s
   numbers).
 
 ## Performance Considerations
@@ -187,7 +187,7 @@ cache-aside discipline).
 - The itab is cached per (interface, concrete) pair: interface
   calls are fast, just not free; devirtualization makes them free
   when the concrete type is provable ([19
-  §4](../19-performance/04-compiler-and-pgo.md)).
+  Section 4](../19-performance/04-compiler-and-pgo.md)).
 
 ## Concurrency Considerations
 
@@ -196,14 +196,14 @@ slice copies need no synchronization. Shared backing arrays are
 the data race the race detector catches most often in service
 code (append writing while another goroutine reads). The rule:
 ownership transfers with the slice ([08
-§5](../08-concurrency/05-patterns.md)'s pipeline stages), or you
+Section 5](../08-concurrency/05-patterns.md)'s pipeline stages), or you
 copy.
 
 ## Security Considerations
 
 Strings are immutable but not secret-shaped: `[]byte` copies of
 secrets outlive their strings in GC-visible memory. The
-`config.Secret` redaction ([14 §2](../14-backend-development/02-configuration-and-secrets.md))
+`config.Secret` redaction ([14 Section 2](../14-backend-development/02-configuration-and-secrets.md))
 keeps values out of logs; keeping them out of *memory dumps* is
 harder (wipe `[]byte` buffers after use where the threat model
 demands it). Also: `unsafe` zero-copy conversions break the

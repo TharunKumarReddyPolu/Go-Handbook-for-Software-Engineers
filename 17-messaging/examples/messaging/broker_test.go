@@ -156,7 +156,7 @@ func TestIdempotentConsumer_DedupesRedelivery(t *testing.T) {
 	b, c := newTestBroker(t)
 	b.Publish("orders", Message{ID: "m1", IdempotencyKey: "order:48123:charge"})
 
-	// The claim store from 15 §4, as a fake: one effect per key.
+	// The claim store from 15 Section 4, as a fake: one effect per key.
 	claims := map[string]bool{}
 	handler := HandlerFunc(func(ctx context.Context, msg Message) error {
 		if msg.IdempotencyKey == "" {

@@ -1,4 +1,4 @@
-// Package httpmw is the platform middleware from 12 §2: the chain
+// Package httpmw is the platform middleware from 12 Section 2: the chain
 // constructor plus the three every service needs. The scoped-logger
 // middleware (chapter 5) attaches a request-scoped slog to the
 // context; handlers pull it via log.FromContext. Section 20 adds
@@ -65,7 +65,7 @@ func ScopedLogger(base *slog.Logger) middleware {
 
 // --- access log: one line per request ---
 
-// statusWriter records whether and what was written (12 §2).
+// statusWriter records whether and what was written (12 Section 2).
 type statusWriter struct {
 	http.ResponseWriter
 	status int
@@ -100,7 +100,7 @@ func AccessLog(next http.Handler) http.Handler {
 // --- recovery ---
 
 // Recover converts handler panics into 500s, never rewriting a
-// response that already committed (12 §2's countingWriter rule).
+// response that already committed (12 Section 2's countingWriter rule).
 func Recover(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		sw := &statusWriter{ResponseWriter: w}

@@ -38,7 +38,7 @@ from breaking domain code and vice versa.
 - Numbers: untyped JSON numbers decode into `float64` inside
   `any`. Into typed fields they decode exactly. This is the root of
   most money-rounding bugs (see
-  [25 §1](../25-fintech-with-go/01-money-and-payments.md)).
+  [25 Section 1](../25-fintech-with-go/01-money-and-payments.md)).
 
 ## Syntax / API: the two helper functions
 
@@ -69,7 +69,7 @@ func decodeJSON[T any](w http.ResponseWriter, r *http.Request) (T, error) {
 `decodeJSON` is generic for one reason: callers get a typed value
 without a second cast, and the compiler enforces that the target is a
 real struct, not an `any` (generics earn their keep here; see
-[07 §4](../07-generics/04-generic-apis.md)).
+[07 Section 4](../07-generics/04-generic-apis.md)).
 
 ## Basic Example: create with validation
 
@@ -92,7 +92,7 @@ func (s *Server) handleCreateUser(w http.ResponseWriter, r *http.Request) {
 	}
 	u, err := s.store.CreateUser(r.Context(), req.Email, req.Name)
 	if err != nil {
-		writeError(w, err) // the mapping point from 05 §2
+		writeError(w, err) // the mapping point from 05 Section 2
 		return
 	}
 	w.Header().Set("Location", "/users/"+u.ID)
@@ -107,7 +107,7 @@ func (s *Server) handleCreateUser(w http.ResponseWriter, r *http.Request) {
 | Created | 201 + `Location` | clients can find the resource |
 | Body did not parse | 400 | malformed is always client's |
 | Parsed but invalid | 422 | distinguishes syntax from semantics |
-| Not found | 404 | mapped from domain error (05 §2) |
+| Not found | 404 | mapped from domain error (05 Section 2) |
 | Conflict (already exists, version clash) | 409 | retry with new state |
 | Handler wrote nothing after deadline | 503 | `http.TimeoutHandler` |
 | Unexpected error | 500, generic body | detail goes to logs, not clients |
@@ -143,7 +143,7 @@ processes.
   exactly; `json:"Name"` on field `Name` makes Go look for `"Name"`
   on the wire while every client sends `"name"`. Field silently always
   zero. (Tag typos are invisible to the compiler; see
-  [02 §4 structs](../02-go-language/04-structs.md).)
+  [02 Section 4 structs](../02-go-language/04-structs.md).)
 - **Decoding straight into domain types.** The day `User` gains an
   internal field, your API docs change shape. Separate wire types.
 - **Unbounded `io.ReadAll(r.Body)`.** A 10 GB body becomes a 10 GB
@@ -173,7 +173,7 @@ processes.
   of response structs first.
 - `encoding/json` reflection cost is real on hot paths: measure before
   swapping in codegen alternatives
-  ([19 §1](../19-performance/01-measure-first.md)). Most services
+  ([19 Section 1](../19-performance/01-measure-first.md)). Most services
   never hit the threshold where it matters.
 - Reused decoders are not safe across requests; the allocation per
   request is small and correct beats cached and racy.

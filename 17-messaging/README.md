@@ -2,8 +2,8 @@
 
 **Status: in depth.** One Go module (`examples/messaging`) implements
 the portable patterns with a deterministic test suite; Kafka-specific
-depth lives in [18 §1](../18-kafka-with-go/01-kafka-concepts.md) and
-[18 §3](../18-kafka-with-go/03-producer-consumer.md). This section is
+depth lives in [18 Section 1](../18-kafka-with-go/01-kafka-concepts.md) and
+[18 Section 3](../18-kafka-with-go/03-producer-consumer.md). This section is
 the broker-agnostic layer beneath it: the models, the tradeoffs, and
 the patterns that survive every transport.
 
@@ -40,7 +40,7 @@ write.
 
 - [18 Kafka with Go](../18-kafka-with-go/README.md): the log-based
   broker in full depth, transport-free handlers, offset management
-- [15 §4](../15-microservices/04-idempotency-sagas-outbox.md): the
+- [15 Section 4](../15-microservices/04-idempotency-sagas-outbox.md): the
   claim-store and outbox patterns the consumer side depends on
-- [16 §5](../16-distributed-systems/05-delivery-backpressure-shedding.md):
+- [16 Section 5](../16-distributed-systems/05-delivery-backpressure-shedding.md):
   delivery semantics and backpressure as system properties

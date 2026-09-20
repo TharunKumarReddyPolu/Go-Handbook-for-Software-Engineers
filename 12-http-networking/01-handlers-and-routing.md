@@ -103,13 +103,13 @@ screen, you do not have a routing problem.
 
 Handlers end in one of three outcomes: encode a value, encode an
 error, or the request context died. The boundary translation from
-[05 §2](../05-errors/02-error-design.md) slots straight in:
+[05 Section 2](../05-errors/02-error-design.md) slots straight in:
 
 ```go
 func (s *Server) handleGetPayment(w http.ResponseWriter, r *http.Request) {
 	p, err := s.store.Payment(r.PathValue("id"))
 	if err != nil {
-		writeError(w, err) // the single translation point from 05 §2
+		writeError(w, err) // the single translation point from 05 Section 2
 		return
 	}
 	writeJSON(w, http.StatusOK, p)
@@ -163,7 +163,7 @@ assert on classification, not on strings.
   request-scoped values via struct fields; use `r.Context()` and
   locals.
 - A handler that starts goroutines must own their lifetime (see
-  [08 §3 context](../08-concurrency/03-context.md)): a returned
+  [08 Section 3 context](../08-concurrency/03-context.md)): a returned
   handler's goroutines outlive the request and leak if unmanaged.
 
 ## Security Considerations
@@ -179,7 +179,7 @@ assert on classification, not on strings.
 
 - Handler tests with `httptest.NewRequest` + `httptest.NewRecorder`
   run in-process with no ports: the default (mechanics in
-  [10 §2](../10-testing/02-doubles-and-httptest.md)).
+  [10 Section 2](../10-testing/02-doubles-and-httptest.md)).
 - One table per route: status code, Content-Type, and body shape.
 - A routing test that iterates the mux's table catches accidental
   method gaps (a route reachable under the wrong verb).

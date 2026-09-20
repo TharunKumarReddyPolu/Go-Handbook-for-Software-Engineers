@@ -25,7 +25,7 @@ flowchart LR
 The craft: put as much change as possible in the cheap-to-reverse
 layers. A feature lives behind a flag long before it lives in a
 deploy; a schema change lands expanded and compatible long before
-the code using it ships ([13 §3](../13-databases/03-pooling-drivers-migrations.md)'s
+the code using it ships ([13 Section 3](../13-databases/03-pooling-drivers-migrations.md)'s
 expand/contract rules).
 
 ## How It Works
@@ -44,15 +44,15 @@ expand/contract rules).
 rollback only works if the previous version can run against the
 current state: current schema, current config, current wire
 traffic. That is a property you build *before* the release:
-[15 §2](../15-microservices/02-boundaries-and-contracts.md)'s
-additive-only contract rules and [13 §3](../13-databases/03-pooling-drivers-migrations.md)'s
+[15 Section 2](../15-microservices/02-boundaries-and-contracts.md)'s
+additive-only contract rules and [13 Section 3](../13-databases/03-pooling-drivers-migrations.md)'s
 expand-first migrations are the same discipline in two media. The
 rule that names it: **N and N-1 must always be simultaneously
 correct.**
 
 ## Syntax / API
 
-The flag gate from [14 §5](../14-backend-development/05-observability-health-flags.md),
+The flag gate from [14 Section 5](../14-backend-development/05-observability-health-flags.md),
 with the release semantics added: flags are versioned, owned, and
 expired:
 
@@ -73,13 +73,13 @@ func (r *Registry) Enabled(name string, req *http.Request) bool {
 The kill switch is the same mechanism with reversed polarity: new
 code ships enabled-by-default-*off* for risky paths, and the flag
 that turns it on is the first thing tried during the incident
-([20 §5](../20-observability/05-incident-debugging.md)'s
+([20 Section 5](../20-observability/05-incident-debugging.md)'s
 mitigation-first ordering).
 
 ## Basic Example
 
 Canary evaluation by SLO, not by vibes: route 1% of traffic to the
-new version, watch the *same* SLIs ([20 §4](../20-observability/04-slos-and-alerting.md))
+new version, watch the *same* SLIs ([20 Section 4](../20-observability/04-slos-and-alerting.md))
 computed for each version's pods separately (the `version` label
 from the metrics), promote when the new version's burn rate is not
 worse than the old's. The version label in the RED metrics is what
@@ -91,7 +91,7 @@ A bad release, contained by layers:
 
 1. Deploy v42; canary serves 1%.
 2. Burn-rate alert fires on canary pods only
-   ([20 §4](../20-observability/04-slos-and-alerting.md)'s fast
+   ([20 Section 4](../20-observability/04-slos-and-alerting.md)'s fast
    tier): rollback deploy, total exposure minutes.
 3. Had the canary missed it: the kill switch flag turns the new
    path off fleet-wide without a deploy.
@@ -107,14 +107,14 @@ contract):
 
 - New columns: nullable or defaulted; old code ignores them.
 - New tables: old code never reads them.
-- Removed columns: drop only after N+1 ships ([13 §3](../13-databases/03-pooling-drivers-migrations.md)'s
+- Removed columns: drop only after N+1 ships ([13 Section 3](../13-databases/03-pooling-drivers-migrations.md)'s
   contract step).
 - Index changes: additive; drops gated on query-plan review.
 
 **The rollback decision itself** is pre-delegated: the on-call
 rolls back first and debugs second for any user-visible SLO burn;
 the decision needs no approval because the criteria are written
-(burn rate X, duration Y). [20 §5](../20-observability/05-incident-debugging.md)'s
+(burn rate X, duration Y). [20 Section 5](../20-observability/05-incident-debugging.md)'s
 capture-before-rollback still applies: profiles and dumps are
 taken, *then* the rollback executes.
 
@@ -144,15 +144,15 @@ Canary analysis needs the version label on metrics; label
 cardinality stays tiny (a handful of versions). Flag evaluation on
 hot paths should be the atomic snapshot read ([01](01-configuration-and-secrets.md)):
 per-request map walks and file reads in flag code are a classic
-profile surprise ([19 §1](../19-performance/01-measure-first.md)).
+profile surprise ([19 Section 1](../19-performance/01-measure-first.md)).
 
 ## Concurrency Considerations
 
 Two versions running simultaneously is a concurrency question as
 much as a compatibility one: N-1's assumptions about in-flight
 requests, lock formats, or message schemas must hold. The outbox
-and idempotency designs ([15 §4](../15-microservices/04-idempotency-sagas-outbox.md),
-[25 §3](../25-fintech-with-go/03-integrity-and-exactly-once.md))
+and idempotency designs ([15 Section 4](../15-microservices/04-idempotency-sagas-outbox.md),
+[25 Section 3](../25-fintech-with-go/03-integrity-and-exactly-once.md))
 are what make mixed-version processing safe during rollouts *and*
 rollbacks.
 
@@ -160,7 +160,7 @@ rollbacks.
 
 Flags change security behavior; treat flag changes to
 authentication/authorization paths as code changes: review, test
-both polarities ([21 §2](../21-security/02-authentication-and-authorization.md)),
+both polarities ([21 Section 2](../21-security/02-authentication-and-authorization.md)),
 and never leave a "temporarily fail open" flag set. Rollback of an
 authz change must be proven fail-closed in both versions.
 
@@ -168,12 +168,12 @@ authz change must be proven fail-closed in both versions.
 
 - The N/N-1 test suite: run the previous release's integration
   tests against the new schema and vice versa; CI fails on
-  contract breaks ([15 §2](../15-microservices/02-boundaries-and-contracts.md)'s
+  contract breaks ([15 Section 2](../15-microservices/02-boundaries-and-contracts.md)'s
   automated compatibility gate).
 - Rollback rehearsal: deploy, flip, roll back, flip back in
   staging on a schedule.
 - Flag polarity tests: every risky path has a test for on and off
-  ([10 §1](../10-testing/01-fundamentals.md)'s table shape).
+  ([10 Section 1](../10-testing/01-fundamentals.md)'s table shape).
 
 ## Interview Questions
 

@@ -23,7 +23,7 @@ Three truths compose into the design:
 
 1. **Delivery is at-least-once**: any ack-then-crash window
    duplicates; any crash-before-ack loses. Choose where the window
-   sits ([18 §1](../18-kafka-with-go/01-kafka-concepts.md)'s commit
+   sits ([18 Section 1](../18-kafka-with-go/01-kafka-concepts.md)'s commit
    strategies), then dedup.
 2. **Queues absorb bursts, not sustained overload.** A queue that
    stays full is not helping; it is hiding the saturation until the
@@ -33,7 +33,7 @@ Three truths compose into the design:
    whether it is chosen (reject newest, serve degraded) or emergent
    (OOM-kill whatever the kernel picks).
 
-## Delivery semantics: generalized from 18 §1
+## Delivery semantics: generalized from 18 Section 1
 
 | Semantics | Where the ack sits | You get | Requires |
 |---|---|---|---|
@@ -43,16 +43,16 @@ Three truths compose into the design:
 
 "Exactly-once" does not exist as a transport property; the honest
 architecture is row two plus row three's machinery, stated exactly
-that way ([25 §3](../25-fintech-with-go/03-integrity-and-exactly-once.md)'s
+that way ([25 Section 3](../25-fintech-with-go/03-integrity-and-exactly-once.md)'s
 teardown is the canonical version; the Kafka EOS specifics are
-[18 §1](../18-kafka-with-go/01-kafka-concepts.md)).
+[18 Section 1](../18-kafka-with-go/01-kafka-concepts.md)).
 
 ## Deduplication: the two-tier implementation
 
 Where dedup lives depends on what promises the key:
 
 **Tier 1: storage-enforced (the strong tier).** The idempotency-claim
-table from [15 §4](../15-microservices/04-idempotency-sagas-outbox.md):
+table from [15 Section 4](../15-microservices/04-idempotency-sagas-outbox.md):
 uniqueness constraint, `ON CONFLICT`, the database refuses the second
 effect even under concurrency. For money and state transitions, this
 is the tier; nothing application-side is as trustworthy.
@@ -97,13 +97,13 @@ func (d *Dedupe) Acquire(key string) bool {
 The two-tier contract: the LRU makes replays cheap and fast; the
 storage constraint makes them *impossible*. One without the other is
 either slow or unsafe. (This is also exactly the `RecentKeys` shape
-from [03 §8](../03-data-structures/08-ring-buffers.md), promoted to a
+from [03 Section 8](../03-data-structures/08-ring-buffers.md), promoted to a
 distributed-systems duty.)
 
 ## Backpressure: end to end
 
 Backpressure is the system's ability to slow its intake when its
-output slows. The Go toolkit ([08 §5](../08-concurrency/05-patterns.md))
+output slows. The Go toolkit ([08 Section 5](../08-concurrency/05-patterns.md))
 composed into a policy:
 
 ```go
@@ -165,14 +165,14 @@ system stops doing. Priorities make it defensible:
 | Standard | ordinary API traffic | 429 with `Retry-After` when saturated |
 | Bulk | analytics, recomputation | shed first, always |
 
-The mechanism is a semaphore at the door ([08 §5](../08-concurrency/05-patterns.md))
+The mechanism is a semaphore at the door ([08 Section 5](../08-concurrency/05-patterns.md))
 plus the priority table: `TryAcquire` for standard/bulk (fail fast
 when full), `Acquire` for critical (block on a short budget). The
 classifier is usually "who is calling and why," available at the edge
 (chapter 4's identity), and the policy is configuration, reviewed
 like code.
 
-Circuit breakers ([15 §3](../15-microservices/03-resilience-patterns.md))
+Circuit breakers ([15 Section 3](../15-microservices/03-resilience-patterns.md))
 are shedding's outbound sibling: inbound shedding protects *you*
 from callers; breakers protect you from *dependencies*. A system
 that sheds and breaks cleanly turns overload into elevated error
@@ -186,7 +186,7 @@ shed-or-block policy switch: tests prove the exact behaviors this
 chapter promises (replay claims false; eviction admits the key again
 with the storage tier noted as backstop; the (capacity+1)th submit
 sheds with a distinguishable error; drain waits for in-flight work
-before shutdown, the 12 §5 lifecycle at queue scale).
+before shutdown, the 12 Section 5 lifecycle at queue scale).
 
 ## Common Mistakes
 
@@ -197,24 +197,24 @@ before shutdown, the 12 §5 lifecycle at queue scale).
   window and the duplicate sails through. The storage tier is not
   optional for invariants.
 - **Shedding without `Retry-After`**: clients retry immediately at
-  full rate; the shed becomes the storm ([15 §3](../15-microservices/03-resilience-patterns.md)'s
+  full rate; the shed becomes the storm ([15 Section 3](../15-microservices/03-resilience-patterns.md)'s
   jitter rule applies to clients honoring your signal).
 - **Shedding the wrong traffic**: bulk analytics starving the payment
   path, or a health probe 429'd into a restart loop. The priority
   table is the whole design; write it down.
 - **Auto-commit-style at-most-once by accident**: ack-before-process
-  sneaks in via framework defaults; [18 §1](../18-kafka-with-go/01-kafka-concepts.md)'s
+  sneaks in via framework defaults; [18 Section 1](../18-kafka-with-go/01-kafka-concepts.md)'s
   commit-strategy table is the checklist.
 
 ## Idiomatic Go
 
 - Bounded channels everywhere; the capacity is a documented decision.
 - Shed errors as typed sentinels (`ErrShedded`) with their own
-  mapping ([05 §2](../05-errors/02-error-design.md) → 429 + Retry-After
-  in [12 §1](../12-http-networking/01-handlers-and-routing.md)'s
+  mapping ([05 Section 2](../05-errors/02-error-design.md) → 429 + Retry-After
+  in [12 Section 1](../12-http-networking/01-handlers-and-routing.md)'s
   translation point).
 - `Dedupe`/`Processor` small and injectable; the pipeline patterns of
-  [08 §5](../08-concurrency/05-patterns.md) compose with them.
+  [08 Section 5](../08-concurrency/05-patterns.md) compose with them.
 
 ## Performance Considerations
 
@@ -222,17 +222,17 @@ before shutdown, the 12 §5 lifecycle at queue scale).
   compute it, don't guess it. A 10k buffer at 100/s drains in 100
   seconds: that is not buffering, it is a delay line.
 - The dedup LRU is O(1) per message at pointer costs; the storage
-  claim is one unique index touch ([13 §4](../13-databases/04-repositories-and-testing.md)'s
+  claim is one unique index touch ([13 Section 4](../13-databases/04-repositories-and-testing.md)'s
   bounded-query discipline applies to the claim table too).
 
 ## Concurrency Considerations
 
 - `Dedupe` and `Processor` are the shared mutable state of this
-  section: mutex-guarded and race-tested ([08 §4](../08-concurrency/04-sync-primitives.md));
+  section: mutex-guarded and race-tested ([08 Section 4](../08-concurrency/04-sync-primitives.md));
   the example's tests run under `-race` in CI.
 - Drain-before-exit: workers finish their current job before the
-  process exits ([12 §5](../12-http-networking/05-graceful-shutdown.md)'s
-  lifecycle, [18 §1](../18-kafka-with-go/01-kafka-concepts.md)'s
+  process exits ([12 Section 5](../12-http-networking/05-graceful-shutdown.md)'s
+  lifecycle, [18 Section 1](../18-kafka-with-go/01-kafka-concepts.md)'s
   rebalance drain).
 
 ## Security Considerations
@@ -242,7 +242,7 @@ before shutdown, the 12 §5 lifecycle at queue scale).
   (chapter 4's authn), not on source trustworthiness
   ([21-security](../21-security/) when it ships).
 - Dedup keys can be attacker-chosen: cap key length and namespace per
-  tenant, or one tenant's keys can evict another's ([15 §4](../15-microservices/04-idempotency-sagas-outbox.md)'s
+  tenant, or one tenant's keys can evict another's ([15 Section 4](../15-microservices/04-idempotency-sagas-outbox.md)'s
   key-hygiene rules).
 
 ## Testing Strategy

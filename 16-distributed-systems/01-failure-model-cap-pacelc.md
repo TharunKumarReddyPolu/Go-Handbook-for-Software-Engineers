@@ -27,7 +27,7 @@ The unknown-response state generates the whole discipline:
   timeout is itself a guess that can be wrong both ways.
 - **The operation may have happened** even though you saw a failure:
   the money moved; the answer was lost. This is why idempotency
-  exists (chapters 4 and [25 §1](../25-fintech-with-go/01-money-and-payments.md)).
+  exists (chapters 4 and [25 Section 1](../25-fintech-with-go/01-money-and-payments.md)).
 - **Two honest observers can disagree** about who is alive: the
   classic split-brain. Consensus, leases, and fencing (chapter 3)
   exist because time and information are local.
@@ -72,7 +72,7 @@ partition, *synchronous replication costs latency on every write*.
 Postgres with synchronous commit waits for the standby on every
 commit; with async commit, a failover may lose the last transactions.
 Neither is wrong; they are different points on the PACELC line, and
-the fintech ledger's choice ([25 §2](../25-fintech-with-go/02-double-entry-ledger.md):
+the fintech ledger's choice ([25 Section 2](../25-fintech-with-go/02-double-entry-ledger.md):
 synchronous, because money) versus a session store's choice (async,
 because a lost session re-login is cheap) are both correct answers to
 different questions.
@@ -86,7 +86,7 @@ The design-review artifact this chapter teaches you to write:
 | Debit account | refuse (C) | sync replication (L paid) | money: divergence is fraud-shaped |
 | Read product page | serve cached (A) | async, stale OK | staleness invisible |
 | Create session | serve from local (A) | async | worst case: re-login |
-| Health/readiness | refuse on unknown | fail fast | [14 §5](../14-backend-development/05-observability-health-flags.md)'s liveness rule |
+| Health/readiness | refuse on unknown | fail fast | [14 Section 5](../14-backend-development/05-observability-health-flags.md)'s liveness rule |
 
 Every row is defensible in one sentence. A system that cannot fill
 this table has not made its tradeoffs; it has inherited them from a
@@ -103,7 +103,7 @@ incidents:
 | The network is reliable | "we retried the webhook but never recorded we sent it" (ch. 4's dual-write) |
 | Latency is zero | in-process assumptions after a split: N+1 calls across services |
 | Bandwidth is infinite | shipping full rows through Kafka where deltas would do |
-| The network is secure | plaintext internal traffic that an audit rejects ([18 §1](../18-kafka-with-go/01-kafka-concepts.md)'s TLS rule) |
+| The network is secure | plaintext internal traffic that an audit rejects ([18 Section 1](../18-kafka-with-go/01-kafka-concepts.md)'s TLS rule) |
 | Topology doesn't change | hard-coded replica IPs; the pod that never comes back |
 | There is one administrator | two teams, one schema (ch. 2 of [15](../15-microservices/02-boundaries-and-contracts.md)'s boundary rule) |
 | Transport cost is zero | health checks calling dependency graphs per probe |
@@ -113,11 +113,11 @@ incidents:
 
 Every unknown-response incident narrows to the same mitigation:
 **bound the wait, decide the timeout policy, make the decision
-idempotent**. The budget hierarchy from [15 §3](../15-microservices/03-resilience-patterns.md)
+idempotent**. The budget hierarchy from [15 Section 3](../15-microservices/03-resilience-patterns.md)
 is the Go mechanics; the systems-level addition: the timeout you pick
 is a *probability statement* about the dependency's tail, not a
 property of the network. Pick it from measured p99s plus margin, and
-re-derive it when the dependency changes ([19 §1](../19-performance/01-measure-first.md)).
+re-derive it when the dependency changes ([19 Section 1](../19-performance/01-measure-first.md)).
 
 ## Common Mistakes
 
@@ -129,7 +129,7 @@ re-derive it when the dependency changes ([19 §1](../19-performance/01-measure-
   they need read-your-writes, which is ch. 2's cheaper mechanism).
 - **Treating timeouts as failures.** The operation may have
   succeeded; the handling must branch on *unknown*, not on *failed*
-  ([15 §3](../15-microservices/03-resilience-patterns.md)'s retry
+  ([15 Section 3](../15-microservices/03-resilience-patterns.md)'s retry
   classification).
 - **Byzantine-grade paranoia for internal systems.** mTLS and signed
   messages yes; Merkle-proof-everything no. Match rigor to the
@@ -142,17 +142,17 @@ re-derive it when the dependency changes ([19 §1](../19-performance/01-measure-
 
 - Model the unknown explicitly: `(result T, err error)` where err
   wraps `context.DeadlineExceeded` distinguishes *gave up* from *was
-  told no*; callers branch differently ([05 §2](../05-errors/02-error-design.md)'s
+  told no*; callers branch differently ([05 Section 2](../05-errors/02-error-design.md)'s
   classification).
 - Never let a goroutine wait forever: every network wait has a
-  context ([08 §3](../08-concurrency/03-context.md)); "the network is
+  context ([08 Section 3](../08-concurrency/03-context.md)); "the network is
   reliable" is often just "nothing had a deadline."
 
 ## Performance Considerations
 
 - Consistency costs latency *on the write path* (sync replication,
   quorum waits); reads can stay cheap. The ELSC tuning is per-store
-  configuration, reviewed with the 13 §3 pool math.
+  configuration, reviewed with the 13 Section 3 pool math.
 - The tail matters more than the mean: one slow replica holds quorum
   reads hostage; hedged reads exist because p99 >> p50.
 
@@ -162,21 +162,21 @@ re-derive it when the dependency changes ([19 §1](../19-performance/01-measure-
   "at 12:00:01" is untrustworthy across nodes. Order comes from
   logical clocks, sequence numbers, and the storage engine (ch. 4's
   ordering rules), never from `time.Now()` comparisons across
-  machines ([08 §4](../08-concurrency/04-sync-primitives.md)'s
+  machines ([08 Section 4](../08-concurrency/04-sync-primitives.md)'s
   happens-before is the honest local analog).
 
 ## Security Considerations
 
 - Partitions are a security event too: fail-open health checks and
   fail-open authz caches under partition are the classic design bug
-  ([14 §5](../14-backend-development/05-observability-health-flags.md)'s
+  ([14 Section 5](../14-backend-development/05-observability-health-flags.md)'s
   probe discipline; [21-security](../21-security/) when it ships).
 
 ## Testing Strategy
 
 - Fault injection is the tier that matters: fail the network between
   A and B, assert A degrades per the design matrix. `toxiproxy` or a
-  failing-transport `RoundTripper` ([10 §2](../10-testing/02-doubles-and-httptest.md))
+  failing-transport `RoundTripper` ([10 Section 2](../10-testing/02-doubles-and-httptest.md))
   makes it deterministic.
 - The unknown-response test: the dependency *succeeds but the
   response is lost*; assert the caller neither double-executes nor

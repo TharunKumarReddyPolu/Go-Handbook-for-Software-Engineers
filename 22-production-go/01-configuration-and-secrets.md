@@ -5,7 +5,7 @@
 Most 3 a.m. incidents include a configuration element: the value
 that was right in staging and wrong in prod, the flag nobody
 remembered setting, the secret that expired silently.
-[14 §2](../14-backend-development/02-configuration-and-secrets.md)
+[14 Section 2](../14-backend-development/02-configuration-and-secrets.md)
 built the loader and the redaction type; this chapter is the
 operational layer: what a production fleet needs from configuration
 that a single dev process does not.
@@ -43,13 +43,13 @@ environment variables. The environment wins because platforms
 that is the seam between your service and its platform.
 
 **Fail at boot, loudly, completely.** The batched-error loader from
-[14 §2](../14-backend-development/02-configuration-and-secrets.md)
+[14 Section 2](../14-backend-development/02-configuration-and-secrets.md)
 is the pattern: collect every invalid value, report all of them,
 exit non-zero. A service that boots half-configured and discovers
 the missing DSN at first request converts a deploy-time failure
 into an incident at an arbitrary later time.
 
-**Secrets** ([21 §5](../21-security/05-secrets-and-supply-chain.md)
+**Secrets** ([21 Section 5](../21-security/05-secrets-and-supply-chain.md)
 covers the redaction types; here is the delivery): the two viable
 patterns are
 
@@ -85,7 +85,7 @@ func (a *atomicConfig) Store(next Config) error {
 
 Every request reads `cfg := a.Load()` once at the top and uses that
 snapshot for the request: one view per request, no torn reads,
-no mid-request flag flips ([14 §5](../14-backend-development/05-observability-health-flags.md)).
+no mid-request flag flips ([14 Section 5](../14-backend-development/05-observability-health-flags.md)).
 
 ## Basic Example
 
@@ -124,7 +124,7 @@ The Section 14 service's `config.LoadOS` follows this exactly:
 batched boot errors, `Secret` values that render as `"REDACTED"` in
 any log, and a `Summary()` that prints shapes not values. The
 remaining production gap is tier 3: the service's feature flags
-([14 §5](../14-backend-development/05-observability-health-flags.md))
+([14 Section 5](../14-backend-development/05-observability-health-flags.md))
 are the runtime tier; their reload is an atomic swap with a health
 endpoint showing the active generation.
 
@@ -135,16 +135,16 @@ needs an owner. The operational pattern:
 
 - Database credentials: platform-injected, rotated by the store,
   restart-or-reconnect handled by the pool
-  ([13 §3](../13-databases/03-pooling-drivers-migrations.md)).
+  ([13 Section 3](../13-databases/03-pooling-drivers-migrations.md)).
 - Signing keys: two-key overlap window during rotation
-  ([21 §2](../21-security/02-authentication-and-authorization.md)'s
+  ([21 Section 2](../21-security/02-authentication-and-authorization.md)'s
   rotation design).
 - Third-party API keys: dual-key window from the provider; the
   config hot-swap above flips them without a deploy.
 
 **Config diffs are deploy diffs.** A config change goes through the
 same review/staging/canary path as code ([26
-§4](../26-go-interview-preparation/04-senior-scenarios.md)'s senior
+Section 4](../26-go-interview-preparation/04-senior-scenarios.md)'s senior
 scenarios include "the config change that took prod down"). The
 tooling differs; the discipline does not.
 
@@ -172,7 +172,7 @@ Loading config at boot costs nothing on the request path. The
 atomic pointer load is a single read instruction; the mistake is
 re-reading env vars or re-parsing files per request, which shows up
 in profiles as `os.Getenv` in hot stacks
-([19 §1](../19-performance/01-measure-first.md)).
+([19 Section 1](../19-performance/01-measure-first.md)).
 
 ## Concurrency Considerations
 

@@ -7,7 +7,7 @@ vulnerabilities, abandoned libraries) and its idioms (code written
 for Go 1.18 that predates the modern stdlib). Both age silently;
 both have first-class tooling: `govulncheck` for the dependency
 surface, `go fix` (and the modernizers it runs) for the code's
-idioms. [21 §5](../21-security/05-secrets-and-supply-chain.md)
+idioms. [21 Section 5](../21-security/05-secrets-and-supply-chain.md)
 covers the security framing; this chapter is the operational
 practice: the commands, the CI wiring (already live in this
 repo), and the upgrade rhythm.
@@ -32,7 +32,7 @@ CI so neither depends on memory.
 
 **govulncheck** is call-graph aware: it reports only
 vulnerabilities in functions your code actually calls, from the
-Go vulnerability database ([21 §5](../21-security/05-secrets-and-supply-chain.md)'s
+Go vulnerability database ([21 Section 5](../21-security/05-secrets-and-supply-chain.md)'s
 details). This changes the triage: a vulnerability in a package
 you never import *paths* of is noise; a reachable one is a ticket
 with a stack trace showing exactly where your code meets it.
@@ -101,7 +101,7 @@ The call stack is the actionable part: your config loader passes
 untrusted YAML through the vulnerable function: severity high,
 fix = bump to v3.0.1. Without the call-graph analysis, the same
 finding is a fleet-wide panic; with it, it is a one-line upgrade
-with a test ([21 §5](../21-security/05-secrets-and-supply-chain.md)'s
+with a test ([21 Section 5](../21-security/05-secrets-and-supply-chain.md)'s
 triage rule: the reachable finding is the severity input).
 
 ## Real-World Example
@@ -119,15 +119,15 @@ existing gate (chapter 1) verify nothing broke.
 
 ## Production Example
 
-**The dependency-review gate** ([21 §5](../21-security/05-secrets-and-supply-chain.md)'s
+**The dependency-review gate** ([21 Section 5](../21-security/05-secrets-and-supply-chain.md)'s
 rules, operationalized):
 
 1. CI blocks on govulncheck findings (PR gate), with the weekly
    scheduled run as backstop for new CVEs landing after merge.
 2. `go.sum` and `go.mod` changes require review: a dependency PR
-   is a supply-chain event ([21 §1](../21-security/01-threat-model-and-validation.md)).
+   is a supply-chain event ([21 Section 1](../21-security/01-threat-model-and-validation.md)).
 3. Release artifacts carry an SBOM; the incident runbook names
-   where ([22 §5](../22-production-go/05-deploying-kubernetes.md)'s
+   where ([22 Section 5](../22-production-go/05-deploying-kubernetes.md)'s
    image scanning joins it: dependencies *and* base image are two
    surfaces).
 4. Unused dependencies: `go mod tidy` in CI (this repo does it
@@ -135,7 +135,7 @@ rules, operationalized):
    smallest graph has the smallest exposure.
 
 **The abandoned dependency check** (the human layer of supply
-chain): before adopting a module, the criteria [18 §2](../18-kafka-with-go/02-go-clients.md)
+chain): before adopting a module, the criteria [18 Section 2](../18-kafka-with-go/02-go-clients.md)
 uses (maintenance activity, governance, responsiveness) apply;
 the `go list -m -u all` habit catches the ones that stopped
 moving.
@@ -153,7 +153,7 @@ moving.
 ## Idiomatic Go
 
 - The Go ecosystem's opinion: fewer dependencies. Standard
-  library first ([01 §1](../01-go-fundamentals/01-why-go-exists.md)'s
+  library first ([01 Section 1](../01-go-fundamentals/01-why-go-exists.md)'s
   philosophy); the smallest module graph is the supply-chain
   strategy.
 - `go fix` is for stdlib-absorbed idioms only; style preferences
@@ -166,9 +166,9 @@ moving.
 
 Modernizers occasionally *are* performance fixes (the modernizers
 for `sort` → `slices` and builtin `min`/`max` remove interface
-boxing and generic overhead; [09 §2](../09-memory-runtime/02-escape-analysis.md)'s
+boxing and generic overhead; [09 Section 2](../09-memory-runtime/02-escape-analysis.md)'s
 boxing notes). Measure anything you suspect ([19
-§1](../19-performance/01-measure-first.md)); the default reason
+Section 1](../19-performance/01-measure-first.md)); the default reason
 for modernizing is currency and readability, with speed as a
 bonus. govulncheck is offline-cheap against the local module
 graph; the vulnerability DB fetch is the only network cost.
@@ -177,14 +177,14 @@ graph; the vulnerability DB fetch is the only network cost.
 
 Upgrading a dependency can change its concurrency behavior
 (pooling, goroutine-per-op): run the race detector on the
-upgrade PR ([10 §1](../10-testing/01-fundamentals.md)), not just
+upgrade PR ([10 Section 1](../10-testing/01-fundamentals.md)), not just
 the functional tests. Modernizers never change concurrency
 semantics: their rewrites are semantics-preserving by design,
 which is why they are safe to apply broadly.
 
 ## Security Considerations
 
-This chapter *is* the operational half of [21 §5](../21-security/05-secrets-and-supply-chain.md)'s
+This chapter *is* the operational half of [21 Section 5](../21-security/05-secrets-and-supply-chain.md)'s
 supply-chain defense: the gate, the SBOM, the triage discipline.
 The one addition: dependency *provenance* matters as much as
 currency: `go get` verifies module checksums against
@@ -196,10 +196,10 @@ ecosystem's integrity backbone: leave it enabled.
 
 - The upgrade gate: full `go test ./... -race` (this repo's CI)
   on every dependency PR; integration tests exercise the
-  upgraded library's actual surface ([10 §3](../10-testing/03-integration-and-e2e.md)).
+  upgraded library's actual surface ([10 Section 3](../10-testing/03-integration-and-e2e.md)).
 - `go fix` PRs: CI's existing gate is the verification; plus a
   targeted benchmark if a modernizer touched a hot path ([10
-  §4](../10-testing/04-benchmarks-coverage-fuzzing.md)).
+  Section 4](../10-testing/04-benchmarks-coverage-fuzzing.md)).
 - The quarterly drill: take a real CVE from the database, trace
   whether your last release was exposed using the SBOM and
   govulncheck; time the answer: it should be minutes.

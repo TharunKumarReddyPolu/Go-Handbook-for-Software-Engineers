@@ -59,10 +59,10 @@ The anatomy of a PR that merges:
    "Tests to follow" is where PRs go to die.
 3. **A description that explains why.** Link the issue, state the
    approach in two sentences, and show the evidence: benchmark before/
-   after ([19 §1](../19-performance/01-measure-first.md) style), the
+   after ([19 Section 1](../19-performance/01-measure-first.md) style), the
    failing-then-passing test, the doc quote that was wrong.
 4. **Green and formatted before you open it.** The project's CI command
-   list ([11 §1](../11-tooling/01-professional-workflow.md)) run
+   list ([11 Section 1](../11-tooling/01-professional-workflow.md)) run
    locally is table stakes; a red PR spends its first impression on
    noise.
 5. **Commits that tell the story.** Small, single-purpose commits with
@@ -120,9 +120,9 @@ decision is easy.
 
 PRs in Go projects get reviewed for the things Go makes cheap to get
 right: `gofmt` clean, `go vet` and staticcheck silent, errors wrapped
-with `%w` where callers need identity ([05 §1](../05-errors/01-errors-are-values.md)),
+with `%w` where callers need identity ([05 Section 1](../05-errors/01-errors-are-values.md)),
 context plumbed for cancellation, table-driven tests
-([10 §1](../10-testing/01-fundamentals.md)). When your diff
+([10 Section 1](../10-testing/01-fundamentals.md)). When your diff
 already satisfies these, review shrinks to the actual logic, which is
 where you want the maintainer's attention.
 

@@ -2,10 +2,10 @@
 
 **Status: in depth: 5 chapters + the resilience quartet example.**
 Phase 6 begins here. The decision question is summarized from
-[26 §4](../26-go-interview-preparation/04-senior-scenarios.md); the
+[26 Section 4](../26-go-interview-preparation/04-senior-scenarios.md); the
 event backbone is [18-kafka-with-go](../18-kafka-with-go/); the
 financial-grade saga/outbox builds are
-[25 §3](../25-fintech-with-go/03-integrity-and-exactly-once.md).
+[25 Section 3](../25-fintech-with-go/03-integrity-and-exactly-once.md).
 
 ## Chapters
 

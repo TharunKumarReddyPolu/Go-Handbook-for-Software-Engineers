@@ -2,7 +2,7 @@
 
 **Status: in depth: 5 chapters + the fencing-lease example.** The
 section generalizes what [18-kafka-with-go](../18-kafka-with-go/),
-[25 §3](../25-fintech-with-go/03-integrity-and-exactly-once.md), and
+[25 Section 3](../25-fintech-with-go/03-integrity-and-exactly-once.md), and
 [15](../15-microservices/) built for specific transports into the
 systems fundamentals, with Go implementations for the parts you
 actually own.
@@ -39,7 +39,7 @@ go test ./16-distributed-systems/... -v
 
 Chapter 5's `Dedupe` (two-tier deduplication) lives in its chapter as
 the teaching implementation; its backstop is always a storage
-constraint ([15 §4](../15-microservices/04-idempotency-sagas-outbox.md)'s
+constraint ([15 Section 4](../15-microservices/04-idempotency-sagas-outbox.md)'s
 claim table).
 
 

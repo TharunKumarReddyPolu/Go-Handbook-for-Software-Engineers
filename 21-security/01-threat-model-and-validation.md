@@ -29,7 +29,7 @@ control. For each boundary, four questions (a one-page STRIDE):
 | What are they allowed to do? | Elevation | Authorization (ch 2) |
 | What are they sending me? | Tampering, injection | Validation (this chapter) |
 | Can they send it forever, free? | Denial of service | Limits (ch 4) |
-| Can I prove what happened? | Repudiation | Audit logs ([25 §3](../25-fintech-with-go/03-integrity-and-exactly-once.md)) |
+| Can I prove what happened? | Repudiation | Audit logs ([25 Section 3](../25-fintech-with-go/03-integrity-and-exactly-once.md)) |
 | Is the channel private? | Disclosure | TLS (ch 3) |
 
 ## How It Works
@@ -49,7 +49,7 @@ The three classes of boundary input and their Go answers:
 
 | Input | Attack | Go control |
 |---|---|---|
-| SQL strings | Injection | Parameterized queries only ([13 §1](../13-databases/01-database-sql.md)) |
+| SQL strings | Injection | Parameterized queries only ([13 Section 1](../13-databases/01-database-sql.md)) |
 | Command arguments | Injection (`; rm -rf`) | `exec.Command(name, args...)`: never a shell string |
 | File paths | Traversal (`../../etc/passwd`) | `filepath.Base`/`Clean` + root prefix check |
 | HTML output | XSS | `html/template` auto-escaping; never string-built HTML |
@@ -122,11 +122,11 @@ malformed body never reaches the domain, and every rejection is a
 
 **Unknown fields** (`DisallowUnknownFields`) are a compatibility
 seam: reject them and a client sending a typo gets a 400 instead of
-silently ignored data ([15 §2](../15-microservices/02-boundaries-and-contracts.md)
+silently ignored data ([15 Section 2](../15-microservices/02-boundaries-and-contracts.md)
 covers the versioning contract). **Fuzz the decoders** that face the
 internet: the parsers behind your API are the first thing an
 attacker probes, and fuzzing finds the input that splits your
-assumptions ([10 §4](../10-testing/04-benchmarks-coverage-fuzzing.md)'s
+assumptions ([10 Section 4](../10-testing/04-benchmarks-coverage-fuzzing.md)'s
 fuzz chapter applies directly).
 
 ## Common Mistakes
@@ -134,7 +134,7 @@ fuzz chapter applies directly).
 | Mistake | Consequence | Do instead |
 |---|---|---|
 | Validating in the UI/client only | API bypasses it trivially | Validate at every boundary you own |
-| String-building SQL | Injection | Parameters, always ([13 §1](../13-databases/01-database-sql.md)) |
+| String-building SQL | Injection | Parameters, always ([13 Section 1](../13-databases/01-database-sql.md)) |
 | `sh -c` with interpolated input | Command injection | `exec.Command` with argv |
 | Serving user paths with `http.ServeFile` unchecked | Reads /etc/passwd | Contained `resolveUnder` above |
 | Regex HTML sanitizing | Bypassed constantly | `html/template` contexts |
@@ -146,7 +146,7 @@ fuzz chapter applies directly).
   edge and pass types, not flags, inward.
 - `filepath` + `strings.HasPrefix` over manual ".." checks.
 - Errors from validation are value errors: `ErrInvalid` sentinels
-  ([05 §2](../05-errors/02-error-design.md)), mapped to 4xx by the
+  ([05 Section 2](../05-errors/02-error-design.md)), mapped to 4xx by the
   transport's table.
 
 ## Performance Considerations
@@ -172,7 +172,7 @@ cannot `DROP` turns an injection into a nuisance).
 ## Testing Strategy
 
 - Table-driven boundary tests: each traversal/overflow/unicode
-  input asserts the rejection ([10 §1](../10-testing/01-fundamentals.md)).
+  input asserts the rejection ([10 Section 1](../10-testing/01-fundamentals.md)).
 - Fuzz `resolveUnder` and the JSON decoders; the property is
   "result is always under root, or error."
 - The service's transport tests double as security regression

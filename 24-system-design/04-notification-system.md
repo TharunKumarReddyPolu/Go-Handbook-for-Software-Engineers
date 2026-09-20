@@ -9,7 +9,7 @@ semantics that customers feel (duplicate password-reset emails are
 a support incident; missing ones are a security incident), and
 compliance (unsubscribe is not optional). The design is the
 handbook's messaging ([17](../17-messaging/01-queues-logs-pubsub.md))
-and backpressure ([16 §5](../16-distributed-systems/05-delivery-backpressure-shedding.md))
+and backpressure ([16 Section 5](../16-distributed-systems/05-delivery-backpressure-shedding.md))
 chapters wearing a product face.
 
 ## Requirements
@@ -76,15 +76,15 @@ flowchart TB
 
 - **Fan-out**: one event (order shipped) → N notifications. The
   faner reads the event once, multiplies, enqueues with the event
-  ID as dedup seed ([17 §3](../17-messaging/03-portable-patterns.md)'s
+  ID as dedup seed ([17 Section 3](../17-messaging/03-portable-patterns.md)'s
   idempotent consumer).
 - **Per-channel rate limits**: vendor quota → token bucket per
-  channel ([21 §4](../21-security/04-limits-and-hardening.md)'s
+  channel ([21 Section 4](../21-security/04-limits-and-hardening.md)'s
   two-layer limiter); exhausted bucket = workers park briefly
   (backoff), never drop transactional traffic ([16
-  §5](../16-distributed-systems/05-delivery-backpressure-shedding.md)'s
+  Section 5](../16-distributed-systems/05-delivery-backpressure-shedding.md)'s
   block-vs-shed table: shed marketing first).
-- **Dedup**: two layers ([17 §3](../17-messaging/03-portable-patterns.md)):
+- **Dedup**: two layers ([17 Section 3](../17-messaging/03-portable-patterns.md)):
   the client key (unique constraint) and the content key
   (same template+user+window suppressed: no triple
   password-reset emails from three retrying services).
@@ -93,9 +93,9 @@ flowchart TB
 
 - Workers scale per channel independently (email volume ≠ push
   volume); the queue's priority lanes keep transactional delivery
-  fast under marketing bursts ([17 §1](../17-messaging/01-queues-logs-pubsub.md)'s
+  fast under marketing bursts ([17 Section 1](../17-messaging/01-queues-logs-pubsub.md)'s
   queue-vs-log choice: a queue per priority class, not one lane).
-- Vendor outages: breaker per vendor ([15 §3](../15-microservices/03-resilience-patterns.md));
+- Vendor outages: breaker per vendor ([15 Section 3](../15-microservices/03-resilience-patterns.md));
   notifications stay queued (durable), drain on recovery. SMS
   delayed 30 minutes is usually acceptable; silently dropped is
   not.
@@ -106,19 +106,19 @@ flowchart TB
 
 | Failure | Behavior | Mitigation |
 |---|---|---|
-| Vendor rejects at high rate | breaker opens; queue drains slower; page | per-channel breaker + DLQ ([17 §3](../17-messaging/03-portable-patterns.md)) |
+| Vendor rejects at high rate | breaker opens; queue drains slower; page | per-channel breaker + DLQ ([17 Section 3](../17-messaging/03-portable-patterns.md)) |
 | Duplicate delivery | content-key dedup suppresses | windowed content key |
-| Template bug (bad payload) | DLQ with triage metadata; no retry storm | DLQ + alert on DLQ depth ([17 §3](../17-messaging/03-portable-patterns.md)) |
-| Queue backlog grows unbounded | shed marketing, delay operational | priority shed order ([16 §5](../16-distributed-systems/05-delivery-backpressure-shedding.md)) |
+| Template bug (bad payload) | DLQ with triage metadata; no retry storm | DLQ + alert on DLQ depth ([17 Section 3](../17-messaging/03-portable-patterns.md)) |
+| Queue backlog grows unbounded | shed marketing, delay operational | priority shed order ([16 Section 5](../16-distributed-systems/05-delivery-backpressure-shedding.md)) |
 
 ## Observability & security
 
 Metrics: `notifications_sent_total{channel,status}`,
 `queue_depth{priority}`, `vendor_429_rate`, DLQ depth ([20
-§2](../20-observability/02-metrics.md)). The SLO is per class:
+Section 2](../20-observability/02-metrics.md)). The SLO is per class:
 transactional delivery p99 < 1 min end-to-end ([20
-§4](../20-observability/04-slos-and-alerting.md)). Security: the
-notification body interpolates user data ([21 §1](../21-security/01-threat-model-and-validation.md):
+Section 4](../20-observability/04-slos-and-alerting.md)). Security: the
+notification body interpolates user data ([21 Section 1](../21-security/01-threat-model-and-validation.md):
 template injection is user input injection); preference changes
 are authz-checked (unsubscribing *someone else* is an attack).
 
@@ -129,13 +129,13 @@ are authz-checked (unsubscribing *someone else* is an attack).
   portability suite is the spec; the production transport plugs in
   beneath ([18](../18-kafka-with-go/README.md) for events, a
   queue for per-class lanes).
-- **The two-layer limiter from [21 §4](../21-security/04-limits-and-hardening.md)**
+- **The two-layer limiter from [21 Section 4](../21-security/04-limits-and-hardening.md)**
   governs vendor rate: global (vendor account) + per-template
   (heat control).
 - **Worker shape**: the stage-5 job processor ([08
-  §5](../08-concurrency/05-patterns.md)) with the channel's
+  Section 5](../08-concurrency/05-patterns.md)) with the channel's
   visibility-timeout semantics; cancellation via context ([08
-  §3](../08-concurrency/03-context.md)).
+  Section 3](../08-concurrency/03-context.md)).
 - **Content-key dedup** is a small TTL map with the memwatch
-  discipline ([09 §5](../09-memory-runtime/05-memory-leaks.md)):
+  discipline ([09 Section 5](../09-memory-runtime/05-memory-leaks.md)):
   bounded, or it becomes the next incident.

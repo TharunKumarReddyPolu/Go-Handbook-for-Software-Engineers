@@ -1,4 +1,4 @@
-// Package httpjson is the platform JSON boundary from 12 §3: write,
+// Package httpjson is the platform JSON boundary from 12 Section 3: write,
 // decode with limits, and the single error-mapping point. Platform
 // code knows no domain.
 package httpjson

@@ -95,7 +95,7 @@ func TestNoCrossDomainImports(t *testing.T) {
 ```
 
 When `payments` needs `accounts` data, the dependency flows through
-an interface the payments package defines ([04 §3](../04-functions-methods-interfaces/03-interfaces-philosophy.md)),
+an interface the payments package defines ([04 Section 3](../04-functions-methods-interfaces/03-interfaces-philosophy.md)),
 satisfied in `main` by either the in-process package (monolith) or a
 client (microservice). **That swap is the whole extraction**, and it
 is reviewable as one PR.
@@ -114,7 +114,7 @@ technically:
 | Divergent availability | checkout at 99.99%; internal analytics fine at 99% | failure isolation |
 
 Notice what is absent: "the codebase feels big." Size is handled by
-packages ([06 §1](../06-packages-modules/01-package-design.md)); a
+packages ([06 Section 1](../06-packages-modules/01-package-design.md)); a
 well-factored 100k-line monolith deploys faster than fifteen
 microservices that share a release train. Also absent: "we want to
 rewrite in microservices" as a plan; rewrites and splits compound
@@ -136,7 +136,7 @@ The extraction of one domain, in the order that keeps risk bounded:
    [14](../14-backend-development/05-observability-health-flags.md)),
    with the in-process path kept as instant rollback.
 5. **Move the data last**, with the expand/contract discipline from
-   [13 §3](../13-databases/03-pooling-drivers-migrations.md): the new
+   [13 Section 3](../13-databases/03-pooling-drivers-migrations.md): the new
    service owns its schema; the old tables become read-only views
    until confidence is total.
 
@@ -149,7 +149,7 @@ quietly correct for a release cycle.
 - **Splitting by technical layer** (a "database service", an
   "auth service" that every request must call): chatty, latency-
   bound, and it recentralizes exactly what the split decentralizes.
-  Split by business capability ([14 §1](../14-backend-development/01-service-layout.md)'s
+  Split by business capability ([14 Section 1](../14-backend-development/01-service-layout.md)'s
   domains).
 - **A shared database across services**: two services, one schema is
   one service with worse latency. Data ownership is the boundary
@@ -169,7 +169,7 @@ quietly correct for a release cycle.
 
 - Go's build system rewards the modular monolith: one module, fast
   builds, `go test ./...` covers everything, refactoring is
-  mechanical ([06 §3](../06-packages-modules/03-multi-module-repositories.md)
+  mechanical ([06 Section 3](../06-packages-modules/03-multi-module-repositories.md)
   covers the multi-module step when teams genuinely diverge).
 - Extraction keeps the domain packages *identical*: same package
   path, same interfaces, new `main`. The diff is infrastructure, not
@@ -181,10 +181,10 @@ quietly correct for a release cycle.
   plus serialization. Feature-by-feature, splitting costs latency
   budget that must be paid from somewhere: the N+1 pattern across
   services (a UI composing five calls) is the classic regression.
-  Compose server-side or denormalize ([19 §1](../19-performance/01-measure-first.md)
+  Compose server-side or denormalize ([19 Section 1](../19-performance/01-measure-first.md)
   to see it).
 - Per-service pools and caches stop being shared: the fleet math of
-  [13 §3](../13-databases/03-pooling-drivers-migrations.md) applies
+  [13 Section 3](../13-databases/03-pooling-drivers-migrations.md) applies
   per service, and total connection counts multiply.
 
 ## Concurrency Considerations
@@ -201,7 +201,7 @@ quietly correct for a release cycle.
   hop ([21-security](../21-security/) when it ships). The monolith's
   "trusted internal network" assumption does not survive the split.
 - Each service's secret surface is smaller and owned: rotate per
-  service, not per cluster ([14 §2](../14-backend-development/02-configuration-and-secrets.md)).
+  service, not per cluster ([14 Section 2](../14-backend-development/02-configuration-and-secrets.md)).
 
 ## Testing Strategy
 

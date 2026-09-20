@@ -133,14 +133,14 @@ Breaking changes are a process, not a deploy:
    at v2.
 
 The same machinery inverts for the consumer side: pin your
-dependencies (13 §2's module discipline), wrap the client behind an
-interface ([04 §3](../04-functions-methods-interfaces/03-interfaces-philosophy.md)),
+dependencies (13 Section 2's module discipline), wrap the client behind an
+interface ([04 Section 3](../04-functions-methods-interfaces/03-interfaces-philosophy.md)),
 and the producer's v2 becomes one implementation behind your seam,
 not a refactor of your domain.
 
 ## Production Example: contract testing, both directions
 
-The two tiers from [13 §4](../13-databases/04-repositories-and-testing.md),
+The two tiers from [13 Section 4](../13-databases/04-repositories-and-testing.md),
 adapted to network seams:
 
 - **Producer side**: the contract is generated from code (OpenAPI
@@ -150,7 +150,7 @@ adapted to network seams:
   exactly because the policy and paths are declarative.
 - **Consumer side**: tests run against a fake that implements the
   contract's *shape* (the interface seam), plus one integration test
-  against the real thing (build-tagged, the 18 §13 pattern) that
+  against the real thing (build-tagged, the 18 Section 13 pattern) that
   catches drift the fake cannot.
 
 This is why chapter 1 insisted on consumer-side interfaces: the
@@ -172,7 +172,7 @@ contract seam and the test seam are the same seam.
   passed: the tests ran against a consumer that did not exist. The
   compatibility table, enforced by CI, is the arbiter.
 - **Deadline-free internal RPC**: without propagated deadlines, one
-  slow dependency stalls every caller up the chain ([12 §4](../12-http-networking/04-clients-and-timeouts.md)'s
+  slow dependency stalls every caller up the chain ([12 Section 4](../12-http-networking/04-clients-and-timeouts.md)'s
   knob map applies per hop; gRPC propagates them for free, which is
   a real argument for it internally).
 
@@ -189,18 +189,18 @@ contract seam and the test seam are the same seam.
 - Protobuf + HTTP/2 typically halves payload size and connection
   churn versus JSON/1.1 at internal-call volume, but the bigger win
   is connection reuse and multiplexing, not encoding. Measure your
-  shapes ([19 §1](../19-performance/01-measure-first.md)).
+  shapes ([19 Section 1](../19-performance/01-measure-first.md)).
 - JSON is not slow by default: `encoding/json` at realistic volumes
-  is rarely the bottleneck (12 §3); switching to protobuf for
+  is rarely the bottleneck (12 Section 3); switching to protobuf for
   performance alone is usually premature.
 
 ## Concurrency Considerations
 
 - gRPC streams are long-lived connections: they interact with the
-  graceful-shutdown lifecycle (12 §5); track and close them
+  graceful-shutdown lifecycle (12 Section 5); track and close them
   explicitly on drain.
 - Contract-guaranteed concurrent safety: generated clients are
-  goroutine-safe; hand-rolled HTTP clients follow 12 §4's pool
+  goroutine-safe; hand-rolled HTTP clients follow 12 Section 4's pool
   discipline.
 
 ## Security Considerations

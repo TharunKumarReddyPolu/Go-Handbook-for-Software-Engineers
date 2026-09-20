@@ -7,10 +7,10 @@ still behaves as written, *if* you stay inside the memory model.
 The model is the contract that makes reordering invisible to
 correctly synchronized code and very visible to racy code. In Go
 this is not academic: goroutines share memory by default, the
-compiler reorders aggressively ([02 §2](02-ssa-and-optimizations.md)),
+compiler reorders aggressively ([02 Section 2](02-ssa-and-optimizations.md)),
 and the race detector enforces the model dynamically. The
-practical rules live in [08 §4](../08-concurrency/04-sync-primitives.md)
-and [08 §8](../08-concurrency/08-faq-notes.md); this chapter is
+practical rules live in [08 Section 4](../08-concurrency/04-sync-primitives.md)
+and [08 Section 8](../08-concurrency/08-faq-notes.md); this chapter is
 the contract itself: small enough to memorize once.
 
 ## Mental Model
@@ -124,7 +124,7 @@ with the edge, or it doesn't travel safely.**
 The race detector is the model, running: `-race` instruments
 every access and reports when two accesses to one address are
 unordered by any edge (happens-before dynamic checking). In CI
-([10 §1](../10-testing/01-fundamentals.md)) it turns model
+([10 Section 1](../10-testing/01-fundamentals.md)) it turns model
 violations into test failures; in staging under load
 (`-race` builds with real traffic) it catches the schedules unit
 tests never produce. The model's guarantee is what makes the
@@ -147,7 +147,7 @@ state) is the goal, not merely "the detector stayed quiet once".
 ## Idiomatic Go
 
 - Share memory by communicating: the channel edge is the design
-  default ([08 §1](../08-concurrency/01-goroutines-and-channels.md)).
+  default ([08 Section 1](../08-concurrency/01-goroutines-and-channels.md)).
 - Mutexes guard *invariants*, not just fields: everything the
   invariant touches goes inside the same lock.
 - `atomic` for single-word flags and counters; bundle publication
@@ -158,12 +158,12 @@ state) is the goal, not merely "the detector stayed quiet once".
 ## Performance Considerations
 
 Edges are not free: mutex round-trips ~25-50ns uncontended, atomics
-~5-20ns, channels ~100ns ([08 §6](../08-concurrency/06-concurrency-vs-parallelism.md)'s
+~5-20ns, channels ~100ns ([08 Section 6](../08-concurrency/06-concurrency-vs-parallelism.md)'s
 numbers). That cost is the price of correctness and it is tiny
 next to a syscall; the real perf risk is *contention* (many
 goroutines on one lock), which is a design fix (shard, batch,
 ownership transfer), not a model violation ([19
-§3](../19-performance/03-concurrency-performance.md)).
+Section 3](../19-performance/03-concurrency-performance.md)).
 
 ## Concurrency Considerations
 
@@ -179,13 +179,13 @@ Racy reads of security state (authz flags, key material) can
 observe stale values *legally* under the model: an attacker does
 not need to win a race if your check reads yesterday's value.
 Publish security-relevant state with explicit edges (atomic
-pointer swap on rotation, [21 §5](../21-security/05-secrets-and-supply-chain.md)'s
+pointer swap on rotation, [21 Section 5](../21-security/05-secrets-and-supply-chain.md)'s
 two-key overlap), and treat "occasionally stale authz" as the
 correctness bug it is.
 
 ## Testing Strategy
 
-- `-race` in every CI run ([10 §1](../10-testing/01-fundamentals.md));
+- `-race` in every CI run ([10 Section 1](../10-testing/01-fundamentals.md));
   `-race` + load in staging for schedule diversity.
 - Stress tests (`-count` with shuffled order, `-cpu=1,2,4`)
   widen executed schedules.

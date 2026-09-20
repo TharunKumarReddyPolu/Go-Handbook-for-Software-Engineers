@@ -22,9 +22,9 @@ flowchart TD
     CFG --> LOG["slog logger"]
     PS --> SVC["payments.NewService"]
     SVC --> H["payments.NewHandler"]
-    H --> MW["middleware chain (12 §2)"]
+    H --> MW["middleware chain (12 Section 2)"]
     MW --> SRV["http.Server"]
-    SRV --> RUN["Run + Shutdown (12 §5)"]
+    SRV --> RUN["Run + Shutdown (12 Section 5)"]
 ```
 
 Rules:
@@ -71,7 +71,7 @@ func main() {
 		ReadHeaderTimeout: 5 * time.Second,
 	}
 
-	run.Serve(ctx, srv, cfg.ShutdownGrace) // the 12 §5 lifecycle, extracted
+	run.Serve(ctx, srv, cfg.ShutdownGrace) // the 12 Section 5 lifecycle, extracted
 }
 ```
 
@@ -80,7 +80,7 @@ in one screen. When someone asks "where does the request timeout
 come from?", the answer is a file, not a search.
 
 **`run.Serve`** is the shutdown lifecycle of
-[12 §5](../12-http-networking/05-graceful-shutdown.md) extracted into
+[12 Section 5](../12-http-networking/05-graceful-shutdown.md) extracted into
 a testable function: signal select, readiness flip, `Shutdown` with
 grace, forced `Close`, and a list of additional closers supplied by
 the caller (in reverse order). Extracting it is what makes shutdown
@@ -140,7 +140,7 @@ func TestService_Charge(t *testing.T) {
 
 The production `main` wires `PostgresStore`; the test wires
 `FakeStore`; neither knows about the other, and no framework
-participates ([13 §4](../13-databases/04-repositories-and-testing.md)'s
+participates ([13 Section 4](../13-databases/04-repositories-and-testing.md)'s
 two tiers). This is the entire argument for explicit wiring: the
 graph is data, and tests are just a second graph.
 
@@ -148,7 +148,7 @@ Clock injection deserves its own note: a `now func() time.Time` field
 (or a small `Clock` interface) is the difference between testing
 "TTL expired" logic and flaking on `time.Sleep`. Inject the clock in
 every service that makes a time-based decision
-([25 §2](../25-fintech-with-go/02-double-entry-ledger.md)'s ledger
+([25 Section 2](../25-fintech-with-go/02-double-entry-ledger.md)'s ledger
 tests depend on exactly this).
 
 ## Production Example: init() and the package-level global cleanup
@@ -168,7 +168,7 @@ top of `main` is the one legitimate call site), and log with context
 tenant) travel without globals. `init()` shares the disease: a
 constructor named `init` that opens files or registers drivers makes
 import order load-bearing. The blank driver import
-([13 §1](../13-databases/01-database-sql.md)) is the sanctioned
+([13 Section 1](../13-databases/01-database-sql.md)) is the sanctioned
 exception; anything beyond registration belongs in `main`.
 
 ## Common Mistakes
@@ -198,7 +198,7 @@ exception; anything beyond registration belongs in `main`.
 ## Idiomatic Go
 
 - Constructors named `NewX`; return concrete types (interfaces at the
-  consumer, per [04 §3](../04-functions-methods-interfaces/03-interfaces-philosophy.md)).
+  consumer, per [04 Section 3](../04-functions-methods-interfaces/03-interfaces-philosophy.md)).
 - Wiring errors fail loudly at boot: a nil dependency passed to a
   constructor should be validated (`if store == nil { return nil,
   errors.New("store is required") }`) when nil is plausible, and
@@ -213,16 +213,16 @@ exception; anything beyond registration belongs in `main`.
   wiring over reflection-based DI.
 - Pool/client construction in `main` means one warm set of
   connections shared by everything; constructors that open their own
-  connections per instance fragment the pool (13 §3's fleet math).
+  connections per instance fragment the pool (13 Section 3's fleet math).
 
 ## Concurrency Considerations
 
 - The graph is built before the server starts, on one goroutine: no
   locks needed, ever, during wiring. Anything that must be created
   lazily under load (a client built on first use) needs the
-  `sync.Once` discipline ([08 §4](../08-concurrency/04-sync-primitives.md))
+  `sync.Once` discipline ([08 Section 4](../08-concurrency/04-sync-primitives.md))
   and a comment explaining why it cannot be eager.
-- Readiness flipping and shutdown ordering (12 §5) are wiring-level
+- Readiness flipping and shutdown ordering (12 Section 5) are wiring-level
   responsibilities: `run.Serve` receives the closers in dependency
   order.
 
@@ -242,9 +242,9 @@ exception; anything beyond registration belongs in `main`.
   fakes/`httptest` servers, assert it runs and shuts down cleanly.
   This catches nil-dep and ordering bugs the compiler cannot.
 - Constructors with options: table-driven over option combinations
-  ([10 §1](../10-testing/01-fundamentals.md)), asserting the derived
+  ([10 Section 1](../10-testing/01-fundamentals.md)), asserting the derived
   fields (`client.Timeout`) not internals.
-- `run.Serve` extracted: the 12 §5 in-process shutdown test runs
+- `run.Serve` extracted: the 12 Section 5 in-process shutdown test runs
   against it directly, no process needed.
 
 ## Interview Questions
@@ -262,7 +262,7 @@ exception; anything beyond registration belongs in `main`.
 ## Practice Exercises
 
 1. Extract the `run.Serve(ctx, srv, grace, closers...)` lifecycle from
-   a main you own and port the 12 §5 shutdown test onto it.
+   a main you own and port the 12 Section 5 shutdown test onto it.
 2. Take a constructor with five boolean parameters and evolve it to
    the right shape (options or Config struct), migrating call sites;
    count what the call sites now communicate.

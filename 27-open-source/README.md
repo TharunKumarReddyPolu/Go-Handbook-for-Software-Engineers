@@ -33,7 +33,7 @@ example the chapters refer to.
 
 Open-source skill is not generosity; it is engineering with strangers:
 same rigor, added communication. The chapters teach the loop once
-([§3](03-contributing-well.md)); the special sections show how the
+([Section 3](03-contributing-well.md)); the special sections show how the
 loop flexes when the destination is Gerrit, a KIP, or a SIG.
 
 | If you want to... | Read |

@@ -9,7 +9,7 @@ deliberately different from the GitHub flow most engineers know, and
 the differences are the first hurdle, not the code. This section walks
 the official process end to end ([go.dev/doc/contribute](https://go.dev/doc/contribute)),
 translated into the contribution loop from
-[27 §3](03-contributing-well.md).
+[27 Section 3](03-contributing-well.md).
 
 ## Mental Model
 

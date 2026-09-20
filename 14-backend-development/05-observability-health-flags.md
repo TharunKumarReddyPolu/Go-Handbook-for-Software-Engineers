@@ -47,8 +47,8 @@ Log discipline the layering enforces:
 
 | Rule | Mechanism |
 |---|---|
-| One line per request, at the end | the logging middleware from [12 §2](../12-http-networking/02-middleware.md), not handlers |
-| Errors logged once, at the boundary | [05 §2](../05-errors/02-error-design.md)'s rule; lower layers wrap, never log-and-return |
+| One line per request, at the end | the logging middleware from [12 Section 2](../12-http-networking/02-middleware.md), not handlers |
+| Errors logged once, at the boundary | [05 Section 2](../05-errors/02-error-design.md)'s rule; lower layers wrap, never log-and-return |
 | Secrets never in fields | chapter 2's `LogValue` redaction seam |
 | Levels have meanings | Debug: developer eyes. Info: business events. Warn: degraded but serving. Error: needs attention |
 
@@ -70,7 +70,7 @@ func (s *Server) handleLiveness(w http.ResponseWriter, _ *http.Request) {
 // first; dependency checks only those that gate *this instance's*
 // ability to serve (chapter 3's pool, not the database's mood).
 func (s *Server) handleReadiness(w http.ResponseWriter, _ *http.Request) {
-	if !s.ready.Load() { // flipped on shutdown: 12 §5
+	if !s.ready.Load() { // flipped on shutdown: 12 Section 5
 		http.Error(w, "draining", http.StatusServiceUnavailable)
 		return
 	}
@@ -98,7 +98,7 @@ The readiness/dependency relationship, ranked:
 | Dependency state | Liveness | Readiness |
 |---|---|---|
 | Database unreachable | 200 (process fine) | 503 (cannot serve real traffic) |
-| Cache (optional) unreachable | 200 | **200**, degraded mode ([13 §5](../13-databases/05-caching-with-redis.md)'s rule) |
+| Cache (optional) unreachable | 200 | **200**, degraded mode ([13 Section 5](../13-databases/05-caching-with-redis.md)'s rule) |
 | Shutting down | 200 | 503 (the drain signal) |
 
 ## Feature flags: the boundary between config and behavior
@@ -191,7 +191,7 @@ without a restart.
 
 - Structured logging costs allocations per field; at high RPS, log
   business events at boundaries and sample debug output
-  ([19 §1](../19-performance/01-measure-first.md)). The middleware's
+  ([19 Section 1](../19-performance/01-measure-first.md)). The middleware's
   per-request line is the floor, not the ceiling.
 - `atomic.Pointer` flag reads are nanoseconds; a flag service with
   network reads per request is a self-inflicted latency floor.
@@ -200,7 +200,7 @@ without a restart.
 
 ## Concurrency Considerations
 
-- The readiness flag is `atomic.Bool` (12 §5's rule): written by the
+- The readiness flag is `atomic.Bool` (12 Section 5's rule): written by the
   shutdown path, read by pollers.
 - The flags map is swapped atomically and never mutated in place;
   readers hold a consistent snapshot.
@@ -213,7 +213,7 @@ without a restart.
   log in) and must therefore leak nothing: no versions, no dependency
   names, no internal hosts.
 - Logs are a data store: PII in log fields is a compliance event
-  ([25 §4](../25-fintech-with-go/04-risk-and-compliance.md)); log
+  ([25 Section 4](../25-fintech-with-go/04-risk-and-compliance.md)); log
   customer IDs, not customer content.
 - Flag names and values are not secrets, but flag-gated *endpoints*
   still enforce full authn/authz: a flag hides a feature from users,

@@ -5,7 +5,7 @@
 A process is born and dies thousands of times during an ordinary
 week: deploys, autoscaling, node drains, evictions. Each birth and
 death is a chance to drop requests, leak resources, or serve
-traffic you cannot handle. [12 §5](../12-http-networking/05-graceful-shutdown.md)
+traffic you cannot handle. [12 Section 5](../12-http-networking/05-graceful-shutdown.md)
 built the drain handshake for one HTTP server; this chapter
 completes the lifecycle: the boot sequence, readiness gating, the
 full component shutdown order, and the container signals that
@@ -26,7 +26,7 @@ stateDiagram-v2
 ```
 
 - **Starting**: config loaded, dependencies opened, metrics/tracing
-  initialized ([20 §3](../20-observability/03-tracing-and-otel.md)'s
+  initialized ([20 Section 3](../20-observability/03-tracing-and-otel.md)'s
   init-first rule). Not yet routed traffic.
 - **Ready**: readiness endpoint reports true; the platform routes.
 - **Draining**: readiness false immediately on SIGTERM; new work
@@ -66,7 +66,7 @@ writing down as code review checklist:
 
 The liveness-checks-a-dependency bug is the classic: dependency
 hiccups restart every pod, the fleet thrashes, and the hiccup
-becomes an outage. [14 §5](../14-backend-development/05-observability-health-flags.md)
+becomes an outage. [14 Section 5](../14-backend-development/05-observability-health-flags.md)
 built the tiered readiness; liveness stays trivial forever.
 
 ## Syntax / API
@@ -86,7 +86,7 @@ defer shutdownTracing(context.Background()) // flush spans after drain
 if err := run(ctx, srv, logger, cfg.ShutdownGrace); err != nil { ... }
 ```
 
-`run` ([12 §5](../12-http-networking/05-graceful-shutdown.md)'s
+`run` ([12 Section 5](../12-http-networking/05-graceful-shutdown.md)'s
 extracted form, testable in-process) does: `srv.Shutdown(graceCtx)`
 to drain, then `Close()` if the grace expired. Workers started at
 step 5 need the same treatment: a `Worker.Stop(ctx)` that stops
@@ -111,9 +111,9 @@ func (w *Worker) Stop(ctx context.Context) error {
 }
 ```
 
-The `WaitGroup` counts in-flight items ([08 §4](../08-concurrency/04-sync-primitives.md));
+The `WaitGroup` counts in-flight items ([08 Section 4](../08-concurrency/04-sync-primitives.md));
 `Add` happens before the work starts, `Done` in a defer: the
-goroutine-leak rule ([08 §7](../08-concurrency/07-pitfalls.md)).
+goroutine-leak rule ([08 Section 7](../08-concurrency/07-pitfalls.md)).
 
 ## Real-World Example
 
@@ -151,7 +151,7 @@ grace period.
 | Drain exceeds the grace period | SIGKILL mid-request | Measure p100 drain; set grace = drain + margin |
 | `ListenAndServe` error ignored | Port conflict crashes silently | Log and exit non-zero; probe catches it |
 | Stores closed before HTTP drained | In-flight panics on closed pool | Close stores last (reverse open order) |
-| No `ReadHeaderTimeout` | Slowloris exhaustion | Always set it ([12 §4](../12-http-networking/04-clients-and-timeouts.md)) |
+| No `ReadHeaderTimeout` | Slowloris exhaustion | Always set it ([12 Section 4](../12-http-networking/04-clients-and-timeouts.md)) |
 | Ready=true before deps pinged | 5xx burst on every deploy | Readiness pings critical deps |
 | Missing signal handling locally | Ctrl-C leaves orphan goroutines | Same `signal.NotifyContext` path everywhere |
 
@@ -177,13 +177,13 @@ them, and keep p99 boot under the probe's failure threshold
 Shutdown is the concurrency review moment: every goroutine started
 at boot must be joined or provably trivial. The audit: search for
 `go func` at boot; each one needs an owner, a stop signal, and a
-`wg.Wait()` path ([08 §7](../08-concurrency/07-pitfalls.md)'s leak
+`wg.Wait()` path ([08 Section 7](../08-concurrency/07-pitfalls.md)'s leak
 shapes are exactly the ones that survive shutdown).
 
 ## Security Considerations
 
 Shutdown ordering is security ordering: flush the audit log
-([25 §3](../25-fintech-with-go/03-integrity-and-exactly-once.md))
+([25 Section 3](../25-fintech-with-go/03-integrity-and-exactly-once.md))
 before the process dies, and do not close the secret-mounted files
 before the last credential use. On `SIGKILL` none of this runs:
 design the durable parts (outbox, audit table) to be
@@ -191,14 +191,14 @@ crash-consistent at commit time, not at exit time.
 
 ## Testing Strategy
 
-- The in-process shutdown test ([12 §5](../12-http-networking/05-graceful-shutdown.md)):
+- The in-process shutdown test ([12 Section 5](../12-http-networking/05-graceful-shutdown.md)):
   start the real `run` on a port, fire the context cancel, assert
   in-flight requests completed and the port freed.
 - Probe contract tests: readiness true with deps up, false with a
   dependency refused; liveness always true.
 - Chaos drill: kill pods under load in staging; assert zero 5xx
   beyond the drain window and no leaked goroutines in the pprof
-  endpoint afterward ([20 §5](../20-observability/05-incident-debugging.md)).
+  endpoint afterward ([20 Section 5](../20-observability/05-incident-debugging.md)).
 
 ## Interview Questions
 

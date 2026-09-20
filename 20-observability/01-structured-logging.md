@@ -123,7 +123,7 @@ The same event, searched three ways in a log platform:
 This is why field names are an API. Renaming `customer` to
 `customer_id` silently breaks every saved query and alert; treat the
 field set as versioned surface (the same discipline as
-[15 §2](../15-microservices/02-boundaries-and-contracts.md) contract
+[15 Section 2](../15-microservices/02-boundaries-and-contracts.md) contract
 versioning).
 
 ## Production Example
@@ -144,7 +144,7 @@ func (s Secret) String() string       { return "REDACTED" }
 ```
 
 **2. Log at the layer that owns the outcome, once.**
-[05 §2](../05-errors/02-error-design.md)'s log-once rule: the
+[05 Section 2](../05-errors/02-error-design.md)'s log-once rule: the
 service logs the refusal with its business reason; the transport
 logs the HTTP result. The error itself travels unwrapped up the
 stack; each layer logs its own verdict, not the same error three
@@ -161,7 +161,7 @@ query can pull that request's Debug detail because it shares the ID.
 | Mistake | Why it hurts | Do instead |
 |---|---|---|
 | `fmt.Println`/`log.Printf` in libraries | Unstructured, unlevel, no context | Accept `*slog.Logger` or return errors; library code rarely logs |
-| Logging then returning the error | Duplicate, confusing chains | Log at the layer that handles it ([05 §2](../05-errors/02-error-design.md)) |
+| Logging then returning the error | Duplicate, confusing chains | Log at the layer that handles it ([05 Section 2](../05-errors/02-error-design.md)) |
 | `%+v` on structs with PII | Dumps every field including secrets | Log the fields you chose, by name |
 | String building: `logger.Info("user " + id + " failed")` | Unqueryable | `logger.Info("user failed", "id", id)` |
 | Rotation/compression in the app | Rebuilt per service, breaks containers | stdout only; the platform rotates |
@@ -192,7 +192,7 @@ second. The escape hatches, in order of increasing commitment:
 - Preallocate `slog.Attr` slices on hot paths; avoid `With` in loops
   (each call allocates a new logger).
 
-Measure before caring ([19 §1](../19-performance/01-measure-first.md)):
+Measure before caring ([19 Section 1](../19-performance/01-measure-first.md)):
 logging shows up in profiles only when volume is high or formatting
 is pathological.
 
@@ -203,7 +203,7 @@ Handlers must be safe for concurrent use; the stdlib handlers are.
 logging inside a worker pool, pass the request-scoped logger into
 the closure: pulling `FromContext(ctx)` after a channel hop still
 works because the context travels with the work item ([08
-§5](../08-concurrency/05-patterns.md)).
+Section 5](../08-concurrency/05-patterns.md)).
 
 ## Security Considerations
 

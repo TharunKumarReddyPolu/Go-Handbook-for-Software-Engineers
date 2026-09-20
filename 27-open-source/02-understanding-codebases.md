@@ -59,7 +59,7 @@ go test ./internal/transport -run TestName -v   # the behavior you will touch
 ```
 
 Editor equivalents: gopls' references and call hierarchy
-([11 §1](../11-tooling/01-professional-workflow.md)) do steps 3 and 4
+([11 Section 1](../11-tooling/01-professional-workflow.md)) do steps 3 and 4
 interactively.
 
 ## Real-World Example
@@ -80,7 +80,7 @@ the skill.
 - **Changing style mid-package.** A PR that renames things to your
   taste fails review on principle, regardless of technical merit.
 - **Not checking internal packages.** Go's `internal/` visibility rule
-  ([06 §1](../06-packages-modules/01-package-design.md)) sometimes
+  ([06 Section 1](../06-packages-modules/01-package-design.md)) sometimes
   means the fix you want must be exported through a deliberate API
   change, which is a discussion, not a PR.
 

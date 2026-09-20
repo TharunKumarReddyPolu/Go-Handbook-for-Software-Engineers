@@ -23,10 +23,10 @@ aggregate (not silently dropped).
 
 ```text
 Producers (services):  domain events on typed topics, envelope-versioned
-                       ([17 §4](../17-messaging/04-schemas-evolution-and-testing.md))
+                       ([17 Section 4](../17-messaging/04-schemas-evolution-and-testing.md))
 
 Consumer API (library):
-Run(ctx, topic, group, Handler)   # [18 §3](../18-kafka-with-go/03-producer-consumer.md)'s shape
+Run(ctx, topic, group, Handler)   # [18 Section 3](../18-kafka-with-go/03-producer-consumer.md)'s shape
 Handler(ctx, Event) error         # retry/DLQ semantics live beneath
 
 Query (read side):
@@ -48,7 +48,7 @@ Aggregate store (per window):
 
 The retention decision is the durability decision: 7 days of
 topics means every aggregate can be rebuilt by replay ([18
-§1](../18-kafka-with-go/01-kafka-concepts.md)'s log model): the
+Section 1](../18-kafka-with-go/01-kafka-concepts.md)'s log model): the
 processor is stateless-plus-checkpoint, not the source of truth.
 
 ## Architecture
@@ -66,53 +66,53 @@ flowchart LR
 
 - **Ordering**: per-key processing (charge_id) makes per-entity
   windows trivially ordered; global windows accept per-key
-  interleaving ([18 §1](../18-kafka-with-go/01-kafka-concepts.md)'s
+  interleaving ([18 Section 1](../18-kafka-with-go/01-kafka-concepts.md)'s
   partition = ordering promise).
 - **Windows**: tumbling windows (fixed, non-overlapping) are the
   default; the processor buckets events by `(window, key)`,
   upserts the aggregate, commits offsets *after* the upsert
-  ([18 §3](../18-kafka-with-go/03-producer-consumer.md)'s
+  ([18 Section 3](../18-kafka-with-go/03-producer-consumer.md)'s
   at-least-once with idempotent upserts = effectively-once
   aggregates: the honest phrasing of exactly-once).
 - **Late events**: events arriving after the window closed
   upsert a *correction* if within the lateness bound (store keeps
   windows live for N minutes past close); beyond that, the
-  reconciler ([25 §3](../25-fintech-with-go/03-integrity-and-exactly-once.md))
+  reconciler ([25 Section 3](../25-fintech-with-go/03-integrity-and-exactly-once.md))
   folds them into daily truth. Silent drops are a correctness
   lie.
 
 ## Scaling & reliability
 
-- Consumers scale by partitions ([18 §1](../18-kafka-with-go/01-kafka-concepts.md)):
+- Consumers scale by partitions ([18 Section 1](../18-kafka-with-go/01-kafka-concepts.md)):
   partition count sets max parallelism; 24 partitions ≈ 24
   effective consumers per topic.
 - Processor crash: replay from last committed offsets; idempotent
-  upserts make replay harmless ([18 §3](../18-kafka-with-go/03-producer-consumer.md)'s
+  upserts make replay harmless ([18 Section 3](../18-kafka-with-go/03-producer-consumer.md)'s
   offset contract).
 - Backpressure: bounded in-flight per consumer; the broker
-  buffers ([16 §5](../16-distributed-systems/05-delivery-backpressure-shedding.md)):
+  buffers ([16 Section 5](../16-distributed-systems/05-delivery-backpressure-shedding.md)):
   lag is the signal, drops are not the answer. Alert on lag trend,
-  not level ([20 §2](../20-observability/02-metrics.md)).
+  not level ([20 Section 2](../20-observability/02-metrics.md)).
 
 ## Failure modes
 
 | Failure | Behavior | Mitigation |
 |---|---|---|
-| Poison event | DLQ after attempts; window continues | [17 §3](../17-messaging/03-portable-patterns.md) |
+| Poison event | DLQ after attempts; window continues | [17 Section 3](../17-messaging/03-portable-patterns.md) |
 | Processor partition stall | Lag grows on one partition; page | per-partition lag alert |
-| Schema evolution breaks consumers | Consumers reject loudly; DLQ fills; no silent corruption | [17 §4](../17-messaging/04-schemas-evolution-and-testing.md)'s rules |
+| Schema evolution breaks consumers | Consumers reject loudly; DLQ fills; no silent corruption | [17 Section 4](../17-messaging/04-schemas-evolution-and-testing.md)'s rules |
 | Store unavailable | Offsets uncommitted; replay on recovery | upsert idempotency |
 
 ## Observability & security
 
 The four lag signals: consumer lag (per partition), end-to-end
 event-to-aggregate latency (the SLO, [20
-§4](../20-observability/04-slos-and-alerting.md)), DLQ depth, and
-replay age ([18 §4](../18-kafka-with-go/04-observability-tuning.md)'s
+Section 4](../20-observability/04-slos-and-alerting.md)), DLQ depth, and
+replay age ([18 Section 4](../18-kafka-with-go/04-observability-tuning.md)'s
 metric designs). Security: events carry business data to every
-consumer: PII fields minimized at the producer ([21 §5](../21-security/05-secrets-and-supply-chain.md));
+consumer: PII fields minimized at the producer ([21 Section 5](../21-security/05-secrets-and-supply-chain.md));
 the metrics API is authz-gated like any read API ([21
-§2](../21-security/02-authentication-and-authorization.md)).
+Section 2](../21-security/02-authentication-and-authorization.md)).
 
 ## Go implementation considerations
 
@@ -123,10 +123,10 @@ the metrics API is authz-gated like any read API ([21
   semantics as its test double.
 - **Window aggregation in Go**: `map[bucketKey]*aggregate` with
   a flush ticker; bounded via the lateness bound ([09
-  §5](../09-memory-runtime/05-memory-leaks.md)'s TTL discipline:
+  Section 5](../09-memory-runtime/05-memory-leaks.md)'s TTL discipline:
   expired buckets freed). The upsert is one Redis
   `INCRBY`/HSET per bucket or one `INSERT ... ON CONFLICT` ([13
-  §2](../13-databases/02-transactions-and-isolation.md)).
+  Section 2](../13-databases/02-transactions-and-isolation.md)).
 - **Offset-after-upsert** ordering is the correctness core: the
   commit happens only after the aggregate store accepts the
   batch; a crash replays, the upsert dedupes. Write the test
@@ -134,6 +134,6 @@ the metrics API is authz-gated like any read API ([21
   or the in-memory broker).
 - **Throughput hygiene**: batch reads (fetch min bytes), batch
   upserts (pipeline), no per-event allocations in the hot loop
-  ([19 §2](../19-performance/02-memory-and-allocations.md)'s
-  playbook; [09 §2](../09-memory-runtime/02-escape-analysis.md)'s
+  ([19 Section 2](../19-performance/02-memory-and-allocations.md)'s
+  playbook; [09 Section 2](../09-memory-runtime/02-escape-analysis.md)'s
   audit for the handler).

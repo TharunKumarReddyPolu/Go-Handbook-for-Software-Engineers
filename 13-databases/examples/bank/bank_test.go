@@ -13,7 +13,7 @@ import (
 // storeCases lists every PaymentStore implementation the unit tier
 // must behave identically to. The fake always runs; the db tier
 // appends the Postgres store (postgres_test.go). One harness, two
-// tiers, one contract (13 §4's parity idea).
+// tiers, one contract (13 Section 4's parity idea).
 //
 // Each subtest receives a fresh store via build, so cumulative
 // effects never leak between cases (the Postgres build re-seeds and

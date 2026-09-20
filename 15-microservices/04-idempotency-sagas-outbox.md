@@ -9,7 +9,7 @@ systems stay correct despite that, and they are the reason the
 monolith/microservices decision in chapter 1 is expensive: the
 monolith had local transactions; the fleet has these. The financial
 versions of these patterns (with money on the line) are developed in
-full in [25 §1-3](../25-fintech-with-go/03-integrity-and-exactly-once.md);
+full in [25 Section 1-3](../25-fintech-with-go/03-integrity-and-exactly-once.md);
 this chapter generalizes them to any service boundary.
 
 ## Mental Model
@@ -46,7 +46,7 @@ The client generates a key (UUID or a natural key like
    running"; never double-execute.
 
 ```sql
--- The claim table: uniqueness is the whole mechanism (25 §1's pattern)
+-- The claim table: uniqueness is the whole mechanism (25 Section 1's pattern)
 CREATE TABLE idempotency_keys (
 	key          text PRIMARY KEY,
 	request_hash text NOT NULL,   -- detect key reuse with a different body
@@ -119,7 +119,7 @@ Two coordination styles, and the honest tradeoff:
 | Change impact | coordinator deploy | any step deploy |
 
 Pragmatic default: **orchestrate money and order flows** (auditability
-is the requirement; [25 §3](../25-fintech-with-go/03-integrity-and-exactly-once.md)
+is the requirement; [25 Section 3](../25-fintech-with-go/03-integrity-and-exactly-once.md)
 builds the payment saga in full), **choreograph notifications and
 analytics** (no invariant to protect). Every compensation must be
 idempotent *and* safe to run after partial progress: the refund that
@@ -140,7 +140,7 @@ same transaction:
 
 The full relay mechanics (`FOR UPDATE SKIP LOCKED`, at-least-once
 publish, idempotent consumers) are built and tested in
-[25 §3](../25-fintech-with-go/03-integrity-and-exactly-once.md); the
+[25 Section 3](../25-fintech-with-go/03-integrity-and-exactly-once.md); the
 microservices-specific rules on top:
 
 1. **The outbox row carries the consumer's idempotency key**: the
@@ -148,7 +148,7 @@ microservices-specific rules on top:
    is what makes the whole chain debuggable with one ID.
 2. **Ordering per aggregate**: the relay preserves per-key order
    (order-48123's events never invert); global order is neither
-   promised nor needed ([18 §1](../18-kafka-with-go/01-kafka-concepts.md)'s
+   promised nor needed ([18 Section 1](../18-kafka-with-go/01-kafka-concepts.md)'s
    partition semantics align naturally: key by aggregate ID).
 3. **Relay lag is a metric**: the outbox is a queue in your database;
    its depth is the truth about event-driven health
@@ -175,12 +175,12 @@ project.
 
 ## Production Example: the patterns in the handbook's own code
 
-- The ledger's claim table ([25 §1](../25-fintech-with-go/01-money-and-payments.md)):
+- The ledger's claim table ([25 Section 1](../25-fintech-with-go/01-money-and-payments.md)):
   idempotency keys as primary keys, the uniqueness constraint doing
   the work.
-- The relay ([25 §3](../25-fintech-with-go/03-integrity-and-exactly-once.md)):
+- The relay ([25 Section 3](../25-fintech-with-go/03-integrity-and-exactly-once.md)):
   the outbox poller with `SKIP LOCKED` and at-least-once publishing.
-- The Kafka consumer's dedup ([18 §3](../18-kafka-with-go/03-producer-consumer.md)):
+- The Kafka consumer's dedup ([18 Section 3](../18-kafka-with-go/03-producer-consumer.md)):
   the consumer-side half of the same discipline.
 - This section's example (`examples/resilience/`) adds the
   retry/breaker layer under the *outbound* half of these flows.
@@ -209,7 +209,7 @@ project.
 ## Idiomatic Go
 
 - Claim tables and outbox tables live beside the domain schema,
-  migrated together ([13 §3](../13-databases/03-pooling-drivers-migrations.md)).
+  migrated together ([13 Section 3](../13-databases/03-pooling-drivers-migrations.md)).
 - The saga coordinator is a plain service with a state machine
   struct: `type Saga struct{ step int; ... }` and a `step()` method
   per state; no workflow framework needed to start.
@@ -220,17 +220,17 @@ project.
 
 - Claim-table lookups are one extra primary-key touch per write:
   negligible. The real cost is the outbox relay's polling cadence vs
-  event freshness; tune batch size and interval with the 13 §3 pool
+  event freshness; tune batch size and interval with the 13 Section 3 pool
   math in view.
 - Saga state persistence per step adds a write per hop: for hot
-  flows, batch step-claims ([19 §1](../19-performance/01-measure-first.md)
+  flows, batch step-claims ([19 Section 1](../19-performance/01-measure-first.md)
   before optimizing).
 
 ## Concurrency Considerations
 
 - Two concurrent first-requests with the same key: the primary key
   makes one insert win; the loser sees the conflict path. This is
-  the entire concurrency story, enforced by the database ([08 §4](../08-concurrency/04-sync-primitives.md)'s
+  the entire concurrency story, enforced by the database ([08 Section 4](../08-concurrency/04-sync-primitives.md)'s
   "let the single writer win" principle at the storage layer).
 - Orchestration concurrency: one worker per saga instance (keyed
   sharding), never two coordinators racing the same saga.
@@ -239,7 +239,7 @@ project.
 
 - Idempotency keys are client-supplied and stored: validate length/
   charset, namespace per customer, and never log full request bodies
-  beside them ([14 §2](../14-backend-development/02-configuration-and-secrets.md)'s
+  beside them ([14 Section 2](../14-backend-development/02-configuration-and-secrets.md)'s
   redaction discipline).
 - The replay path returns recorded responses: ensure the recorded
   payload carries no secrets that outlive the session
@@ -276,7 +276,7 @@ project.
 2. Build a three-step saga coordinator with fakes; force a step-2
    failure and assert both compensations ran, then make a
    compensation fail and decide (in code) what the saga records.
-3. Wire the outbox + relay from 25 §3 and add the replay test: same
+3. Wire the outbox + relay from 25 Section 3 and add the replay test: same
    event delivered twice, one effect.
 
 ## Further Reading

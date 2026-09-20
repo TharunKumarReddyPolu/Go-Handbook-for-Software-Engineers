@@ -36,8 +36,8 @@ flowchart LR
 - **Offer the smallest version first.** An internal fix that removes
   80% of the pain is easier to accept than the full-featured public
   API. You can grow it later; you cannot easily shrink a shipped one
-  (the compatibility discipline from [06 §5](../06-packages-modules/05-reproducible-builds.md)
-  and the versioning habits in [06 §6](../06-packages-modules/06-semantic-versioning.md)).
+  (the compatibility discipline from [06 Section 5](../06-packages-modules/05-reproducible-builds.md)
+  and the versioning habits in [06 Section 6](../06-packages-modules/06-semantic-versioning.md)).
 - **Write the decision down.** A short issue comment: what was agreed,
   what was explicitly out of scope. It prevents the slow PR drift that
   exhausts both sides.
@@ -53,7 +53,7 @@ The professional moves:
    who argues; they also track who did not, and the second group gets
    their next PR reviewed faster.
 3. If the need is real for you, maintain it in your own fork or as a
-   small module, and keep the upstream seam clean ([18 §2](../18-kafka-with-go/02-go-clients.md)'s
+   small module, and keep the upstream seam clean ([18 Section 2](../18-kafka-with-go/02-go-clients.md)'s
    transport/domain seam applies to your patch too).
 
 ### The habits of long-term contributors
@@ -103,7 +103,7 @@ showing up predictably.
 Where you invest long-term matters: Go's ecosystem rewards
 contributors who can read the stdlib source fluently (it is the style
 reference for everything), keep module compatibility promises, and
-write tests that pin behavior ([10 §4](../10-testing/04-benchmarks-coverage-fuzzing.md)'s
+write tests that pin behavior ([10 Section 4](../10-testing/04-benchmarks-coverage-fuzzing.md)'s
 fuzzing habit catches real bugs upstream and is always welcome). A
 maintainer reading your fifth PR should be able to merge it on the
 tests alone.
