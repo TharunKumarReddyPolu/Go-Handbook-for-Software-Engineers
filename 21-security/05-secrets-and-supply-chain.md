@@ -119,6 +119,13 @@ func FuzzResolveUnder(f *testing.F) {
 }
 ```
 
+**Secret scanning** closes the other half of the loop: govulncheck
+catches bad dependencies, but a credential pasted into a commit is
+yours alone to leak. Run a scanner (gitleaks, trufflehog) as a CI
+gate on every push, and keep secrets out of logs with the redaction
+types from this chapter. Rotating a pushed secret is an incident;
+blocking it at the PR is config.
+
 ## Basic Example
 
 The webhook receiver that got SSRF right: allowlist of two hosts,

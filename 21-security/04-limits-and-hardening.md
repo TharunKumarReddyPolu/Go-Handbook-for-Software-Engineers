@@ -127,6 +127,15 @@ outage; the bulkhead ([15 Section 3](../15-microservices/03-resilience-patterns.
 is a rate limiter for concurrency. Bound goroutine fan-out with a
 semaphore ([08 Section 5](../08-concurrency/05-patterns.md)).
 
+**Response headers are hardening too:** Go sets no security headers
+by default, so a stdlib service ships none unless you add them. One
+middleware, decided once: `Strict-Transport-Security` for browser
+clients, `X-Content-Type-Options: nosniff` to stop MIME confusion
+on user-supplied files, and a `Content-Security-Policy` whenever the
+service renders HTML (API-only services can skip CSP: they serve no
+documents to confine). Unlike rate limits, headers never
+false-positive, so the bar for adding them is low.
+
 ## Common Mistakes
 
 | Mistake | Consequence | Do instead |
@@ -206,6 +215,8 @@ attack in progress, visible before it hurts.
    you would set on it.
 
 ## Further Reading
+
+- [OWASP Secure Headers Project](https://owasp.org/www-project-secure-headers/): header-by-header guidance
 
 - [x/time/rate documentation](https://pkg.go.dev/golang.org/x/time/rate)
 - [Go 1.25 release notes: sync.Map improvements](https://go.dev/doc/go1.25)

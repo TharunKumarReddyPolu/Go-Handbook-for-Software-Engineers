@@ -165,9 +165,10 @@ request (also faster).
 ## Security Considerations
 
 This chapter is the security chapter for injection. The
-defense-in-depth stack: parameterized SQL, type-safe domains,
-bounded input, and least-privilege DB accounts (an app account that
-cannot `DROP` turns an injection into a nuisance).
+defense-in-depth stack: parameterized SQL (the whole SQL injection
+defense: values travel as values, never as query text), type-safe
+domains, bounded input, and least-privilege DB accounts (an app
+account that cannot `DROP` turns an injection into a nuisance).
 
 ## Testing Strategy
 

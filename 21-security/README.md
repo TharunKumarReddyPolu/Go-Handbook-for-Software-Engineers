@@ -20,7 +20,7 @@ mechanics with tests.
    defaults, autocert, internal mTLS, rotation and expiry monitoring
 4. **[Limits & hardening](04-limits-and-hardening.md)**: the
    two-layer rate limiter, body caps, cheap-checks-first ordering,
-   the 429 contract
+   the 429 contract, response security headers
 5. **[Secrets, hashing & the supply chain](05-secrets-and-supply-chain.md)**:
    redaction types, PBKDF2/argon2id, SSRF allowlisted fetching, CORS,
    govulncheck and fuzzing
