@@ -86,6 +86,14 @@ Two details carry most of the value:
   translate it to your domain's not-found (as in
   [05 Section 2](../05-errors/02-error-design.md)) and move on.
 
+**Bulk writes are a different tool.** Row-at-a-time `Exec` in a loop
+turns one job into thousands of round trips. The ladder: multi-row
+`INSERT ... VALUES` for modest batches; `ON CONFLICT DO UPDATE` for
+upsert semantics, with the conflict target stated explicitly; and
+`COPY` (pgx's `CopyFrom`) when rows number in the thousands. Batch
+size is a measurement question, not a constant
+([19 Section 1](../19-performance/01-measure-first.md)).
+
 ## How It Works: drivers
 
 `database/sql` defines the interface; a driver implements it.

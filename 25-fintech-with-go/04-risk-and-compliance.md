@@ -133,6 +133,7 @@ regulation drives:
 | Driver | Engineering consequence |
 |---|---|
 | PCI DSS (card data) | card numbers never in your systems/logs; tokenization at the PSP; scope reduction as an architecture goal |
+| ISO 20022 (payment messaging) | message schemas are versioned contracts; translate at the boundary, never inside the ledger |
 | AML/KYC | identity checks as explicit workflow states; sanctions screening as a blocking gate with audit trail |
 | Retention rules | ledger + audit logs retained per jurisdiction (often 5-10y); append-only storage enforced technically |
 | Right-to-explanation (fair lending/fraud) | decisions explainable and reproducible from stored features + versioned rules |

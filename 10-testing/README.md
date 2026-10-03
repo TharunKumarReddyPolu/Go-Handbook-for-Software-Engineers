@@ -21,7 +21,7 @@ By the end of this section you can:
 |---|---|---|
 | 1 | [Fundamentals](01-fundamentals.md) | Table-driven tests, subtests, helpers, t.Cleanup |
 | 2 | [Test doubles & httptest](02-doubles-and-httptest.md) | Fakes, stubs, mocks, HTTP handler testing |
-| 3 | [Integration & e2e](03-integration-and-e2e.md) | Tiers, build tags, skip patterns |
+| 3 | [Integration & e2e](03-integration-and-e2e.md) | Tiers, build tags, skip patterns, deterministic time (synctest) |
 | 4 | [Benchmarks, coverage, fuzzing](04-benchmarks-coverage-fuzzing.md) | The measurement toolkit |
 
 ## Examples

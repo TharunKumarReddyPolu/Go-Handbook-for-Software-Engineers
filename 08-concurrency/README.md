@@ -23,7 +23,7 @@ By the end of this section you can:
 | 1 | [Goroutines & channels](01-goroutines-and-channels.md) | The model, ownership, directional channels |
 | 2 | [Select & timeouts](02-select-and-timeouts.md) | Multiplexing, the time.After trap |
 | 3 | [Context](03-context.md) | Cancellation, deadlines, values |
-| 4 | [Sync primitives](04-sync-primitives.md) | Mutex, RWMutex, Once, WaitGroup, atomic, sync.Map |
+| 4 | [Sync primitives](04-sync-primitives.md) | Mutex, RWMutex, Once/OnceFunc, WaitGroup, atomic, sync.Map |
 | 5 | [Patterns](05-patterns.md) | Pools, pipelines, fan-out/in, semaphores, rate limits |
 | 6 | [Concurrency vs parallelism](06-concurrency-vs-parallelism.md) | Models, scheduling, what to claim in interviews |
 | 7 | [Pitfalls](07-pitfalls.md) | Deadlocks, races, leaks, starvation, the race detector |

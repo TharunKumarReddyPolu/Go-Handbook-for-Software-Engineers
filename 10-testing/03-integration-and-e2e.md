@@ -104,6 +104,19 @@ Rules embedded here:
 - **Skip vs fail:** missing *infrastructure* skips; a broken assumption
   fails. CI must set the env vars so skip never hides a broken suite.
 
+### Deterministic time for concurrent tests
+
+The other flake source is `time.Sleep` in assertions: too short and
+the test flakes, too long and the suite crawls. `testing/synctest`
+(experimental in Go 1.24, stable in Go 1.25) runs the test in an
+isolated bubble where time is virtual: sleeps, timers, and
+`context.WithTimeout` complete instantly in test time, while
+`synctest.Wait` returns only when every goroutine in the bubble is
+durably blocked, giving assertions a deterministic ordering point. A
+bubble whose goroutines all block fails fast instead of hanging. Scope
+it to concurrency logic (pipelines, timeouts, cancellation); code that
+talks to real infrastructure still needs the real tiers above.
+
 ### Migrations are part of the contract
 
 Integration tests must apply the same migrations production uses. If

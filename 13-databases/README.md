@@ -10,7 +10,7 @@ section explains is used in anger by the fintech ledger:
 
 | # | Chapter | Focus |
 |---|---|---|
-| 1 | [database/sql in depth](01-database-sql.md) | the pool-handle mental model, the 90% queries, scanning traps, drivers |
+| 1 | [database/sql in depth](01-database-sql.md) | the pool-handle mental model, the 90% queries, bulk writes, scanning traps, drivers |
 | 2 | [Transactions & isolation](02-transactions-and-isolation.md) | the transaction function, read phenomena, optimistic vs pessimistic, retry discipline |
 | 3 | [Pooling, drivers & migrations](03-pooling-drivers-migrations.md) | sizing math, symptoms, pgx vs database/sql, expand/contract deploys |
 | 4 | [Repositories, ORMs & testing](04-repositories-and-testing.md) | consumer-side interfaces, the ORM ledger, sqlc, the two-tier test strategy |

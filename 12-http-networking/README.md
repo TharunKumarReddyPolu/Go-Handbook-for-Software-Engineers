@@ -12,7 +12,7 @@ context rules in [08 Section 3](../08-concurrency/03-context.md).
 |---|---|---|
 | 1 | [Handlers & routing](01-handlers-and-routing.md) | Go 1.22 ServeMux patterns, handler discipline, what still needs a framework |
 | 2 | [Middleware](02-middleware.md) | the wrapping pattern, Chain, ordering rules, stdlib TimeoutHandler |
-| 3 | [JSON & REST APIs](03-json-and-rest-apis.md) | wire types vs domain types, decode/encode helpers, status-code decisions |
+| 3 | [JSON & REST APIs](03-json-and-rest-apis.md) | wire types vs domain types, decode/encode helpers, status-code decisions, streaming/compression/conditional requests |
 | 4 | [HTTP clients & timeouts](04-clients-and-timeouts.md) | the knob map, pooling judgment, idempotent retries |
 | 5 | [Graceful shutdown](05-graceful-shutdown.md) | the full lifecycle, readiness, dependency close order |
 

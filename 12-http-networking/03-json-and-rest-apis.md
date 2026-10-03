@@ -177,6 +177,16 @@ processes.
   never hit the threshold where it matters.
 - Reused decoders are not safe across requests; the allocation per
   request is small and correct beats cached and racy.
+- **The other response shapes live in the stdlib too.** `http.Flusher`
+  streams progressive responses and is the whole basis of server-sent
+  events (`Content-Type: text/event-stream`, write, flush per event).
+  `gzip` compression is a middleware decision: never compress small
+  JSON or already-compressed bodies, and cap decompressed size when
+  acting as the client. `ETag` plus `If-None-Match` turns repeat
+  fetches into 304s. WebSockets are the one real gap: bidirectional
+  connections outgrow `http.Handler`, so pick a maintained library,
+  and know its shutdown story
+  ([05](05-graceful-shutdown.md) applies to hijacked connections too).
 
 ## Concurrency Considerations
 

@@ -105,6 +105,13 @@ completes. Two caveats: a panicking `Do` still counts as done (the
 failure is sticky), and `Do` cannot take arguments: capture them in the
 closure.
 
+For one-shot functions rather than struct fields, `sync.OnceFunc` and
+`sync.OnceValue` (Go 1.21+) package the same idiom as a value:
+`load := sync.OnceValue(loadConfig)` gives a function whose expensive
+body runs on first call and is memoized after. There is no
+error-carrying variant: return a result struct from the closure if you
+need one, and the panic-stickiness caveat above applies to these too.
+
 ## WaitGroup: the collector
 
 ```go
