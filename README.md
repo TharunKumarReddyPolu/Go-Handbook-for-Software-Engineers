@@ -110,6 +110,16 @@ If this handbook helps you on your path to mastering Go, please consider:
 
 </div>
 
+## Star History
+
+<a href="https://www.star-history.com/?repos=tharunkumarreddypolu%2Fgo-handbook-for-software-engineers&type=date&legend=bottom-right">
+<picture>
+<source media="(prefers-color-scheme: dark)" srcset="https://api.star-history.com/chart?repos=tharunkumarreddypolu/go-handbook-for-software-engineers&type=date&theme=dark&legend=top-left" />
+<source media="(prefers-color-scheme: light)" srcset="https://api.star-history.com/chart?repos=tharunkumarreddypolu/go-handbook-for-software-engineers&type=date&legend=top-left" />
+<img alt="Star History Chart" src="https://api.star-history.com/chart?repos=tharunkumarreddypolu/go-handbook-for-software-engineers&type=date&legend=top-left" />
+</picture>
+</a>
+
 ---
 
 <div align="center">
