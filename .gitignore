@@ -23,9 +23,6 @@ coverage.html
 .DS_Store
 Thumbs.db
 
-# Local agent state
-.freebuff/
-
 # Local environment files
 .env
 .env.local
