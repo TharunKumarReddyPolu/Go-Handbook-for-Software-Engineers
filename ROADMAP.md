@@ -138,3 +138,5 @@ standing maintenance (below) and opportunistic improvement.
 - [ ] Re-run govulncheck weekly (CI scheduled)
 - [ ] Periodic link and terminology audit (GLOSSARY.md is the source of truth)
 - [ ] Reader feedback: recurring confusion points become new "Common Mistakes" entries
+- [ ] Submit to awesome-go after 2027-02-09 (kit ready: meta/awesome-go-submission.md)
+- [ ] Keep the Codecov coverage report current (CI uploads on every push)
