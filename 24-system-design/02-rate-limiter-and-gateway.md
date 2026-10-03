@@ -20,6 +20,14 @@ meet physical traffic.
 | Routing + backpressure | route to services; shed before collapse |
 | p99 edge overhead | < 5ms added |
 
+**The algorithm family, since interviews ask for it:** token bucket
+(this design's choice) caps rate and allows controlled burst. Fixed-
+window counters are the cheapest but burst at window boundaries;
+sliding-window logs are exact but pay memory per request; sliding-
+window counters approximate the log using two adjacent windows. The
+production compromise is almost always token bucket per identity plus
+a global cap, which is what this design builds.
+
 ## APIs
 
 The gateway speaks the backend's contract; the limiter's API is

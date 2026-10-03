@@ -27,8 +27,8 @@ By the end of this section you can:
 
 | # | Chapter | Focus |
 |---|---|---|
-| 1 | [Money & payments in Go](01-money-and-payments.md) | Minor units, idempotency, retry semantics |
-| 2 | [Double-entry ledgers](02-double-entry-ledger.md) | The ledger model, invariants, a tested implementation |
+| 1 | [Money & payments in Go](01-money-and-payments.md) | Minor units, the payment lifecycle (auth/capture/void/refund/chargeback), idempotency, retry semantics |
+| 2 | [Double-entry ledgers](02-double-entry-ledger.md) | The ledger model, chart of accounts, trial balance, invariants, a tested implementation |
 | 3 | [Integrity, consistency & exactly-once myths](03-integrity-and-exactly-once.md) | Distributed transactions, outbox, reconciliation |
 | 4 | [Risk, market data & compliance](04-risk-and-compliance.md) | Fraud pipelines, event-driven finance, regulatory notes |
 

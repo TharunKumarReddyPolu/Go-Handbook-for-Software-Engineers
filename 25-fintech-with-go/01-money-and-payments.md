@@ -116,6 +116,28 @@ Design notes that matter in review:
   struct literal.
 - Comparisons compare currency first; equality includes currency.
 
+## The life of a payment: auth, capture, void, refund, chargeback
+
+The states a card payment moves through are distinct money events,
+not flags on one row:
+
+- **Authorization** places a hold: the issuer reserves the amount; no
+  money has moved. Uncaptured authorizations expire.
+- **Capture** moves the money (often partially: capture less than
+  was authorized).
+- **Void** cancels an uncaptured authorization: no money moved, so it
+  is the reversal of a hold, not a refund.
+- **Refund** returns captured money, initiated by the merchant.
+- **Chargeback** returns captured money involuntarily: the cardholder
+  disputes the charge through their issuer. The dispute lifecycle
+  (reason code, representment, evidence deadlines) runs on your
+  stored audit trail ([03](03-integrity-and-exactly-once.md)'s
+  audit-log rules).
+
+Each event is its own ledger posting with its own idempotency key.
+Modeling them as status flags on a payments row is how "refund"
+before reconciliation loses points (this chapter's interview note).
+
 ## Idempotent payments: the durable claim pattern
 
 Section 18 introduced claim/apply/release against an in-memory store.

@@ -13,7 +13,7 @@ and explains how they compose at design scale.
 |---|---|---|
 | 1 | [URL shortener](01-url-shortener.md) | the warm-up: ID generation, read-heavy caching, the open-redirector trap |
 | 2 | [Rate limiter & API gateway](02-rate-limiter-and-gateway.md) | the edge: shared buckets, auth-then-limit-then-route, shed-before-collapse |
-| 3 | [Payment service & ledger](03-payment-service-and-ledger.md) | the flagship: idempotency, double-entry, outbox, the unknown-PSP-response discipline |
+| 3 | [Payment service & ledger](03-payment-service-and-ledger.md) | the flagship: idempotency, double-entry, outbox, PSP webhooks, the unknown-PSP-response discipline |
 | 4 | [Notification system](04-notification-system.md) | fan-out under vendor limits: priority lanes, dedup layers, honest 202s |
 | 5 | [Job scheduler & distributed cache](05-job-scheduler-and-distributed-cache.md) | ownership: SQL leases with SKIP LOCKED, fencing, consistent hashing, singleflight |
 | 6 | [Event processing & analytics](06-event-processing-and-analytics.md) | streams: per-key ordering, windowed aggregation, offsets-after-upsert |

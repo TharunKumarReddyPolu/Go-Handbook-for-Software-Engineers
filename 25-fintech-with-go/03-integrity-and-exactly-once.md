@@ -122,7 +122,10 @@ standard flows:
 2. **External**: your ledger vs the PSP's settlement report,
    every auth, capture, refund, and fee matched line by line. Mismatches
    become investigate items with SLAs; unmatched PSP records are money
-   you don't know about.
+   you don't know about. Clearing and settlement are different clocks:
+   clearing exchanges the payment obligations, settlement moves the
+   funds (often T+1), so the PSP report you reconcile runs a day or
+   more behind your ledger by design.
 3. **Claim closure**: claims pending longer than T are queried against
    the PSP (the timeout workflow from ch. 01) and resolved.
 

@@ -14,8 +14,8 @@ event-driven architecture earns its keep.**
 
 ## Requirements
 
-**Orders**: create → reserve stock → charge → fulfill, each step
-compensable; idempotent per order; p99 create < 300ms.
+**Orders**: create → reserve stock (inventory reservation) → charge →
+fulfill, each step compensable; idempotent per order; p99 create < 300ms.
 
 **Fraud**: score every order < 2s behind the critical path;
 blocklist/velocity/model signals; decisions: approve, review,

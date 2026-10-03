@@ -35,10 +35,19 @@ flowchart LR
     A2["Account: revenue<br/>balance = sum of its lines"] -.-> L2
 ```
 
+A production ledger fixes its vocabulary up front: the **chart of
+accounts** is the fixed catalogue of accounts postings may touch
+(asset, liability, revenue, expense, and their sub-accounts).
+Inventing account names at write time is how an audit turns into
+archaeology.
+
 The invariants: the entire safety story:
 
 1. **Every entry sums to zero.** Money appears from nowhere and
-   vanishes to nowhere, ever.
+   vanishes to nowhere, ever. The account-level statement of the same
+   rule is the **trial balance**: sum all debits and all credits
+   across the ledger and the totals match. It is the one number that
+   must never drift, and the cheapest integrity check you own.
 2. **Entries are immutable.** Mistakes are corrected by *new* reversing
    entries, never edits. The ledger is the audit trail.
 3. **Accounts are derived.** Balance(account) = sum of its lines.
@@ -217,6 +226,10 @@ the whole engineering gap:
    transaction boundary discussion).
 2. **Ordering**: the entry sequence comes from a DB sequence; per-
    account serialization uses row locks or per-account writer lanes.
+   The wrinkle is the **hot account**: the house or clearing account
+   every payment touches serializes no matter how you shard. Split it
+   into sub-accounts and batch its postings; a single account's
+   throughput is the ledger's ceiling.
 3. **Immutability**: enforced by permissions and append-only design,
    not just by Go's unexported fields. Audit access is its own role.
 

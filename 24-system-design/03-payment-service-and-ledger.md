@@ -36,6 +36,16 @@ The idempotency contract ([25 Section 3](../25-fintech-with-go/03-integrity-and-
 same key + same request hash → replay the stored result; same key
 + different hash → 422 (client bug, loud failure).
 
+**How PSP results arrive** (the API table shows polling, but that is
+only half the ingress): a real PSP also pushes webhooks: asynchronous,
+retried, at-least-once, occasionally out of order. Webhook ingress is
+therefore an event source with its own rules: idempotent by the PSP's
+event ID, sender verified before parsing
+([21 Section 5](../21-security/05-secrets-and-supply-chain.md)), and
+landing in the same outbox-and-ledger path a poll would have taken.
+Polling remains the fallback and the reconciliation backbone
+([25 Section 3](../25-fintech-with-go/03-integrity-and-exactly-once.md)).
+
 ## Data model
 
 ```sql
@@ -105,6 +115,11 @@ tested relay):
   `account_id` hash when a single Postgres is exhausted ([16
   Section 4](../16-distributed-systems/04-quorums-sharding.md)); per-account
   ordering falls out of the shard key.
+- The hot-account wrinkle survives sharding: one account (the house
+  or clearing account every payment touches) serializes its postings
+  no matter where it lives. Split it into sub-accounts and batch its
+  postings ([25 Section 2](../25-fintech-with-go/02-double-entry-ledger.md)'s
+  production notes).
 - PSP is the dependency to design around: its failure class is
   degrading ([22 Section 4](../22-production-go/04-dependency-failures.md)):
   charges queue in the outbox as "pending PSP", the breaker opens,
