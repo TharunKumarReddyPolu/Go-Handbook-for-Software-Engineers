@@ -8,6 +8,7 @@
 
 [![CI](https://github.com/TharunKumarReddyPolu/Go-Handbook-for-Software-Engineers/actions/workflows/ci.yml/badge.svg)](https://github.com/TharunKumarReddyPolu/Go-Handbook-for-Software-Engineers/actions/workflows/ci.yml)
 [![Go version](https://img.shields.io/badge/go-1.27-00ADD8?logo=go&logoColor=white)](https://go.dev/doc/go1.27)
+[![Go Reference](https://pkg.go.dev/badge/github.com/TharunKumarReddyPolu/Go-Handbook-for-Software-Engineers.svg)](https://pkg.go.dev/github.com/TharunKumarReddyPolu/Go-Handbook-for-Software-Engineers)
 [![GitHub stars](https://img.shields.io/github/stars/TharunKumarReddyPolu/Go-Handbook-for-Software-Engineers?style=social)](https://github.com/TharunKumarReddyPolu/Go-Handbook-for-Software-Engineers/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/TharunKumarReddyPolu/Go-Handbook-for-Software-Engineers?style=social)](https://github.com/TharunKumarReddyPolu/Go-Handbook-for-Software-Engineers/network/members)
 [![Last commit](https://img.shields.io/github/last-commit/TharunKumarReddyPolu/Go-Handbook-for-Software-Engineers/main?label=last%20commit)](https://github.com/TharunKumarReddyPolu/Go-Handbook-for-Software-Engineers/commits/main)
