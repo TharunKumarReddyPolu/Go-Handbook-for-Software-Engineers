@@ -49,12 +49,14 @@ func NewTracker() *Tracker {
 	return &Tracker{stop: make(map[int]chan struct{})}
 }
 
-// StartNoOwner leaks: nothing can ever stop the goroutine.
+// StartNoOwner leaks: nothing can ever stop the goroutine. It blocks
+// on a channel no one will ever close: the stack and the closure
+// (with the captured name) are retained forever, without burning CPU.
 func (t *Tracker) StartNoOwner(name string) {
 	go func() {
-		for {
-			_ = name // "process events" forever
-		}
+		_ = name // the closure pins its argument
+		var forever chan struct{}
+		<-forever // "process events" forever; nothing ever sends
 	}()
 }
 
@@ -68,17 +70,14 @@ func (t *Tracker) Start(name string) (stop func()) {
 	t.stop[id] = quit
 	t.mu.Unlock()
 	go func() {
-		for {
-			select {
-			case <-quit:
-				t.mu.Lock()
-				delete(t.stop, id)
-				t.mu.Unlock()
-				return
-			default:
-				_ = name // process events
-			}
-		}
+		defer func() {
+			t.mu.Lock()
+			delete(t.stop, id)
+			t.mu.Unlock()
+		}()
+		<-quit // blocks: zero CPU while idle. A select with a default
+		// branch here would spin a full core per worker: the busy-wait
+		// trap that turns a well-owned goroutine into a load problem.
 	}()
 	var once sync.Once
 	return func() { once.Do(func() { close(quit) }) }
