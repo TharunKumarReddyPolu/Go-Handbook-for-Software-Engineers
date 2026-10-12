@@ -50,7 +50,10 @@ Two consequences:
 1. **Allocation is safe by default.** `new(T)`, `&T{}`, `make`, a fresh
    goroutine's stack frame: all zero memory first. C++ classes teach you
    to fear uninitialized members; Go eliminates the fear by paying a
-   zeroing cost.
+   zeroing cost. Since Go 1.26, `new` also accepts an initial-value
+   expression: `age := new(42)` has type `*int` and points to 42. Use
+   this when a pointer to a value is required; `new(T)` without an
+   argument still returns a pointer to T's zero value.
 2. **Types should be designed to be *useful* at zero.** The standard
    library is the proof:
    - `bytes.Buffer{}`: ready to write, no constructor.

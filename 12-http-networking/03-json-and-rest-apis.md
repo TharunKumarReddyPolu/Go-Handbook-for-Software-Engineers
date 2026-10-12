@@ -40,6 +40,14 @@ from breaking domain code and vice versa.
   most money-rounding bugs (see
   [25 Section 1](../25-fintech-with-go/01-money-and-payments.md)).
 
+Go 1.27 adds `encoding/json/v2` for stricter, configurable JSON
+semantics and `encoding/json/jsontext` for token-level processing. The
+v2 defaults reject invalid UTF-8 and duplicate object names. The
+existing `encoding/json` API remains supported and is backed by the new
+implementation; behavior is preserved, though error text may differ.
+Choose v2 deliberately at a wire boundary where stricter interoperability
+is wanted rather than assuming the v1 API has been removed.
+
 ## Syntax / API: the two helper functions
 
 Nearly every service needs exactly these two:
@@ -242,5 +250,7 @@ processes.
 ## Further Reading
 
 - [encoding/json package](https://pkg.go.dev/encoding/json)
+- [encoding/json/v2 package](https://pkg.go.dev/encoding/json/v2) (Go 1.27+)
+- [Go 1.27 release notes: JSON v2](https://go.dev/doc/go1.27)
 - [JSON and Go (Go Blog)](https://go.dev/blog/json)
 - [RFC 9110 status code semantics](https://httpwg.org/specs/rfc9110.html)

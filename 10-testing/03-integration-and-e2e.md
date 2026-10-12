@@ -117,6 +117,10 @@ bubble whose goroutines all block fails fast instead of hanging. Scope
 it to concurrency logic (pipelines, timeouts, cancellation); code that
 talks to real infrastructure still needs the real tiers above.
 
+Since Go 1.27, `go test` runs the `stdversion` vet check by default. It
+flags standard-library APIs newer than the language version permitted
+for that file by the module's `go` directive and build constraints.
+
 ### Migrations are part of the contract
 
 Integration tests must apply the same migrations production uses. If

@@ -4,7 +4,7 @@
 
 Generics are the fastest-evolving corner of Go: introduced in 1.18,
 refined in nearly every release since, and structurally extended in
-1.27. Code that compiles on one toolchain silently fails on older
+1.26 and 1.27. Code that compiles on one toolchain silently fails on older
 ones, and advice written for 1.18 (much of the internet's generics
 content) is now outdated in specific, checkable ways. This chapter is
 the timeline and the compatibility rules, in the handbook's
@@ -21,6 +21,7 @@ versioning convention ([meta/versioning.md](../meta/versioning.md)).
 | **1.22** | `slices.Delete` zeroes removed elements; loop variables per-iteration | Closures/captures pre-1.22 differ (see below) |
 | **1.23** | `iter.Seq`/`iter.Seq2`; range-over-func; `maps.Keys/Values` return iterators | Iterator-style generic APIs standardize |
 | **1.25** | `sync.WaitGroup.Go` helper | One-liner goroutine+WaitGroup (concurrency, but changes generic pool examples) |
+| **1.26** | Generic constraints may refer to their own generic type | Enables patterns such as `Adder[A Adder[A]]` |
 | **1.27** | **Generic methods**: methods may declare type parameters | The last structural gap closes; interface methods still may not |
 
 ## Go 1.27: generic methods, precisely
@@ -141,9 +142,9 @@ archaeology session.
 
 ## Interview Questions
 
-1. *When did generics land, and what were the headline packages that
+1. *When did generics land, and what were the headline changes that
    followed?*: 1.18; slices/maps/cmp plus min/max/clear in 1.21;
-   iterators 1.23; generic methods 1.27.
+   iterators 1.23; self-referential constraints 1.26; generic methods 1.27.
 2. *What did Go 1.27 add, and what is still off the table?*: Generic
   methods on concrete types; interface methods remain non-generic
   (no virtual dispatch of instantiations).

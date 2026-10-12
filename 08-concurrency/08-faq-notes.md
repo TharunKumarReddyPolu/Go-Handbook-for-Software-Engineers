@@ -102,7 +102,7 @@ acquisition: see [16-distributed-systems](../16-distributed-systems/).
 // 1. Fire-and-forget goroutine (no exit path, panics kill the process)
 go doWork()
 
-// 2. time.After in a hot loop (allocates, resets deadline each item)
+// 2. time.After in a hot loop (one timer per iteration; resets each item)
 select {
 case v := <-ch:
 	process(v)

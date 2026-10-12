@@ -8,9 +8,12 @@ mTLS certificates say they are. Go's `crypto/tls` has the unusual
 property that its defaults have been *modernized in place*: since
 Go 1.17 the defaults enforce TLS 1.2+, and since Go 1.22 cipher
 suites follow the same trend, so a plain `tls.Server(conn, nil)` is
-already stricter than most hand-tuned configs. The work is knowing
-the handful of knobs that remain yours: certificates, client auth,
-and rotation.
+already stricter than most hand-tuned configs. Go 1.27 permanently
+removed compatibility settings including `tls10server`, `tlsrsakex`,
+`tls3des`, `tlsunsafeekm`, and `x509keypairleaf`; their secure defaults
+now apply regardless of the module's `go` directive. The work is
+knowing the handful of knobs that remain yours: certificates, client
+auth, and rotation.
 
 ## Mental Model
 

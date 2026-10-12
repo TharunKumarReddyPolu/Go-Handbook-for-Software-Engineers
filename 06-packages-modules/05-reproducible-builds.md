@@ -65,7 +65,7 @@ Go 1.21+ made this first-class:
 go 1.27
 
 // ...and optionally the exact toolchain for this module:
-toolchain go1.27.1
+toolchain go1.27.2
 ```
 
 ```bash
@@ -77,7 +77,7 @@ The policy split: the **go directive** is your compatibility floor
 (raising it is a user-facing decision), while the **toolchain
 directive** (or CI's `GOTOOLCHAIN=local` + explicit setup) pins what
 you build with. Release builds should use one pinned toolchain
-everywhere; a `golang:1.27.1` container image is the simplest honest
+everywhere; a `golang:1.27.2` container image is the simplest honest
 pin. Tools (`go install tool@v1.2.3`) get the same treatment: pinned
 versions, never `@latest` in scripts.
 
@@ -127,7 +127,7 @@ Multi-stage Dockerfiles are the standard delivery for Go binaries;
 the reproducibility checklist carries over:
 
 ```dockerfile
-FROM golang:1.27.1 AS build       # pinned toolchain, digest-pinned in prod
+FROM golang:1.27.2 AS build       # pinned toolchain, digest-pinned in prod
 WORKDIR /src
 COPY go.mod go.sum ./
 RUN go mod download               # cached layer: deps before source
@@ -142,7 +142,7 @@ ENTRYPOINT ["/app"]
 Notes that matter: `CGO_ENABLED=0` + distroless/static for pure Go
 (no libc surface, tiny image, no package drift); `go mod download`
 before `COPY . .` for layer caching; a digest-pinned base image for
-the strongest pin (`golang:1.27.1@sha256:...`).
+the strongest pin (`golang:1.27.2@sha256:...`).
 
 ## Common Mistakes
 

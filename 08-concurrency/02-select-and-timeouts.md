@@ -51,16 +51,17 @@ for {
 	select {
 	case v := <-ch:
 		process(v)
-	case <-time.After(5 * time.Second): // MISTAKE in a loop
+	case <-time.After(5 * time.Second): // resets the timeout on each loop iteration
 		return ErrSlowConsumer
 	}
 }
 ```
 
-Each loop iteration allocates a *new* timer. With a chatty channel the
-timer is replaced constantly (garbage + scheduled timers accumulate);
-the deadline also *resets* every time data arrives, so it measures
-"idle time," not total time. Correct forms:
+Each loop iteration creates a *new* timer. Since Go 1.23, unreachable
+timers can be collected before firing, so they do not accumulate forever;
+this is still unnecessary timer churn, and the deadline also *resets*
+every time data arrives, so it measures "idle time," not total time.
+Correct forms:
 
 ```go
 // Idle timeout: reuse one timer, stop/reset it.
@@ -70,9 +71,7 @@ for {
 	select {
 	case v := <-ch:
 		process(v)
-		if !idle.Stop() {
-			<-idle.C // drain if it fired; see the stop contract
-		}
+		idle.Stop() // Go 1.23+ synchronous timers need no drain before Reset
 		idle.Reset(5 * time.Second)
 	case <-idle.C:
 		return ErrSlowConsumer
@@ -93,9 +92,12 @@ for {
 }
 ```
 
-(Since Go 1.23 timer channels are unbuffered and timer stops are more
-forgiving, but reusing timers remains the right pattern for both
-correctness and allocation hygiene: see [meta/versioning.md](../meta/versioning.md).)
+Go 1.23 introduced synchronous timer channels for modules using the
+new semantics; Go 1.27 removed the `asynctimerchan` compatibility
+setting, so timer channels are now always unbuffered. Timer stops are
+more forgiving, but reusing timers remains the right pattern for
+correctness and allocation hygiene. See
+[meta/versioning.md](../meta/versioning.md).
 
 ## Non-blocking operations with default
 
@@ -157,9 +159,7 @@ func Watchdog(ctx context.Context, beat <-chan struct{}, maxSilence time.Duratio
 	for {
 		select {
 		case <-beat:
-			if !t.Stop() {
-				<-t.C
-			}
+			t.Stop() // Go 1.23+ synchronous timers need no drain before Reset
 			t.Reset(maxSilence)
 		case <-t.C:
 			return errors.New("heartbeat lost") // escalate: restart, failover, alert
@@ -211,8 +211,9 @@ func (b *Batcher) Run(ctx context.Context) error {
 
 ## Common Mistakes
 
-- **`time.After` inside hot loops**: allocation + reset-every-message
-  semantics; use `NewTimer` + `Reset`.
+- **`time.After` inside hot loops**: one timer is created per iteration,
+  and the timeout resets with each message; for very hot loops, reuse a
+  `NewTimer` to reduce churn and make idle-vs-total timeout semantics explicit.
 - **Missing the `ctx.Done()` case**: the select blocks forever when the
   caller cancels: a leak.
 - **Assuming order**: multiple ready cases are chosen randomly; do not
@@ -230,7 +231,9 @@ func (b *Batcher) Run(ctx context.Context) error {
       }
   }
   ```
-- **Forgetting `Stop()` on tickers/timers**: leaks until they fire.
+- **Forgetting `Stop()` on tickers/timers**: stop timers when their
+  lifetime ends; modern timers are garbage-collected when unreachable,
+  but explicit Stop still documents ownership and stops tickers.
 - **Draining a closed `done` channel in a loop with send**: closing a
   channel broadcasts to all waiters; use it for "done" semantics, not
   single handoff.
@@ -239,7 +242,7 @@ func (b *Batcher) Run(ctx context.Context) error {
 
 - Every blocking select has a cancellation case.
 - `default` is for explicit non-blocking semantics, never "just in case."
-- Tickers for periodic work, timers for deadlines; both get `defer Stop()`.
+- Stop timers/tickers when their behavior should end; under Go 1.23+ timer semantics, `Stop` is unnecessary solely for collecting an unreachable timer.
 - If a select grows past ~4 cases, it is usually two responsibilities,
   split the goroutine.
 
@@ -258,10 +261,11 @@ func (b *Batcher) Run(ctx context.Context) error {
   `default`-drop or full-block decisions live here.
 - Random readiness pick is the *starvation prevention* mechanism; don't
   defeat it with nested priority selects unless you mean it.
-- The `t.Stop() + drain` dance: after `Stop()` returns false, the timer
-  already fired and its channel holds a value; not draining it breaks the
-  next `Reset`. Read `time.Timer` docs carefully: this exact contract
-  has changed across versions.
+- **Pre-Go 1.23 timer folklore**: current synchronous timer channels
+  guarantee that after `Stop` or `Reset` returns, receives cannot observe
+  stale values from the previous setting. The old stop-and-drain dance
+  was needed for pre-1.23 asynchronous timer channels; see the
+  [timer compatibility notes](../meta/versioning.md).
 
 ## Security Considerations
 
@@ -283,8 +287,10 @@ is the defense at the goroutine level (the HTTP-level equivalents are in
 
 1. *What happens if multiple select cases are ready?*: Uniform random
    choice; why: prevent starvation.
-2. *Why is `time.After` in a loop a problem?*: New timer per iteration
-   (allocation), and deadline resets on each message (measures idleness).
+2. *Why might `time.After` in a loop be a problem?*: It creates one
+   timer per iteration and resets the timeout on each message; unreachable
+   timers are collectible with modern semantics, but hot loops may benefit
+   from timer reuse.
 3. *How do you make a channel operation non-blocking?*: select with
    default; show drop/shed metrics use.
 4. *How would you implement "take the first successful response of 5
@@ -293,9 +299,9 @@ is the defense at the goroutine level (the HTTP-level equivalents are in
 
 ## Practice Exercises
 
-1. Fix the `time.After` trap version of a consumer and write a test that
-   fails with the looped version (hint: assert allocations with
-   `testing.AllocsPerRun`, or count timers via runtime metrics).
+1. Compare a looped `time.After` consumer with a reused `NewTimer` version.
+   Measure allocations with `testing.AllocsPerRun` and test whether the
+   timeout measures idle time or a total deadline.
 2. Implement `OrDone(ctx, ch)`: relays values until ctx cancels or the
    channel closes, leaking nothing. It's a canonical utility; test it.
 3. Build the priority-select pair above; then break priority by
@@ -306,3 +312,4 @@ is the defense at the goroutine level (the HTTP-level equivalents are in
 - [Go Concurrency Patterns: Pipelines and cancellation](https://go.dev/blog/pipelines): canonical
 - [time.Timer docs](https://pkg.go.dev/time#Timer): the Stop/Reset contract
 - [Go 1.23 timer changes](https://go.dev/doc/go1.23): timer channel semantics
+- [time.Timer documentation](https://pkg.go.dev/time#Timer): current Stop/Reset contract

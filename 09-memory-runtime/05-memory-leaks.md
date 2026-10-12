@@ -50,13 +50,15 @@ Section 9](../03-data-structures/README.md)'s cache chapter) plus
 cardinality metrics ([20 Section 2](../20-observability/02-metrics.md)):
 an unbounded map is a slow OOM with a j curve.
 
-**Shape 4: runtime resources without cleanup.** `time.Ticker`
-never stopped (`Stop` releases the timer heap entry; the channel
-is not the cleanup), `http.Response.Body` never closed (keeps the
-connection pinned: fd + buffers), `sql.Rows` not closed. The
-owner rule again: whoever opens closes, typically `defer` at the
-same scope ([12 Section 4](../12-http-networking/04-clients-and-timeouts.md)'s
-client hygiene).
+**Shape 4: runtime resources without cleanup.** A live `time.Ticker`
+kept running after its owner no longer needs ticks, `http.Response.Body`
+never closed (keeps the connection pinned: fd + buffers), `sql.Rows`
+not closed. The owner rule again: whoever opens closes, typically
+`defer` at the same scope
+([12 Section 4](../12-http-networking/04-clients-and-timeouts.md)'s
+client hygiene). With Go 1.23 timer semantics, unreachable timers and
+tickers are eligible for garbage collection even without `Stop`; the
+method still ends their behavior promptly while referenced.
 
 ## Syntax / API
 
@@ -72,12 +74,20 @@ go tool pprof http://svc:6060/debug/pprof/heap   # in-use view
 
 # 3. Goroutine leaks: is the count trending up? Who is parked?
 curl -s svc:6060/debug/pprof/goroutine?debug=1 | head -40
+
+# Go 1.27+: profile goroutines the runtime can prove are permanently blocked.
+go tool pprof http://svc:6060/debug/pprof/goroutineleak
 ```
 
 The heap profile's *in-use* view is the leak lens: allocation-rate
 problems show in `alloc_space`; leaks show in `inuse_space`
 growing without traffic ([19 Section 1](../19-performance/01-measure-first.md)
-distinguishes them in peacetime).
+distinguishes them in peacetime). Go 1.27 also provides a generally
+available `goroutineleak` profile through `runtime/pprof` and
+`net/http/pprof`. It detects a useful class of goroutines blocked on
+unreachable synchronization primitives, not every leak: globally
+reachable blockers can evade detection. Treat it as additional evidence,
+not a replacement for lifecycle ownership and goroutine trends.
 
 ## Basic Example
 
@@ -103,15 +113,14 @@ details.
 
 The ticker leak, the most common production find: a reconnect
 loop creates a `time.NewTicker` per attempt and returns early
-without `Stop()`. Each abandoned ticker holds a runtime timer and
-its channel: after a week of flapping, the process holds hundreds
-of thousands of timers, the timer heap makes every
-`time.AfterFunc` slower, and latency creeps while heap looks
-"reasonable" (timers are small). The fix is one `defer t.Stop()`;
-the lesson is that the *cost* of leaks is not always the bytes:
-timers, fds, and goroutines each have their own exhaustion
-signature ([20 Section 5](../20-observability/05-incident-debugging.md)'s
-signal table).
+without `Stop()`. Before Go 1.23, each abandoned ticker could remain
+live indefinitely; since Go 1.23, an unreachable ticker can be
+collected, but one that is still referenced remains active and emits
+ticks. Explicit `Stop` is therefore still necessary when ending a live
+ticker's behavior. Resource leaks may have their own exhaustion
+signature (fds and goroutines still require deliberate cleanup; see
+[20 Section 5](../20-observability/05-incident-debugging.md)'s signal
+table). Do not assume every timer/ticker leak consumes heap forever.
 
 ## Production Example
 
@@ -140,7 +149,7 @@ their liveness, and the alert checks the sum.
 | `go func` with no stop path | Shape 1 | Return a stop function; or tie to `ctx.Done()` ([08 Section 3](../08-concurrency/03-context.md)) |
 | Returning `big[:small]` views | Shape 2 | `copy` at the boundary, or full-slice `[:n:n]` to cap |
 | Cache/session maps keyed by IDs | Shape 3 | TTLs, bounded LRU, cardinality metrics |
-| Ticker without `Stop` on early return | Shape 4 (timers) | `defer ticker.Stop()` at creation scope |
+| Ticker kept active after its owner exits | Shape 4 (runtime resource) | `defer ticker.Stop()` when the ticker is no longer needed |
 | `resp.Body` unclosed on error paths | Shape 4 (fds/connections) | `defer resp.Body.Close()` immediately after `Do` |
 | Reading only `alloc_space` profiles | Churn hides as leak or vice versa | Check `inuse_space` for leaks, `alloc_space` for churn |
 | `append` to a retained slice in a loop | Shape 2 variant (growth pinning) | Pre-size or copy snapshots |
@@ -163,9 +172,9 @@ lesson matters too: over-aggressive cleanup churns allocations
 ([19 Section 2](../19-performance/02-memory-and-allocations.md)). The
 balance: bounded and reused beats unbounded and "collected
 eventually", and pooling (`sync.Pool`) is the tool for the churn
-side. The timer-heap cost of ticker leaks is also a scheduler
-cost ([09 Section 4](../09-memory-runtime/04-scheduler-internals.md)):
-timers live in per-P heaps touched on every scheduling pass.
+side. A live ticker left running is still needless runtime work even
+when its owner retains no application data; stop it when it is no
+longer needed.
 
 ## Concurrency Considerations
 

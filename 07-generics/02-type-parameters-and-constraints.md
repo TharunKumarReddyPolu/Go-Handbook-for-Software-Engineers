@@ -171,10 +171,11 @@ compile).
 - **Union of interfaces that overlaps itself** (`interface{ int } |
   interface{ ~int }`): redundant and a readability tax; flatten
   unions, name them, reuse them.
-- **Recursive constraints** (a constraint referencing its own type
-  parameter): sometimes legitimate (linked types) but usually a sign
-  the design wants an interface method instead; Go 1.27's generic
-  methods ([06](06-version-notes.md)) retire several of these hacks.
+- **Recursive constraints**: self-referential generic constraints
+  such as `Adder[A Adder[A]]` became legal in Go 1.26. Use them when
+  they express a real recursive type relationship, not as a workaround
+  for missing methods; Go 1.27's generic methods
+  ([06](06-version-notes.md)) are a separate feature.
 - **Forgetting comparable's exactness**: putting a `comparable`
   constraint on a parameter you also want to use as a map key is
   fine; putting it on something you want to *sort* silently misses

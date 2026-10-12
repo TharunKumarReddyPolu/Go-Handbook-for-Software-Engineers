@@ -45,14 +45,16 @@ CycloneDX) from the same source; attach one to release artifacts
 so the question "were we exposed to CVE-X?" has a same-day
 answer.
 
-**Modernizers**: `go fix` applies analyzer-driven rewrites that
-modernize idioms the stdlib has since absorbed. The Go 1.27
-modernizers ([meta/versioning.md](../meta/versioning.md)) cover
-conversions like `interface{}` → `any`, `sort.Slice` →
-`slices.SortFunc` where appropriate, `m[i] = v; return m`-shaped
-helpers → clearer stdlib calls, and min/max expressions → the
-builtins. They are *suggested* by vet-style diagnostics and
-*applied* by `go fix -fix=...`: reviewable, mechanical PRs.
+**Modernizers**: Go 1.26 revamped `go fix` into the analyzer-driven
+command for updating code to current language and library idioms. Its
+fixers include rewrites such as `interface{}` to `any`, `sort.Slice`
+to `slices.SortFunc` where appropriate, and older helpers to clearer
+standard-library calls. Go 1.27 adds modernizers including
+`atomictypes`, `embedlit`, `slicesbackward`, and `unsafefuncs`; the
+release also renamed the waitgroup analyzer to `waitgroupgo` and
+removed `fmtappendf`. Diagnostics are suggested by analyzers and
+applied by `go fix -fix=...`: reviewable, mechanical changes that still
+need code review and tests.
 
 ## Syntax / API
 
@@ -233,4 +235,5 @@ ecosystem's integrity backbone: leave it enabled.
 - [govulncheck documentation](https://pkg.go.dev/golang.org/x/vuln/cmd/govulncheck)
 - [Go vulnerability database](https://vuln.go.dev/)
 - [Managing dependencies (go.dev)](https://go.dev/doc/modules/managing-dependencies)
-- [Go 1.27 release notes: go fix and modernizers](https://go.dev/doc/go1.27)
+- [Go 1.26 release notes: go fix modernizers](https://go.dev/doc/go1.26)
+- [Go 1.27 release notes: additional modernizers](https://go.dev/doc/go1.27)

@@ -279,9 +279,10 @@ non-event.
 - The quartet trades availability for latency: an open breaker is the
   fastest response in the system by design. Alert on breaker state
   transitions, not on their absence.
-- `time.After` in retry loops allocates a timer per attempt; for
-  hot loops, reuse timers ([19 Section 2](../19-performance/02-memory-and-allocations.md)).
-  At normal call volumes, the readability wins.
+- `time.After` in retry loops creates a timer per attempt, but
+  unreachable timers are collectible under Go 1.23+ semantics. For very
+  hot loops, reuse timers to reduce churn ([19 Section 2](../19-performance/02-memory-and-allocations.md));
+  at normal call volumes, the readability wins.
 
 ## Concurrency Considerations
 
